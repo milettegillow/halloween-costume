@@ -791,6 +791,10 @@
           out += E(ex + s, a.eyeY + 1, a.eyeRX + 6, a.eyeRY + 6, '#b0303a', op(0.38));
           out += underCrescent(a, s, '#9a1a24', 0.5, 8);
           break;
+        case 'dollBlush':
+          out += C(CX + s * 52, a.cheekY + 6, 13, '#e8728a', op(0.6)) + C(CX + s * 52, a.cheekY + 6, 9, '#e05a78', op(0.4)) +
+            C(CX + s * 49, a.cheekY + 3, 3.5, '#ffffff', op(0.35));
+          break;
       }
     });
     return out ? G(out, `clip-path="url(#${id}hd)"`) : '';
@@ -1173,16 +1177,15 @@
       neckFx += vein(CX + a.neckW - 8, a.collarY + 4, -1.8, 18, 0);
     }
     if (has('cracked')) {
-      [-1, 1].forEach(s => out += E(CX + s * 52, a.cheekY + 6, 15, 11, '#e2737f', op(0.55)) + E(CX + s * 52 - 3, a.cheekY + 3, 5, 3, '#ffffff', op(0.4)));
       [
-        [[CX - 70, a.crownY + 50], [CX - 52, a.crownY + 66], [CX - 56, a.browY - 8], [CX - 40, a.browY + 6]],
-        [[CX - 52, a.crownY + 66], [CX - 30, a.crownY + 62], [CX - 18, a.crownY + 74]],
-        [[CX - 64, a.eyeY + 28], [CX - 72, a.cheekY + 6], [CX - 60, a.cheekY + 30], [CX - 66, a.jawY]],
-        [[CX - 72, a.cheekY + 6], [CX - 84, a.cheekY + 16]],
-        [[CX + 30, a.chinY - 8], [CX + 22, a.mouthY + 16], [CX + 30, a.mouthY + 6]]
+        [[CX - 58, a.hairlineY - 6], [CX - 50, a.hairlineY + 14], [CX - 56, a.browY - 8], [CX - 46, a.browY + 4]],
+        [[CX - 50, a.hairlineY + 14], [CX - 30, a.hairlineY + 18], [CX - 20, a.hairlineY + 30]],
+        [[CX - 70, a.eyeY + 24], [CX - 60, a.cheekY + 4], [CX - 40, a.cheekY + 18], [CX - 30, a.cheekY + 40]],
+        [[CX - 60, a.cheekY + 4], [CX - 78, a.cheekY + 18], [CX - 74, a.jawY - 4]],
+        [[CX - 40, a.cheekY + 18], [CX - 26, a.cheekY + 12]]
       ].forEach(line => {
         const d = 'M' + line.map(p => pt(p[0], p[1])).join('L');
-        out += S(d, sk.light, 1.1, `${op(0.9)} transform="translate(1,1)"`) + S(d, '#2b2226', 1.2);
+        out += S(d, '#ffffff', 1.1, `${op(0.9)} transform="translate(1,1)"`) + S(d, '#2b2226', 1.2);
       });
       const chip = `M${pt(CX + 54, a.crownY + 48)}L${pt(CX + 70, a.crownY + 56)}L${pt(CX + 66, a.crownY + 70)}L${pt(CX + 74, a.crownY + 82)}L${pt(CX + 56, a.crownY + 80)}L${pt(CX + 50, a.crownY + 64)}Z`;
       out += P(chip, '#1a1214') + S(chip, sk.light, 1, `${op(0.8)} transform="translate(-1,-1)"`);
@@ -1326,8 +1329,6 @@
     const R = rng(131), r = (x, y) => x + R() * (y - x);
     const mw = a.mouthW, my = a.mouthY;
     let out = '';
-    if (list.includes('nose')) out += hookedNose(a, sk);
-    if (list.includes('wart')) out += wart(CX - 22, Math.min(a.chinY - 18, a.mouthY + 26), sk);
     if (list.includes('messyFeed')) {
       const ring = [];
       for (let i = 0; i < 14; i++) {
@@ -2369,7 +2370,9 @@
 
   function portraitContent(look, id) {
     const a = anchors(look.shape, look.features);
-    const sm = SKIN_MAKEUP[look.skin];
+    // the crackle paint leaves a porcelain base when no other base is chosen
+    const porcelain = look.skin === 'none' && (look.effects || []).includes('cracked') && !MASKS[look.mask];
+    const sm = porcelain ? { mix: '#f3eee8', t: 0.6, tint: '#6a5a62' } : SKIN_MAKEUP[look.skin];
     const skinBase = sm ? mix(look.skinTone, sm.mix, sm.t) : look.skinTone;
     const sk = skinPalette(skinBase, sm && sm.tint);
     const h = hairPalette(look.hairColour);

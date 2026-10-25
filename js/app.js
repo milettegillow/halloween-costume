@@ -175,6 +175,8 @@
     if (onSkin) add(DATA.prep);
     if (chosen.some(item => item.patch) || bald) add(DATA.patchTest);
     chosen.forEach(add);
+    // latex wounds share one method, after their placement lines
+    if (chosen.some(item => item.wound)) add(DATA.woundMethod);
     if (onSkin) add(DATA.setting);
     if (masked) add(byId(DATA.masks, s.mask));
 
@@ -216,8 +218,12 @@
 
   function productRow(p) {
     const li = el('li');
-    const link = linkFor(p);
-    li.appendChild(el('a', { href: link.href, target: '_blank', rel: link.rel }, p.name));
+    if (p.asin || p.q || p.url) {
+      const link = linkFor(p);
+      li.appendChild(el('a', { href: link.href, target: '_blank', rel: link.rel }, p.name));
+    } else {
+      li.appendChild(el('span', {}, p.name));
+    }
     if (p.note) li.appendChild(el('p', { class: 'product-note' }, p.note));
     return li;
   }
