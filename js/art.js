@@ -635,11 +635,15 @@
   const LENS = {
     none: { iris: '#3d2717', ring: '#24150c', r: 8.5, pupil: 5 },
     whiteout: { iris: '#ebe7df', ring: '#c4beb2', r: 9.5, pupil: 0 },
+    whiteRing: { iris: '#f4f1ea', ring: '#0d0b0c', ringW: 3, r: 11, pupil: 3.4 },
+    vampireRed: { iris: '#8e0d18', ring: '#3a0408', r: 10, pupil: 4, rays: '#5a0610' },
+    brightRed: { iris: '#e2161c', ring: '#5a0408', r: 11, pupil: 0, slit: true, rays: '#ff6a5a' },
+    werewolf: { iris: '#9ac43a', ring: '#2e4a10', ringW: 2.2, r: 10.5, pupil: 4, rays: '#e2ee7a' },
+    redClown: { iris: '#c4161c', ring: '#000000', ringW: 3.2, r: 11, pupil: 3.5, rays: '#7a0a10' },
+    galaxy: { iris: '#2a1f6a', ring: '#120c30', r: 10.5, pupil: 3.5, stars: true },
+    enchantedPink: { iris: '#e78ab4', ring: '#8a2a5a', r: 10, pupil: 3.6, rays: '#f7c4dc' },
     blackout: { iris: '#0e0b0c', ring: '#000000', r: 11.5, pupil: 2.2, pupilColour: '#cfc9bf' },
-    red: { iris: '#b3121f', ring: '#560510', r: 9.5, pupil: 4 },
-    cat: { iris: '#e6bd1e', ring: '#8a650c', r: 11.5, pupil: 0, slit: true },
-    swirl: { iris: '#f1ece2', ring: '#141014', r: 11, pupil: 0, swirl: true },
-    iceMesh: { iris: '#bfe3f2', ring: '#4f87a3', r: 10, pupil: 3, mesh: true }
+    cat: { iris: '#e6bd1e', ring: '#8a650c', r: 11.5, pupil: 0, slit: true }
   };
 
   function lensFor(look, s) {
@@ -661,23 +665,27 @@
       out += `<clipPath id="${cid}"><path d="${ep}"/></clipPath>`;
       let inner = P(ep, lens.sclera || '#f6f1e6');
       const ix = g.ex + 2, iy = g.ey + 1;
-      inner += C(ix, iy, lens.r, lens.iris) + C(ix, iy, lens.r, 'none', `stroke="${lens.ring}" stroke-width="1.6"`);
-      if (lens.swirl) {
+      inner += C(ix, iy, lens.r, lens.iris);
+      if (lens.rays) {
         let d = '';
-        for (let i = 0; i <= 48; i++) {
-          const t = i / 48, th = t * Math.PI * 5, rr = 0.8 + t * (lens.r - 1.6);
-          d += (i ? 'L' : 'M') + pt(ix + Math.cos(th) * rr, iy + Math.sin(th) * rr);
+        for (let i = 0; i < 16; i++) {
+          const th = i / 16 * Math.PI * 2;
+          d += `M${pt(ix + Math.cos(th) * 3, iy + Math.sin(th) * 3)}L${pt(ix + Math.cos(th) * (lens.r - 1.5), iy + Math.sin(th) * (lens.r - 1.5))}`;
         }
-        inner += S(d, '#141014', 1.5);
+        inner += S(d, lens.rays, 0.9, op(0.75));
       }
-      if (lens.mesh) {
-        let m = '';
-        for (let k = -14; k <= 14; k += 3.2) m += `M${pt(ix + k - 12, iy - 12)}L${pt(ix + k + 12, iy + 12)}M${pt(ix + k + 12, iy - 12)}L${pt(ix + k - 12, iy + 12)}`;
-        inner += `<clipPath id="${cid}m"><circle cx="${f(ix)}" cy="${f(iy)}" r="${lens.r}"/></clipPath>` + G(S(m, '#3f7590', 0.6, op(0.85)), `clip-path="url(#${cid}m)"`);
+      if (lens.stars) {
+        const R = rng(s > 0 ? 17 : 13);
+        for (let i = 0; i < 14; i++) {
+          const th = R() * Math.PI * 2, rr = 3.5 + R() * (lens.r - 5);
+          inner += C(ix + Math.cos(th) * rr, iy + Math.sin(th) * rr, 0.4 + R() * 0.7, ['#ffffff', '#f7c4ff', '#9ad8ff'][i % 3], op(0.95));
+        }
+        inner += E(ix + 3, iy + 2, 4, 2.5, '#8a4ac0', op(0.45));
       }
+      inner += C(ix, iy, lens.r, 'none', `stroke="${lens.ring}" stroke-width="${lens.ringW || 1.6}"`);
       if (lens.slit) inner += E(ix, iy, 1.9, lens.r - 1.5, '#0d0805');
       else if (lens.pupil) inner += C(ix, iy, lens.pupil, lens.pupilColour || '#0d0805');
-      else if (!lens.swirl) inner += C(ix, iy, 2.4, '#cfc9be', op(0.8));
+      else inner += C(ix, iy, 2.4, '#cfc9be', op(0.8));
       inner += C(ix - 3, iy - 3.5, 1.9, '#ffffff', op(0.95));
       // lid shadow across the top of the eyeball
       inner += P(upperLid(g) + `L${pt(g.x2, g.y2 - 20)}L${pt(g.x1, g.y1 - 20)}Z`, '#000000', `${op(0.18)} transform="translate(0,5)"`);

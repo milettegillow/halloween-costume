@@ -165,7 +165,6 @@
       });
     }
     const onSkin = chosen.some(item => !M.lenses.includes(item));
-    const lensed = !masked && s.lenses !== 'none';
 
     const d = DATA.defaults;
     const v = versionOf(s);
@@ -176,7 +175,6 @@
     if (onSkin) add(DATA.prep);
     if (chosen.some(item => item.patch) || bald) add(DATA.patchTest);
     chosen.forEach(add);
-    if (lensed) add(DATA.lensSafety);
     if (onSkin) add(DATA.setting);
     if (masked) add(byId(DATA.masks, s.mask));
 
@@ -185,7 +183,7 @@
       else {
         const colour = byId(DATA.hairColours, s.hairColour);
         add(DATA.wig);
-        products.push({ name: `${colour.label} ${style.wig}`, q: `${colour.label.toLowerCase()} ${style.wig}` });
+        products.push(Object.assign({}, DATA.kit.wig, { name: `${colour.label} ${style.wig}` }));
       }
     }
 
@@ -206,10 +204,22 @@
     return { method, shopping };
   }
 
-  function amazonUrl(p) {
+  // Amazon links carry the tag; external links (the lenses) do not.
+  function linkFor(p) {
+    if (p.url) return { href: p.url, rel: 'noopener' };
     const tag = AMAZON_TAG ? encodeURIComponent(AMAZON_TAG) : '';
-    if (p.asin) return `https://www.amazon.co.uk/dp/${encodeURIComponent(p.asin)}` + (tag ? `?tag=${tag}` : '');
-    return 'https://www.amazon.co.uk/s?k=' + encodeURIComponent(p.q) + (tag ? `&tag=${tag}` : '');
+    const href = p.asin
+      ? `https://www.amazon.co.uk/dp/${encodeURIComponent(p.asin)}` + (tag ? `?tag=${tag}` : '')
+      : 'https://www.amazon.co.uk/s?k=' + encodeURIComponent(p.q) + (tag ? `&tag=${tag}` : '');
+    return { href, rel: 'sponsored noopener' };
+  }
+
+  function productRow(p) {
+    const li = el('li');
+    const link = linkFor(p);
+    li.appendChild(el('a', { href: link.href, target: '_blank', rel: link.rel }, p.name));
+    if (p.note) li.appendChild(el('p', { class: 'product-note' }, p.note));
+    return li;
   }
 
   /* ---------- rendering ---------- */
@@ -405,12 +415,23 @@
     const ul = $('#shopping');
     ul.innerHTML = '';
     if (!shopping.length) ul.appendChild(el('li', { class: 'empty' }, 'Nothing to buy yet.'));
-    shopping.forEach(p => {
-      const li = el('li');
-      li.appendChild(el('a', { href: amazonUrl(p), target: '_blank', rel: 'sponsored noopener' }, p.name));
-      ul.appendChild(li);
+    shopping.forEach((p, i) => {
+      ul.appendChild(productRow(p));
+      // the lens notes sit once, under the lens
+      if (p.lens && !(shopping[i + 1] && shopping[i + 1].lens)) {
+        const notes = el('li', { class: 'lens-notes' });
+        DATA.lensNotes.forEach(t => notes.appendChild(el('p', {}, t)));
+        ul.appendChild(notes);
+      }
     });
-    $('#affiliate').hidden = !AMAZON_TAG || !shopping.length;
+    $('#affiliate').hidden = !AMAZON_TAG;
+  }
+
+  function renderEssentials() {
+    $('#essentials-intro').textContent = DATA.essentials.intro;
+    const ul = $('#essentials');
+    ul.innerHTML = '';
+    DATA.essentials.products.forEach(k => ul.appendChild(productRow(product(k))));
   }
 
   function update() {
@@ -525,6 +546,7 @@
     $('#reset').addEventListener('click', reset);
     $('#download').addEventListener('click', download);
     renderTabs();
+    renderEssentials();
     update();
   });
 

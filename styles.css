@@ -514,6 +514,27 @@ button {
   margin: 0.8rem 0 0;
 }
 
+.product-note {
+  margin: 0.1rem 0 0.5rem;
+}
+
+.shopping li.lens-notes {
+  padding-left: 1.3rem;
+  margin-bottom: 0.6rem;
+}
+
+.shopping li.lens-notes::before {
+  display: none;
+}
+
+.lens-notes p {
+  margin: 0 0 0.5rem;
+}
+
+.essentials-intro {
+  margin: 0 0 0.6rem;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;
