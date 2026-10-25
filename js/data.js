@@ -92,7 +92,6 @@ const DATA = {
     bluePaint: { name: 'Snazaroo blue face paint', asin: 'B000H6W2H6' },
     crackedPaint: { name: 'Cracked doll face paint', asin: 'B0HCVMWPGR' },
     dollBlush: { name: 'Pink doll blush', asin: 'B0GH8T5R9W' },
-    powder: { name: 'Setting powder', asin: 'B09N2YW2T6' },
     sponges: { name: 'Makeup sponges', asin: 'B0CMCKBBRJ', note: 'These look better than mine, to be fair.', shopNote: null },
     brushes: { name: 'Makeup brushes', asin: 'B07FTB6NKV', note: 'I\'ve bought these exact ones. Just a good-to-have.' },
     tweezers: { name: 'Tweezers', asin: 'B01N5A69RV' },
@@ -106,10 +105,13 @@ const DATA = {
     wig: { asin: 'B09QKPCL8T', note: 'I\'ve ordered this exact one before. I think these wigs are great - I have this one in several shades.' }
   },
 
-  // The shared method for latex wounds; each selected wound adds its own line to the first and third steps.
+  // The base layer when no full-face paint is chosen.
+  foundationBase: { cover: 'your normal foundation', product: 'paleFoundation' },
+
+  // The shared method for latex wounds; each selected wound adds its own line to the first and second steps.
+  // The base layer goes between building and ripping.
   latexWoundSteps: [
     'Rip toilet paper into rough shapes with no hard edges and peel the plies apart. Paint a layer of liquid latex where each wound will go, press a ply of tissue over it and let it dry. Add another layer of latex and more tissue, and repeat a few times. Finish with a layer of liquid latex and let it dry.',
-    'Cover your face with your normal foundation, blending over the latex so it\'s as hidden as possible.',
     'Use tweezers to rip holes in the latex.',
     'Fill the inside of every wound with red lipstick. Dab blue and purple eyeshadow onto the ripped skin around it so it looks more damaged. For extra depth, line the inside corners of each wound with a darker eyeshadow like black or brown.',
     'Add fake blood over the whole thing and dab a little inside each wound. Don\'t overdo it.'
@@ -272,31 +274,36 @@ const DATA = {
     ],
 
     // Pale base, ghostly white and bruised blue are skin bases; the art treats them as skin.
+    // A full-face paint is the base layer (base: what covers the face, and its product);
+    // its own steps only cover the details on top. Without one, the base is your normal foundation.
     facePaint: [
       { id: 'none', label: 'None', namePart: '', applyOrder: 50, steps: [], products: [] },
       {
         id: 'paleBase', label: 'Pale base', namePart: 'pallid', applyOrder: 20,
-        steps: ['Use your normal foundation shade and skip any bronzer, then add the blue and purple.'],
-        products: ['paleFoundation', 'sponges']
+        base: { cover: 'your normal foundation, skipping any bronzer', product: 'paleFoundation' },
+        steps: [],
+        products: ['sponges']
       },
       {
         id: 'ghostly', label: 'Ghostly white', namePart: 'spectral', applyOrder: 20,
-        steps: ['Sponge white face paint thinly over your face, neck and ears.'],
-        products: ['whitePaint', 'sponges']
+        base: { cover: 'white face paint, thinly, right down your neck and over your ears', product: 'whitePaint' },
+        steps: [],
+        products: ['sponges']
       },
       {
         id: 'bruisedBlue', label: 'Bruised blue', namePart: 'drowned', applyOrder: 20,
-        steps: ['Sponge blue face paint thinly over your face and neck, then pat purple eyeshadow on top so you look cold and waterlogged.'],
-        products: ['bluePaint', 'palette', 'sponges']
+        base: { cover: 'blue face paint, thinly, right down your neck', product: 'bluePaint' },
+        steps: ['Pat purple eyeshadow over the blue so you look cold and waterlogged.'],
+        products: ['palette', 'sponges']
       },
       {
         id: 'clown', label: 'Clown', namePart: 'grinning', applyOrder: 50,
+        base: { cover: 'white face paint', product: 'whitePaint' },
         steps: [
-          'Cover your face in white face paint and set it with powder.',
           'Draw high arched brows in black.',
           'Paint the tip of your nose red with lipstick.'
         ],
-        products: ['whitePaint', 'powder', 'blackLiner', 'redLipstick', 'sponges', 'brushes', 'blackLashes', 'lashGlue']
+        products: ['blackLiner', 'redLipstick', 'sponges', 'brushes', 'blackLashes', 'lashGlue']
       },
       {
         id: 'skull', label: 'Skull, half face', namePart: 'skeletal', applyOrder: 50,
@@ -308,48 +315,51 @@ const DATA = {
       },
       {
         id: 'skeletonFull', label: 'Full skeleton', namePart: 'bony', applyOrder: 50,
+        base: { cover: 'white face paint', product: 'whitePaint' },
         steps: [
-          'Paint your whole face white, then fill big sockets round your eyes with black eyeliner and a little navy eyeshadow.',
+          'Fill big sockets round your eyes with black eyeliner and a little navy eyeshadow.',
           'Fill in your nose with eyeliner and draw a stitched smile right across your cheeks.'
         ],
-        products: ['whitePaint', 'blackLiner', 'palette', 'brushes', 'sponges']
+        products: ['blackLiner', 'palette', 'brushes', 'sponges']
       },
       {
         id: 'pumpkin', label: 'Pumpkin', namePart: 'carved', applyOrder: 50,
+        base: { cover: 'orange face paint', product: 'orangePaint' },
         steps: [
-          'Sponge orange face paint all over, with darker orange lines curving down your face.',
+          'Shade a few curved lines down your face with a darker orange or brown eyeshadow.',
           'Fill in black triangles over your eyes and nose and a jagged grin over your mouth with black eyeliner.'
         ],
-        products: ['orangePaint', 'blackLiner', 'sponges', 'brushes']
+        products: ['palette', 'blackLiner', 'sponges', 'brushes']
       },
       {
         id: 'redPaint', label: 'Red face paint', namePart: 'infernal', applyOrder: 50,
-        steps: ['Sponge red face paint over your whole face and neck in thin, even layers.'],
-        products: ['redPaint', 'sponges']
+        base: { cover: 'red face paint, right down your neck', product: 'redPaint' },
+        steps: [],
+        products: ['sponges']
       },
       {
         id: 'cracked', label: 'Cracked porcelain', namePart: 'cracked', applyOrder: 50,
+        base: { cover: 'the cracked doll face paint and let it dry so it cracks', product: 'crackedPaint' },
         steps: [
-          'Sponge the cracked doll face paint over your face and let it dry so it cracks.',
           'Draw a few bigger cracks from your hairline down across one cheek with black eyeliner, with a fine line of white eyeliner beside each one.'
         ],
-        products: ['crackedPaint', 'sponges', 'blackLiner', 'whitePencil', 'brushes']
+        products: ['sponges', 'blackLiner', 'whitePencil', 'brushes']
       }
     ],
 
     // Effects can be combined.
     effects: [
       { id: 'none', label: 'None', namePart: '', applyOrder: 60, steps: [], products: [] },
-      { id: 'clawRip', label: 'Claw rip', namePart: 'mauled', applyOrder: 10, patch: true, latexWound: { place: 'Claw rip: three long, thin strips running diagonally across the bridge of your nose and both cheeks, between your eyes and mouth.', open: 'Claw rip: three long parallel tears, one along each strip.' }, steps: [], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
-      { id: 'cheekGash', label: 'Cheek gash', namePart: 'gashed', applyOrder: 10, patch: true, latexWound: { place: 'Cheek gash: a big rough patch on one cheek.', open: 'Cheek gash: tear it wide so the edges are really ragged.' }, steps: [], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
-      { id: 'slicedCheeks', label: 'Sliced cheeks', namePart: 'sliced', applyOrder: 10, patch: true, latexWound: { place: 'Sliced cheeks: a thin strip down each cheekbone, straight down from your eyes.', open: 'Sliced cheeks: one long slit down the middle of each strip.' }, steps: [], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
-      { id: 'tornCorners', label: 'Sliced mouth corners', namePart: 'slashed', applyOrder: 10, patch: true, latexWound: { place: 'Sliced mouth corners: a thin, curved strip from each corner of your mouth up towards your cheeks.', open: 'Sliced mouth corners: open each one along the curve, starting at the corner of your mouth.' }, steps: [], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
-      { id: 'templePeel', label: 'Temple peel', namePart: 'peeling', applyOrder: 10, patch: true, latexWound: { place: 'Temple peel: a long strip from your lower forehead down through one eye to your upper cheek, keeping clear of the eye itself.', open: 'Temple peel: start small above and below the eye and keep tearing until it opens fully round the eye.' }, steps: [], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
-      { id: 'foreheadGash', label: 'Forehead gash', namePart: 'slain', applyOrder: 10, patch: true, latexWound: { place: 'Forehead gash: a long strip across your forehead.', open: 'Forehead gash: rip it open along its length.' }, steps: [], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
+      { id: 'clawRip', label: 'Claw rip', namePart: 'mauled', applyOrder: 10, patch: true, latexWound: { place: 'Claw rip: three long, thin strips running diagonally across the bridge of your nose and both cheeks, between your eyes and mouth.', open: 'Claw rip: three long parallel tears, one along each strip.' }, steps: [], products: ['latex', 'toiletPaper', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
+      { id: 'cheekGash', label: 'Cheek gash', namePart: 'gashed', applyOrder: 10, patch: true, latexWound: { place: 'Cheek gash: a big rough patch on one cheek.', open: 'Cheek gash: tear it wide so the edges are really ragged.' }, steps: [], products: ['latex', 'toiletPaper', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
+      { id: 'slicedCheeks', label: 'Sliced cheeks', namePart: 'sliced', applyOrder: 10, patch: true, latexWound: { place: 'Sliced cheeks: a thin strip down each cheekbone, straight down from your eyes.', open: 'Sliced cheeks: one long slit down the middle of each strip.' }, steps: [], products: ['latex', 'toiletPaper', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
+      { id: 'tornCorners', label: 'Sliced mouth corners', namePart: 'slashed', applyOrder: 10, patch: true, latexWound: { place: 'Sliced mouth corners: a thin, curved strip from each corner of your mouth up towards your cheeks.', open: 'Sliced mouth corners: open each one along the curve, starting at the corner of your mouth.' }, steps: [], products: ['latex', 'toiletPaper', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
+      { id: 'templePeel', label: 'Temple peel', namePart: 'peeling', applyOrder: 10, patch: true, latexWound: { place: 'Temple peel: a long strip from your lower forehead down through one eye to your upper cheek, keeping clear of the eye itself.', open: 'Temple peel: start small above and below the eye and keep tearing until it opens fully round the eye.' }, steps: [], products: ['latex', 'toiletPaper', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
+      { id: 'foreheadGash', label: 'Forehead gash', namePart: 'slain', applyOrder: 10, patch: true, latexWound: { place: 'Forehead gash: a long strip across your forehead.', open: 'Forehead gash: rip it open along its length.' }, steps: [], products: ['latex', 'toiletPaper', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
       // Zip face has its own method and can't be combined with other wounds.
-      { id: 'zipFace', label: 'Zip face', namePart: 'unzipped', applyOrder: 61, patch: true, exclusive: true, steps: ['Put liquid latex on your face, press the zip into it, then add more latex over the top. If the edges look rough, layer the thinnest possible plies of toilet paper over them so you can\'t see the hard edge of the zip, finishing with latex. Once it\'s dry, cover with foundation. Colour in the skin inside the zip with red lipstick or red face paint, then cover with fake blood.'], products: ['zip', 'latex', 'toiletPaper', 'paleFoundation', 'redLipstick', 'freshBlood'] },
-      { id: 'bulletWound', label: 'Forehead bullet wound', namePart: 'shot', applyOrder: 10, patch: true, latexWound: { place: 'Forehead bullet wound: a small round patch in the middle of your forehead.', open: 'Forehead bullet wound: one small round hole.' }, steps: [], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
-      { id: 'throatBite', label: 'Throat bite', namePart: 'bitten', applyOrder: 10, patch: true, latexWound: { place: 'Throat bite: a small patch on the side of your neck.', open: 'Throat bite: two small holes side by side like fang marks.' }, steps: [], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
+      { id: 'zipFace', label: 'Zip face', namePart: 'unzipped', applyOrder: 61, patch: true, exclusive: true, latexBase: true, steps: [[9, 'Put liquid latex on your face, press the zip into it, then add more latex over the top. If the edges look rough, layer the thinnest possible plies of toilet paper over them so you can\'t see the hard edge of the zip, finishing with latex, and let it dry.'], [9.1, 'Colour in the skin inside the zip with red lipstick or red face paint, then cover with fake blood.']], products: ['zip', 'latex', 'toiletPaper', 'redLipstick', 'freshBlood'] },
+      { id: 'bulletWound', label: 'Forehead bullet wound', namePart: 'shot', applyOrder: 10, patch: true, latexWound: { place: 'Forehead bullet wound: a small round patch in the middle of your forehead.', open: 'Forehead bullet wound: one small round hole.' }, steps: [], products: ['latex', 'toiletPaper', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
+      { id: 'throatBite', label: 'Throat bite', namePart: 'bitten', applyOrder: 10, patch: true, latexWound: { place: 'Throat bite: a small patch on the side of your neck.', open: 'Throat bite: two small holes side by side like fang marks.' }, steps: [], products: ['latex', 'toiletPaper', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
       {
         id: 'stitchedSmile', label: 'Stitched smile', namePart: 'stitched', applyOrder: 60,
         steps: ['Draw a line from each corner of your mouth up towards your ears, then add little black stitches across it.'],

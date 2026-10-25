@@ -235,6 +235,8 @@
   const product = p => typeof p === 'string' ? (DATA.kit[p] || DATA.costume[p]) : p;
 
   // Steps run tab by tab in this order; costume pieces keep their own applyOrder after these.
+  // latex wounds are built first, then the base layer goes on, then they're opened up
+  const BUILD_ORDER = 9;
   const STEP_ORDER = { effects: 10, facePaint: 20, contour: 30, underEyes: 40, eyes: 50, lips: 60, fangs: 65, blood: 70, lenses: 80, mask: 85, wig: 90 };
 
   function recipe(s) {
@@ -264,10 +266,20 @@
       // latex wounds share one five-step method, naming each wound where it matters
       const wounds = s.effects.map(id => byId(M.effects, id)).filter(o => o.latexWound);
       if (wounds.length) {
-        const [build, base, rip, colour, blood] = DATA.latexWoundSteps;
+        const [build, rip, colour, blood] = DATA.latexWoundSteps;
         const lines = key => wounds.map(w => w.latexWound[key]).join('\n');
-        [build + '\n' + lines('place'), base, rip + '\n' + lines('open'), colour, blood]
-          .forEach((text, i) => steps.push([STEP_ORDER.effects - 1 + i * 0.1, text]));
+        [build + '\n' + lines('place'), rip + '\n' + lines('open'), colour, blood]
+          .forEach((text, i) => steps.push([BUILD_ORDER + i * 0.1, text]));
+      }
+
+      // one base layer: a full-face paint if there is one, otherwise normal foundation.
+      // It goes straight after building any latex, and blends over it.
+      if (onSkin) {
+        const paint = byId(M.facePaint, s.facePaint);
+        const base = paint.base || DATA.foundationBase;
+        const latex = wounds.length || s.effects.some(id => byId(M.effects, id).latexBase);
+        steps.push([BUILD_ORDER + 0.05, `Cover your face with ${base.cover}${latex ? ', blending over the latex so it\'s as hidden as possible' : ''}.`]);
+        products.push(product(base.product));
       }
     }
     if (onSkin) add(DATA.setting);
