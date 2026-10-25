@@ -131,7 +131,7 @@ const DATA = {
       'latex',
       { key: 'toiletPaper', note: 'I\'m concerned if you don\'t have this already' },
       'freshBlood',
-      'redLipstick',
+      { key: 'redLipstick', note: 'For the inside of wounds.' },
       'paleFoundation',
       'tweezers',
       'wipes',
