@@ -76,7 +76,7 @@ const DATA = {
     latex: { name: 'Liquid latex', asin: 'B0B6FWCG5D', note: 'I\'ve bought this exact one.', shopExtra: 'Remember to patch test in case you have a latex allergy.' },
     toiletPaper: { name: 'Toilet paper' },
     freshBlood: { name: 'Fake blood', asin: 'B0BSXW7GT9', note: 'I\'ve ordered this one before. Honestly, any fake blood works.', shopNote: null },
-    paleFoundation: { name: 'Foundation', asin: 'B008BEQFAQ', note: 'This is what I use for costume makeup. Match your skin tone if you can, but it\'s not essential - you\'ll add blue and purple around it anyway.', shopNote: 'This is the one I use for costume makeup.' },
+    paleFoundation: { name: 'Foundation', asin: 'B008BEQFAQ', note: 'This is what I use for costume makeup. Match your skin tone if you can, but it\'s not essential - you\'ll add blue and purple around it anyway.', shopNote: null },
     whitePaint: { name: 'Snazaroo white face paint', asin: 'B0027IVU5C', note: 'I only use Snazaroo. I\'ve used this exact one, just not bought through Amazon.' },
     primer: { name: 'Eyeshadow primer', asin: 'B01DEYPNPU', note: 'I\'ve used this exact primer for eye makeup.', shopNote: null },
     palette: { name: 'Eyeshadow palette', asin: 'B081D95GMC', note: 'I\'ve got this exact one - it\'s what I use for my signature dead look.' },
@@ -132,7 +132,7 @@ const DATA = {
       { key: 'toiletPaper', note: 'I\'m concerned if you don\'t have this already' },
       'freshBlood',
       { key: 'redLipstick', note: 'For the inside of wounds.' },
-      'paleFoundation',
+      { key: 'paleFoundation', note: 'This is the one I use for costume makeup.' },
       'tweezers',
       'wipes',
       { name: 'Any makeup you normally use' }
