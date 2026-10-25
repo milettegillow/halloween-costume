@@ -464,7 +464,7 @@ const DATA = {
       products: ['nurseCostume', 'freshBlood']
     },
     { id: 'clown', label: 'Ruff and stripes', noun: 'jester', applyOrder: 110, steps: [], products: [] },
-    { id: 'harlequin', label: 'Harlequin satin top', noun: 'jester', applyOrder: 110, steps: [], products: ['harlequin'] },
+    { id: 'harlequin', label: 'Harlequin satin top', noun: 'jester', applyOrder: 110, steps: [], products: ['clownCostume'] },
     {
       id: 'bride', label: 'Ragged lace bodice', noun: 'bride', applyOrder: 110,
       steps: ['Tear the edges of an old dress and rub grey eyeshadow into the folds so it looks grave-worn.'],
@@ -538,7 +538,7 @@ const DATA = {
     gloves: { name: 'Black gloves with long nails', asin: 'B0H9XZM4W9', note: 'I got these and they were fine.' },
     creepyCloth: { name: 'Creepy cloth', asin: 'B0D31BZCXK', note: 'I just layered this as a shawl and it worked super well.' },
     nurseCostume: { name: 'Zombie nurse costume', asin: 'B003DRUG7O', note: 'I\'m fairly sure this is the exact one I wore.' },
-    harlequin: { name: 'Harlequin costume', asin: 'B07JKMRJYK', alts: [{ label: 'Black jester', asin: 'B0027VT5XS' }] },
+    clownCostume: { name: 'Clown costume', asin: 'B0DGTC3LCY' },
     veil: { name: 'Veil', asin: 'B071F7GR8L' },
     skeletonMask: { name: 'Skeleton mask', asin: 'B0B78GWXGJ' },
     feathers: { name: 'Black feathers', asin: 'B072KVR5KW', note: 'The ones I bought.' },
@@ -616,7 +616,7 @@ const DATA = {
     {
       id: 'clown', label: 'Scary clown',
       nouns: { feminine: 'clown', masculine: 'clown', androgynous: 'clown' },
-      products: ['harlequin'],
+      products: ['clownCostume'],
       versions: [
         {
           id: 'tornCheeks', label: 'Torn cheeks', tag: 'scary',
