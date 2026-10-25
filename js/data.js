@@ -433,8 +433,8 @@ const DATA = {
       products: ['cape']
     },
     { id: 'velvetCorset', label: 'Velvet corset and capelet', noun: 'temptress', applyOrder: 110, steps: [], products: ['corset'] },
-    { id: 'cloak', label: 'Brown hooded cloak', noun: 'wanderer', applyOrder: 110, steps: [], products: ['cloak'] },
-    { id: 'redCape', label: 'Red hooded cape', noun: 'wanderer', applyOrder: 110, steps: [], products: [] },
+    { id: 'cloak', label: 'Brown cloak', noun: 'wanderer', applyOrder: 110, steps: [], products: ['cloak'] },
+    { id: 'redCape', label: 'Red cape', noun: 'wanderer', applyOrder: 110, steps: [], products: [] },
     {
       id: 'shawl', label: 'Tattered shawl', noun: 'crone', applyOrder: 110,
       steps: ['Layer the creepy cloth round your shoulders like a shawl.'],
@@ -461,7 +461,6 @@ const DATA = {
       steps: ['Rip the hem and sleeves of the nurse dress and splatter it with fake blood.'],
       products: ['nurseCostume', 'freshBlood']
     },
-    { id: 'clown', label: 'Ruff and stripes', noun: 'jester', applyOrder: 110, steps: [], products: [] },
     { id: 'harlequin', label: 'Harlequin satin top', noun: 'jester', applyOrder: 110, steps: [], products: [{ byFeatures: { feminine: 'harlequin', masculine: 'clownCostume', androgynous: 'harlequinOrClown' } }] },
     {
       id: 'bride', label: 'Ragged lace bodice', noun: 'bride', applyOrder: 110,
@@ -496,11 +495,6 @@ const DATA = {
     { id: 'brownHood', label: 'Brown hood', applyOrder: 115, steps: [], products: [] },
     { id: 'blackHood', label: 'Black hood', applyOrder: 115, steps: [], products: [] },
     { id: 'nurseCap', label: 'Nurse cap', applyOrder: 115, steps: [], products: [] },
-    {
-      id: 'cone', label: 'Little cone hat', applyOrder: 115,
-      steps: ['Angle the cone hat to one side and tuck the elastic under your hair.'],
-      products: [{ name: 'Mini clown cone hat', q: 'mini clown party hat pompom' }]
-    },
     { id: 'veil', label: 'Veil and wilted crown', applyOrder: 115, steps: ['Pin the veil in at the crown.'], products: ['veil'] },
     { id: 'bow', label: 'Big hair bow', applyOrder: 115, steps: [], products: ['bow'] },
     { id: 'stalk', label: 'Pumpkin headband', applyOrder: 115, steps: [], products: ['pumpkinHeadband'] }
@@ -510,6 +504,7 @@ const DATA = {
     { id: 'none', label: 'None', applyOrder: 120, steps: [], products: [] },
     { id: 'choker', label: 'Black choker', applyOrder: 120, steps: [], products: [{ name: 'Black velvet choker', q: 'black velvet choker' }] },
     { id: 'tulleRuff', label: 'Red and black ruff', applyOrder: 120, steps: [], products: [] },
+    { id: 'whiteRuff', label: 'White ruff', applyOrder: 120, steps: [], products: [] },
     { id: 'amulet', label: 'Blood amulet', applyOrder: 120, steps: [], products: [{ name: 'Gothic red gem pendant', q: 'gothic red gem pendant necklace' }] },
     { id: 'bones', label: 'Bone charms', applyOrder: 120, steps: [], products: [{ name: 'Bone charm necklace', q: 'bone charm necklace' }] },
     { id: 'locket', label: 'Pearls and locket', applyOrder: 120, steps: [], products: [{ name: 'Pearl necklace with locket', q: 'pearl necklace heart locket' }] },
@@ -633,7 +628,7 @@ const DATA = {
         },
         {
           id: 'glam', label: 'Glam clown', tag: 'glam',
-          set: { facePaint: 'clown', lips: 'blood', clothing: 'clown', headwear: 'cone', accessory: 'pompoms', hairStyle: 'witch', hairColour: 'orange' }, products: ['blackLashes', 'lashGlue']
+          set: { facePaint: 'clown', lips: 'blood', clothing: 'harlequin', accessory: 'whiteRuff', hairStyle: 'witch', hairColour: 'orange' }, products: ['blackLashes', 'lashGlue']
         }
       ]
     },

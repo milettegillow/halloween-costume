@@ -5,6 +5,7 @@
   'use strict';
 
   const CX = 200;
+  const DRESS_UP = 14;
   const GLASS = { cx: 200, cy: 255, rx: 166, ry: 213 };
 
   /* ---------- small helpers ---------- */
@@ -1639,28 +1640,45 @@
       E(x, y, 4 * k, 5 * k, mix(colour, '#000000', 0.3)) + S(`M${x - 13 * k},${y - 4 * k}L${x - 4 * k},${y - 1}`, '#ffffff', 0.8, op(0.25));
   }
 
-  function choker(a) {
-    const y = a.chinY + (a.collarY - a.chinY) * 0.5 + 2, w = a.neckW + 1;
+  function choker(a, dy) {
+    const y = a.chinY + (a.collarY - DRESS_UP - a.chinY) * 0.5 + (dy || 0), w = a.neckW + 0.5;
     return P(`M${pt(CX - w, y - 3)}Q${pt(CX, y + 4)} ${pt(CX + w, y - 3)}L${pt(CX + w, y + 3)}Q${pt(CX, y + 10)} ${pt(CX - w, y + 3)}Z`, '#121014') +
       S(`M${pt(CX - w + 4, y - 1)}Q${pt(CX, y + 5)} ${pt(CX + w - 4, y - 1)}`, '#4a4050', 0.8, op(0.7));
   }
 
   // Feathers fanned over one shoulder.
   function feathers(x, y) {
+    const R = rng(211);
     let out = '';
-    [-150, -128, -106, -84, -62, -40].forEach((deg, i) => {
-      const th = deg * Math.PI / 180, len = 44 + (i % 3) * 8;
-      const tx = x + Math.cos(th) * len * 1.2, ty = y + Math.sin(th) * len * 1.2, nx = -Math.sin(th), ny = Math.cos(th);
-      const mx = (x + tx) / 2, my = (y + ty) / 2;
-      out += P(`M${pt(x, y)}Q${pt(mx + nx * 11, my + ny * 11)} ${pt(tx, ty)}Q${pt(mx - nx * 9, my - ny * 9)} ${pt(x, y)}Z`, '#1c1a26', 'stroke="#000000" stroke-width="0.6"');
-      out += S(`M${pt(x, y)}L${pt(tx, ty)}`, '#6a7aaa', 1, op(0.9));
-      for (let k = 1; k < 5; k++) {
-        const px = x + (tx - x) * k / 5, py = y + (ty - y) * k / 5;
-        out += S(`M${pt(px, py)}l${f(nx * 6 + Math.cos(th) * 3)},${f(ny * 6 + Math.sin(th) * 3)}`, '#2c3a58', 0.7, op(0.7));
+    [[-172, 58], [-150, 70], [-128, 64], [-106, 56], [-196, 46]].forEach(([deg, len], i) => {
+      const th = deg * Math.PI / 180, tx = x + Math.cos(th) * len, ty = y + Math.sin(th) * len;
+      const nx = -Math.sin(th), ny = Math.cos(th), bend = (i % 2 ? 1 : -1) * 6;
+      const at = t => [x + (tx - x) * t + nx * bend * Math.sin(Math.PI * t), y + (ty - y) * t + ny * bend * Math.sin(Math.PI * t)];
+      // a soft dark body, then fine drooping barbs on both sides
+      const body = [];
+      for (let k = 0; k <= 10; k++) {
+        const t = k / 10, p = at(t), w = 12 * Math.sin(Math.PI * Math.min(1, t * 1.1)) + 2;
+        body.push([p[0] + nx * w, p[1] + ny * w]);
       }
+      for (let k = 10; k >= 0; k--) {
+        const t = k / 10, p = at(t), w = 12 * Math.sin(Math.PI * Math.min(1, t * 1.1)) + 2;
+        body.push([p[0] - nx * w, p[1] - ny * w]);
+      }
+      out += P(spline(body, true), i % 2 ? '#1a1a1e' : '#222226', op(0.95));
+      let barbs = '';
+      for (let k = 1; k < 26; k++) {
+        const t = k / 26, p = at(t), w = 15 * Math.sin(Math.PI * Math.min(1, t * 1.1)) + 3;
+        [-1, 1].forEach(sd => {
+          const ex = p[0] + nx * sd * w + Math.cos(th) * 5 + (R() - 0.5) * 3, ey = p[1] + ny * sd * w + Math.sin(th) * 5 + 3 + R() * 3;
+          barbs += `M${pt(p[0], p[1])}Q${pt((p[0] + ex) / 2 + nx * sd * 2, (p[1] + ey) / 2)} ${pt(ex, ey)}`;
+        });
+      }
+      out += S(barbs, '#2a2a2e', 0.7, op(0.9)) + S(barbs, '#5e5e64', 0.35, `${op(0.7)} transform="translate(-0.6,-0.6)"`);
+      out += S(spline([0, 0.3, 0.6, 0.9].map(at), false), '#3a3848', 0.8, op(0.8));
     });
     return out;
   }
+
 
   // Shirt, optional jacket with lapels, and a tie, bow tie or jabot.
   function suit(a, id, o) {
@@ -1694,7 +1712,7 @@
         S(`M${CX - 2},${y + 12}L${CX - 5},${y + 104}`, '#ffffff', 0.8, op(0.2));
     }
     if (o.tie === 'jabot') collar += jabot(a, '#141014');
-    if (o.feathers) collar += feathers(CX - sw + 16, y + 26);
+    if (o.feathers) collar += G(feathers(CX - sw + 46, y + 16), `transform="translate(${CX - sw + 46} ${y + 16}) scale(1.45) translate(${-(CX - sw + 46)} ${-(y + 16)})"`);
     return { back: '', main, collar, clip: neckClip({ nlW: nw + 6, nlY: y - 18, nlD: y - 18 }) };
   }
 
@@ -1853,32 +1871,6 @@
         P(`M${pt(CX + nw + 2, y - 18)}L${pt(CX + 6, y + 50)}L${pt(CX + 22, y + 40)}L${pt(CX + 28, y + 26)}L${pt(CX + 36, y + 20)}L${pt(CX + nw + 22, y + 4)}Z`, '#b9b094', 'stroke="#5a5240" stroke-width="1.2"') +
         E(CX - 30, y + 16, 6, 3, '#6b1414', op(0.6));
       return { back: '', main, collar, clip: neckClip(o) };
-    },
-
-    clown(a, id) {
-      const nw = a.neckW, y = a.collarY;
-      const o = { nlW: nw + 6, nlY: y - 12, nlD: y };
-      const d = bodice(a, o);
-      let s = '';
-      for (let i = 0; i < 12; i++) {
-        const yy = y - 10 + i * 18;
-        s += P(`M-10,${yy}Q${CX},${yy + 14} 410,${yy}V${yy + 9}Q${CX},${yy + 23} -10,${yy + 9}Z`, '#a8161e');
-      }
-      s += P(`M${CX + 40},${y}C${CX + 70},${y + 40} ${CX + 80},${y + 90} ${CX + 70},560H460V${y - 40}Z`, '#000000', op(0.25));
-      const main = P(d, '#ece6da') + shade(d, id + 'cs', s) + P(d, 'none', 'stroke="#2a1416" stroke-width="1.3"');
-      // two-tier pleated ruff
-      const ruff = (cy, rx, ry, n, c1, c2) => {
-        let out = '';
-        for (let i = 0; i < n; i++) {
-          const t0 = i / n * Math.PI * 2, t1 = (i + 1) / n * Math.PI * 2;
-          const p0 = [CX + Math.cos(t0) * rx, cy + Math.sin(t0) * ry], p1 = [CX + Math.cos(t1) * rx, cy + Math.sin(t1) * ry];
-          const tm = (t0 + t1) / 2, bulge = [CX + Math.cos(tm) * rx * 1.08, cy + Math.sin(tm) * ry * 1.12];
-          out += P(`M${CX},${cy}L${pt(p0[0], p0[1])}Q${pt(bulge[0], bulge[1])} ${pt(p1[0], p1[1])}Z`, i % 2 ? c1 : c2, 'stroke="#8c8476" stroke-width="0.8"');
-        }
-        return out;
-      };
-      const collar = ruff(y + 8, 104, 30, 26, '#f4f0e8', '#d6cec0') + ruff(y + 2, 80, 22, 22, '#fbf8f2', '#ddd5c7') + E(CX, y - 2, nw + 2, 9, '#ccc4b6');
-      return { back: '', main, collar, clip: neckClip({ nlW: nw + 6, nlY: y - 14, nlD: y - 14 }) };
     },
 
     bride(a, id) {
@@ -2057,7 +2049,7 @@
         }
       });
       cape += bowTie(CX, y - 10, '#141014', 0.7) + S(`M${CX - 2},${y - 8}l-5,22M${CX + 2},${y - 8}l6,20`, '#141014', 2);
-      g.collar = choker(a) + cape;
+      g.collar = choker(a, DRESS_UP) + cape;
       g.clip = neckClip({ nlW: nw + 4, nlY: y - 20, nlD: y - 20 });
       return g;
     },
@@ -2142,41 +2134,56 @@
     },
 
     tulleGown(a, id) {
-      const nw = a.neckW, y = a.collarY, sw = a.shoulderW;
-      const nl = { nlW: nw + 30, nlY: y + 4, nlD: y + 30, drop: 6 };
-      const R = rng(29);
-      let det = '';
-      for (let i = 0; i < 20; i++) det += C(CX + (R() - 0.5) * 220, y + 30 + R() * 120, 0.9, '#e9d8ff', op(0.8));
-      let collar = '';
-      [-1, 1].forEach(s => {
-        for (let i = 0; i < 7; i++) {
-          const t = i / 6, x = CX + s * (nw + 26 + (sw - nw - 14) * t), yy = y + 6 + t * 26;
-          collar += E(x, yy, 22, 13, i % 2 ? '#8a5ab0' : '#6a3a8a', `${op(0.5)} transform="rotate(${s * (20 + t * 30)} ${f(x)} ${f(yy)})"`);
-        }
+      const nw = a.neckW, y = a.collarY + DRESS_UP, sw = a.shoulderW;
+      const plum = '#4a1648', dark = '#2e0c2e', light = '#7a3a78';
+      const top = `M${pt(CX - sw - 12, y + 34)}Q${pt(CX - 70, y + 16)} ${pt(CX - 44, y + 20)}L${pt(CX, y + 54)}L${pt(CX + 44, y + 20)}Q${pt(CX + 70, y + 16)} ${pt(CX + sw + 12, y + 34)}`;
+      const d = top + `L${pt(CX + sw + 14, 560)}H${f(CX - sw - 14)}Z`;
+      let inner = P(d, plum);
+      // wrapped panels crossing at the waist, with soft ruching
+      inner += P(`M${pt(CX + 44, y + 20)}L${pt(CX - 10, y + 64)}L${pt(CX - 40, y + 72)}L${pt(CX + sw + 14, y + 72)}V${y + 20}Z`, dark, op(0.35));
+      for (let i = 0; i < 7; i++) {
+        inner += S(`M${pt(CX - 40 + i * 6, y + 26 + i * 6)}q${f(10 + i)},4 ${f(18 + i * 2)},${f(-2 + i)}`, light, 1.2, op(0.55));
+        inner += S(`M${pt(CX + 40 - i * 6, y + 26 + i * 6)}q${f(-10 - i)},5 ${f(-18 - i * 2)},${f(-1 + i)}`, dark, 1.2, op(0.6));
+      }
+      inner += S(`M${pt(CX - 44, y + 20)}L${pt(CX, y + 54)}L${pt(CX + 44, y + 20)}`, light, 1.4, op(0.7));
+      // layers of ruffled tulle from the waist
+      [[y + 70, plum], [y + 80, '#5e2260'], [y + 90, plum]].forEach(([ty, c], k) => {
+        let edge = `M${CX - sw - 14},${ty}`;
+        for (let x = CX - sw - 14; x < CX + sw + 14; x += 12) edge += `q6,${k % 2 ? 8 : 7} 12,0`;
+        inner += P(edge + `V560H${CX - sw - 14}Z`, c, op(0.88)) + S(edge, light, 1, op(0.6));
       });
-      return garment(a, id, { nl, fill: '#4a1f6a', dark: '#2e1046', fold: '#371452', light: '#6a3a8a', line: '#1a0628', detail: det, collar });
+      const main = shade(d, id + 'tg', inner) + S(top, '#1a0418', 1.2);
+      // spaghetti straps over the shoulders
+      let collar = '';
+      [-1, 1].forEach(sd => collar += S(`M${pt(CX + sd * 42, y + 22)}Q${pt(CX + sd * (nw + 26), y - 4)} ${pt(CX + sd * (nw + 34), y - 16)}`, '#2a0828', 2));
+      const clip = `M-60,-60H460V${f(y + 34)}H${f(CX + sw + 12)}Q${pt(CX + 70, y + 16)} ${pt(CX + 44, y + 20)}L${pt(CX, y + 54)}L${pt(CX - 44, y + 20)}Q${pt(CX - 70, y + 16)} ${pt(CX - sw - 12, y + 34)}H-60Z`;
+      return { back: '', main, collar, clip };
     },
 
     laceTop(a, id) {
       const nw = a.neckW, y = a.collarY;
       const nl = { nlW: nw + 6, nlY: y - 12, nlD: y };
       const d = bodice(a, nl);
-      let lace = '';
+      const yoke = y + 46;
+      // solid black top below a scalloped edge
+      let scal = `M-20,${yoke}`;
+      for (let x = -20; x < 420; x += 14) scal += 'q7,9 14,0';
+      let inner = P(scal + 'V560H-20Z', '#141216');
+      inner += P(`M${CX - 140},${yoke}H${CX - 96}V560H${CX - 140}Z M${CX + 96},${yoke}H${CX + 140}V560H${CX + 96}Z`, '#000000', op(0.25));
+      // sheer lace over the skin above it
+      inner += P(`M-20,-20H420V${yoke + 4}H-20Z`, '#141216', op(0.3));
       for (let row = 0; row < 4; row++) {
-        for (let col = -7; col <= 7; col++) {
-          const x = CX + col * 22 + (row % 2 ? 11 : 0), yy = y - 6 + row * 14;
-          lace += C(x, yy, 5, 'none', 'stroke="#0a080c" stroke-width="1.2"');
+        for (let col = -8; col <= 8; col++) {
+          const x = CX + col * 20 + (row % 2 ? 10 : 0), yy = y - 8 + row * 15;
+          inner += C(x, yy, 4.6, 'none', 'stroke="#0a080c" stroke-width="1.1"');
           for (let k = 0; k < 6; k++) {
             const th = k / 6 * Math.PI * 2;
-            lace += C(x + Math.cos(th) * 7.5, yy + Math.sin(th) * 7.5, 1.3, '#0a080c');
+            inner += C(x + Math.cos(th) * 7, yy + Math.sin(th) * 7, 1.2, '#0a080c');
           }
         }
       }
-      let scal = `M-20,${y + 50}`;
-      for (let x = -20; x < 420; x += 14) scal += `q7,-9 14,0`;
-      lace += P(scal + 'V560H-20Z', '#141216');
-      lace += drape(a, '#000000', '#000000');
-      const main = P(d, '#141216', op(0.55)) + shade(d, id + 'l', lace) + P(d, 'none', 'stroke="#000000" stroke-width="1.2"');
+      inner += S(scal, '#2a2830', 1.2);
+      const main = shade(d, id + 'l', inner) + P(d, 'none', 'stroke="#000000" stroke-width="1.2"');
       return { back: '', main, collar: neckband(a, nl, '#141216', '#2a2830'), clip: neckClip(nl) };
     },
 
@@ -2186,7 +2193,7 @@
       let det = S(`M${CX - 90},${y + 40}C${CX - 70},${y + 80} ${CX - 66},${y + 120} ${CX - 70},560`, '#4a3a52', 6, op(0.45));
       det += S(`M${CX - 20},${y + 50}C${CX - 10},${y + 90} ${CX - 14},${y + 120} ${CX - 16},560`, '#4a3a52', 3, op(0.35));
       const g = garment(a, id, { nl, fill: '#151216', dark: '#060507', fold: '#000000', light: '#2e2436', line: '#000000', detail: det });
-      g.collar = choker(a);
+      g.collar = choker(a, DRESS_UP);
       return g;
     },
 
@@ -2220,8 +2227,9 @@
     const outer = `M${CX - 176},560C${CX - 170},440 ${CX - 150},330 ${CX - 132},230C${CX - 116},130 ${CX - 76},${top} ${CX},${top}` +
       `C${CX + 76},${top} ${CX + 116},130 ${CX + 132},230C${CX + 150},330 ${CX + 170},440 ${CX + 176},560Z`;
     const ot = a.crownY - 24;
-    const opening = `M${CX - 98},${a.collarY + 10}C${CX - 108},300 ${CX - 110},180 ${CX - 86},120C${CX - 64},${ot + 6} ${CX - 30},${ot} ${CX},${ot}` +
-      `C${CX + 30},${ot} ${CX + 64},${ot + 6} ${CX + 86},120C${CX + 110},180 ${CX + 108},300 ${CX + 98},${a.collarY + 10}Q${CX},${a.collarY + 34} ${CX - 98},${a.collarY + 10}Z`;
+    const ob = a.collarY + 10 - DRESS_UP;
+    const opening = `M${CX - 98},${ob}C${CX - 108},300 ${CX - 110},180 ${CX - 86},120C${CX - 64},${ot + 6} ${CX - 30},${ot} ${CX},${ot}` +
+      `C${CX + 30},${ot} ${CX + 64},${ot + 6} ${CX + 86},120C${CX + 110},180 ${CX + 108},300 ${CX + 98},${ob}Q${CX},${ob + 24} ${CX - 98},${ob}Z`;
     const d = outer + opening;
     let s = `<clipPath id="${id}ho"><path d="${opening}"/></clipPath>` +
       G(S(opening, '#000000', 18, op(0.35)), `clip-path="url(#${id}ho)"`);
@@ -2229,7 +2237,7 @@
     let fold = P(`M${CX + 70},${top}C${CX + 130},150 ${CX + 140},300 ${CX + 160},560H460V${top}Z`, '#000000', op(0.3));
     [-1, 1].forEach(sd => {
       fold += S(`M${CX + sd * 118},200C${CX + sd * 130},300 ${CX + sd * 146},420 ${CX + sd * 150},560`, o.fold, 3, op(0.8));
-      fold += S(`M${CX + sd * 104},${a.collarY + 20}C${CX + sd * 110},${a.collarY + 80} ${CX + sd * 120},480 ${CX + sd * 124},560`, o.fold, 2.4, op(0.7));
+      fold += S(`M${CX + sd * 104},${ob + 10}C${CX + sd * 110},${ob + 70} ${CX + sd * 120},480 ${CX + sd * 124},560`, o.fold, 2.4, op(0.7));
       fold += S(`M${CX + sd * 30},${top + 6}Q${CX + sd * 70},${top + 14} ${CX + sd * 100},110`, o.light, 2, op(0.6));
     });
     s += `<clipPath id="${id}hf"><path d="${d}" clip-rule="evenodd"/></clipPath>` + G(fold, `clip-path="url(#${id}hf)"`);
@@ -2255,18 +2263,6 @@
         G(E(CX, by + 24, 110, 16, '#000000', op(0.22)), `clip-path="url(#${id}hb)"`) +
         under + brim + E(CX, by, 150, 24, 'none', `stroke="#4a4552" stroke-width="1.4" transform="rotate(-5 ${CX} ${by})"`) + S(`M${CX - 148},${by + 10}Q${CX},${by + 38} ${CX + 148},${by - 16}`, '#2c2a32', 1.6, op(0.8)) + c;
       return { back: '', front, clipHair: by - 4 };
-    },
-
-    cone(a, hair) {
-      const x = CX + 34, y = Math.max(hair.top + 24, a.crownY + 14);
-      let s = '';
-      const cone = `M${x - 24},${y}L${x},${y - 66}L${x + 24},${y}Z`;
-      s += P(cone, '#ece6da', 'stroke="#2a1416" stroke-width="1.2"');
-      s += P(`M${x - 18},${y - 16}L${x + 20},${y - 10}L${x + 16},${y - 22}L${x - 13},${y - 30}Z M${x - 8},${y - 42}L${x + 11},${y - 36}L${x + 7},${y - 48}L${x - 3},${y - 54}Z`, '#a8161e');
-      s += P(`M${x},${y - 66}L${x + 24},${y}H${x + 6}Z`, '#000000', op(0.2));
-      for (let i = 0; i < 6; i++) s += C(x - 22 + i * 9, y, 4.6, '#1a1214');
-      s += C(x - 4, y - 70, 8, '#a8161e') + C(x + 4, y - 68, 7, '#8a0f16') + C(x, y - 74, 6, '#c42028') + C(x - 3, y - 76, 2, '#ff8a80', op(0.7));
-      return { back: '', front: G(s, `transform="rotate(16 ${x} ${y}) translate(${x} ${y}) scale(0.8) translate(${-x} ${-y})"`) };
     },
 
     veil(a, hair) {
@@ -2428,10 +2424,26 @@
 
   /* ---------- accessories ---------- */
 
+  // The front half of a pleated ruff, resting on the collarbones under the chin.
+  function ruff(a, c1, c2) {
+    const cy = a.collarY - DRESS_UP - 10;
+    let s = '';
+    [[96, 34, 22], [80, 27, 18], [62, 20, 14]].forEach(([rx, ry, n], tier) => {
+      const y = cy + tier * 2;
+      for (let i = 0; i < n; i++) {
+        const t0 = -0.12 + i / n * (Math.PI + 0.24), t1 = -0.12 + (i + 1) / n * (Math.PI + 0.24), tm = (t0 + t1) / 2;
+        s += P(`M${CX},${y}L${pt(CX + Math.cos(t0) * rx, y + Math.sin(t0) * ry)}Q${pt(CX + Math.cos(tm) * rx * 1.12, y + Math.sin(tm) * ry * 1.2)} ${pt(CX + Math.cos(t1) * rx, y + Math.sin(t1) * ry)}Z`,
+          (i + tier) % 2 ? c1 : c2, 'stroke="#000000" stroke-width="0.5" stroke-opacity="0.45"');
+      }
+    });
+    return s + P(`M${pt(CX - a.neckW - 4, cy - 2)}Q${pt(CX, cy + 8)} ${pt(CX + a.neckW + 4, cy - 2)}L${pt(CX + a.neckW + 2, cy + 3)}Q${pt(CX, cy + 12)} ${pt(CX - a.neckW - 2, cy + 3)}Z`, mix(c2, '#000000', 0.25));
+  }
+
   const ACCESSORIES = {
     amulet(a) {
       const y = a.collarY;
-      let s = S(`M${CX - 30},${y - 4}Q${CX - 24},${y + 40} ${CX},${y + 56}Q${CX + 24},${y + 40} ${CX + 30},${y - 4}`, '#c9a24a', 1.6, 'stroke-dasharray="3 1.5"');
+      const nx = a.neckW + 3, ny = y - DRESS_UP - 10;
+      let s = S(`M${CX - nx},${ny}Q${CX - nx + 2},${y + 34} ${CX},${y + 56}Q${CX + nx - 2},${y + 34} ${CX + nx},${ny}`, '#c9a24a', 1.6, 'stroke-dasharray="3 1.5"');
       s += E(CX, y + 66, 12, 15, '#c9a24a', 'stroke="#8a6d2a" stroke-width="1.2"') + E(CX, y + 66, 7, 9.5, '#a3101d') + E(CX - 2, y + 62, 2.4, 3, '#ff8a8a', op(0.8));
       for (let i = 0; i < 8; i++) {
         const th = i / 8 * Math.PI * 2;
@@ -2441,7 +2453,8 @@
     },
     bones(a) {
       const y = a.collarY + 6;
-      let s = S(`M${CX - 34},${y - 8}Q${CX},${y + 50} ${CX + 34},${y - 8}`, '#4a3a2a', 1.6);
+      const nx = a.neckW + 3, ny = a.collarY - DRESS_UP - 10;
+      let s = S(`M${CX - nx},${ny}Q${CX},${y + 50} ${CX + nx},${ny}`, '#4a3a2a', 1.6);
       for (let i = -3; i <= 3; i++) {
         const t = (i + 3) / 6, x = CX - 30 + t * 60, yy = y - 4 + Math.sin(t * Math.PI) * 26;
         if (i % 2) s += C(x, yy + 2, 3.4, '#8a5a3a', 'stroke="#3a2418" stroke-width="0.8"');
@@ -2460,13 +2473,14 @@
       return s;
     },
     cameo(a) {
-      const y = a.collarY + 6;
+      const y = a.collarY + 6 - DRESS_UP;
       return E(CX, y, 11, 13, '#c9a24a', 'stroke="#8a6d2a" stroke-width="1"') + E(CX, y, 8, 10, '#3a2a3a') +
         P(`M${CX + 1},${y - 7}c-4,0 -5,4 -4,6c-2,1 -1,3 0,3c-1,3 1,5 4,5c1,-2 2,-4 0,-6c3,-2 2,-8 0,-8Z`, '#efe6d6');
     },
     key(a) {
       const y = a.collarY + 10;
-      let s = S(`M${CX - 30},${y - 12}Q${CX},${y + 36} ${CX + 30},${y - 12}`, '#1a1418', 2.4);
+      const nx = a.neckW + 3, ny = a.collarY - DRESS_UP - 10;
+      let s = S(`M${CX - nx},${ny}Q${CX},${y + 36} ${CX + nx},${ny}`, '#1a1418', 2.4);
       s += C(CX, y + 30, 6, 'none', 'stroke="#8a7a50" stroke-width="2.4"') + P(`M${CX - 1.6},${y + 36}h3.2v26h-3.2Z`, '#8a7a50');
       s += P(`M${CX + 1.6},${y + 52}h6v3h-6Z M${CX + 1.6},${y + 58}h4v3h-4Z`, '#8a7a50');
       return s;
@@ -2482,17 +2496,10 @@
       return choker(a);
     },
     tulleRuff(a) {
-      const y = a.collarY + 4;
-      let s = '';
-      [[108, 32, 26], [92, 26, 22], [74, 20, 18]].forEach(([rx, ry, n], tier) => {
-        for (let i = 0; i < n; i++) {
-          const t0 = i / n * Math.PI * 2, t1 = (i + 1) / n * Math.PI * 2, tm = (t0 + t1) / 2;
-          const cy = y - tier * 4;
-          s += P(`M${CX},${cy}L${pt(CX + Math.cos(t0) * rx, cy + Math.sin(t0) * ry)}Q${pt(CX + Math.cos(tm) * rx * 1.12, cy + Math.sin(tm) * ry * 1.18)} ${pt(CX + Math.cos(t1) * rx, cy + Math.sin(t1) * ry)}Z`,
-            (i + tier) % 2 ? '#a3121c' : '#141014', `${op(0.82)} stroke="#000000" stroke-width="0.5" stroke-opacity="0.5"`);
-        }
-      });
-      return s + E(CX, y - 10, a.neckW + 2, 8, '#141014');
+      return ruff(a, '#a3121c', '#141014');
+    },
+    whiteRuff(a) {
+      return ruff(a, '#f4f0e8', '#d6cec0');
     },
     lantern(a) {
       const x = CX - 66, y = a.collarY + 40;
@@ -2587,6 +2594,8 @@
     const cloth = (CLOTHES[look.clothing] || CLOTHES.plain)(a, id + 'c');
     const hw = HEADWEAR[look.headwear] ? HEADWEAR[look.headwear](a, hair, id + 'h') : { back: '', front: '' };
     const acc = ACCESSORIES[look.accessory] ? ACCESSORIES[look.accessory](a) : '';
+    // garments are drawn from collarY and lifted so the neckline meets the base of the neck
+    const up = `transform="translate(0 ${-DRESS_UP})"`;
     const mask = MASKS[look.mask] ? MASKS[look.mask](a, id + 'k', id) : null;
     const l = Object.assign({}, look, { hideBrows: HIDE_BROWS.includes(look.facePaint), effects: look.effects || [], blood: look.blood || [] });
 
@@ -2609,8 +2618,8 @@
     const layers = [
       ['background', background(id)],
       ['back-hair', G(hair.back, hc)],
-      ['clothing', hw.back + cloth.back + bodySkin(a, sk) + cloth.main],
-      ['neck', `<clipPath id="${id}ncl"><path d="${cloth.clip}"/></clipPath>` + G(neck(a, sk, id), `clip-path="url(#${id}ncl)"`) + cloth.collar],
+      ['clothing', hw.back + G(cloth.back, up) + bodySkin(a, sk) + G(cloth.main, up)],
+      ['neck', `<clipPath id="${id}ncl"><path d="${cloth.clip}" ${up}/></clipPath>` + G(neck(a, sk, id), `clip-path="url(#${id}ncl)"`) + G(cloth.collar, up)],
       ['head', head(a, sk, id)]
     ].concat(face, [
       ['mask', mask && !mask.overHair ? mask.svg : ''],
