@@ -4,7 +4,7 @@
    60 effects, 70 eye makeup, 80 lips, 85-88 setting and blood, 90 lenses,
    95 fangs, 100 wig and hair, 110 costume, 115 headwear, 120 accessories, 130 removal. */
 
-const AMAZON_TAG = '';
+const AMAZON_TAG = 'milettegillow-21';
 
 const DATA = {
   faceShapes: [

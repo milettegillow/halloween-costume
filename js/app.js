@@ -290,7 +290,7 @@
     if (!shopping.length) ul.appendChild(el('li', { class: 'empty' }, 'Nothing to buy yet.'));
     shopping.forEach(p => {
       const li = el('li');
-      li.appendChild(el('a', { href: amazonUrl(p.q), target: '_blank', rel: AMAZON_TAG ? 'noopener sponsored' : 'noopener' }, p.name));
+      li.appendChild(el('a', { href: amazonUrl(p.q), target: '_blank', rel: 'sponsored noopener' }, p.name));
       ul.appendChild(li);
     });
     $('#affiliate').hidden = !AMAZON_TAG || !shopping.length;
