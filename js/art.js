@@ -105,7 +105,7 @@
   };
 
   const FEATURES = {
-    feminine: { jaw: -4, brow: 3.4, arch: 8, lashes: 4, lashLen: 8, lipTop: 5.5, lipBot: 7.5, mouthW: 15.5, nose: -4, neckW: 29, shoulderW: 124, eyeRX: 23.5, eyeRY: 19.5 },
+    feminine: { chinLift: 0.9, jaw: -4, brow: 3.4, arch: 8, lashes: 4, lashLen: 8, lipTop: 5.5, lipBot: 7.5, mouthW: 15.5, nose: -4, neckW: 29, shoulderW: 124, eyeRX: 23.5, eyeRY: 19.5 },
     androgynous: { jaw: 0, brow: 4.6, arch: 5.5, lashes: 3, lashLen: 5.5, lipTop: 4.2, lipBot: 6, mouthW: 17, nose: 0, neckW: 32, shoulderW: 132, eyeRX: 23, eyeRY: 18.5 },
     masculine: { jaw: 5, brow: 6.6, arch: 2.5, lashes: 2, lashLen: 3.5, lipTop: 3, lipBot: 5, mouthW: 18.5, nose: 6, neckW: 36, shoulderW: 142, eyeRX: 22, eyeRY: 17.5 }
   };
@@ -117,6 +117,8 @@
     const upper = s.upper ? s.upper.map(([x, y]) => [x * w, s.crownY + y])
       : [[0, s.crownY], [48 * w, s.crownY + 4], [76 * w, s.crownY + 22], [86 * w, s.crownY + 54], [88 * w, 190], [88 * w, 226]];
     const jaw = s.jaw.map(([x, y], i, arr) => {
+      // feminine faces have a slightly shorter chin: the jaw below 260 is drawn up, keeping its curve
+      if (ft.chinLift && y > 260) y = 260 + (y - 260) * ft.chinLift;
       if (i === arr.length - 1 || y < 270) return [x, y];
       return [Math.max(0, x + ft.jaw * (i === arr.length - 2 ? 0.7 : 1)), y];
     });
