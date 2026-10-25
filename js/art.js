@@ -917,6 +917,21 @@
           out += P(`M${pt(g.x2 - sd * 10, ey - ry * 0.75)}L${pt(g.x2 + sd * 22, ey - 16)}L${pt(g.x2 + sd * 2, ey + 1)}Z`, '#0c080e');
         });
         break;
+      case 'comicDevil': {
+        let s = P(hp, '#c4161c');
+        s += P(`M${pt(CX + 44, a.crownY - 10)}C${pt(CX + 72, 150)} ${pt(CX + 68, a.eyeY)} ${pt(CX + 70, a.cheekY)}C${pt(CX + 70, a.jawY)} ${pt(CX + 40, a.chinY - 20)} ${pt(CX + 8, a.chinY + 4)}H${CX + 140}V${a.crownY - 10}Z`, '#8e0d18', op(0.45));
+        s += E(CX - 20, a.crownY + 58, 30, 14, '#e85050', op(0.4));
+        [-1, 1].forEach(sd => {
+          const ex = CX + sd * a.eyeDX;
+          s += P(`M${pt(ex - sd * a.eyeRX * 0.9, a.browY + 2)}Q${pt(ex + sd * 2, a.browY - 10)} ${pt(ex + sd * a.eyeRX * 1.3, a.browY - 18)}L${pt(ex + sd * a.eyeRX * 1.05, a.browY - 6)}Q${pt(ex, a.browY - 2)} ${pt(ex - sd * a.eyeRX * 0.9, a.browY + 6)}Z`, '#0a0202');
+          // curled moustache
+          s += S(`M${pt(CX, a.noseY + 9)}Q${pt(CX + sd * 14, a.noseY + 6)} ${pt(CX + sd * 24, a.noseY + 12)}Q${pt(CX + sd * 30, a.noseY + 4)} ${pt(CX + sd * 26, a.noseY - 2)}`, '#0a0202', 2.4);
+        });
+        out += G(s, clip);
+        // little pointed goatee
+        out += G(P(`M${pt(CX - 9, a.mouthY + a.lipBot + 6)}Q${pt(CX, a.mouthY + a.lipBot + 10)} ${pt(CX + 9, a.mouthY + a.lipBot + 6)}L${pt(CX + 1, a.chinY + 6)}Z`, '#0a0202'), clip);
+        break;
+      }
       case 'devil': {
         let s = P(hp, '#8e1a1a');
         s += P(`M${pt(CX + 44, a.crownY - 10)}C${pt(CX + 72, 150)} ${pt(CX + 68, a.eyeY)} ${pt(CX + 70, a.cheekY)}C${pt(CX + 70, a.jawY)} ${pt(CX + 40, a.chinY - 20)} ${pt(CX + 8, a.chinY + 4)}H${CX + 140}V${a.crownY - 10}Z`, '#3a0606', op(0.5));
@@ -1095,6 +1110,7 @@
       if (look.lips === 'stitched') colour = mix(sk.lip, '#6a5a6e', 0.55);
       else if (look.facePaint === 'glamWitch') colour = LIPS.blood;
       else if (look.facePaint === 'devil') colour = LIPS.black;
+      else if (look.facePaint === 'comicDevil') colour = '#7a0a12';
       else if (look.facePaint === 'skeletonFull') colour = '#d8d6d0';
       else colour = a.features === 'masculine' ? mix(sk.lip, sk.base, 0.4) : sk.lip;
     }
@@ -2223,6 +2239,29 @@
       return { back: '', front: G(s, `transform="rotate(-6 ${CX} ${by})"`), clipHair: by - 8 };
     },
 
+    ramHorns(a) {
+      let s = '';
+      [-1, 1].forEach(sd => {
+        const bx = CX + sd * 52, by = a.crownY + 14;
+        const cx = CX + sd * 86, cy = a.crownY + 58;
+        const r0 = Math.hypot(bx - cx, by - cy), th0 = Math.atan2(by - cy, bx - cx);
+        const N = 40, turns = 1.15, L = [], Rr = [];
+        for (let i = 0; i <= N; i++) {
+          const t = i / N, th = th0 + sd * t * turns * Math.PI * 2, rr = r0 * (1 - 0.72 * t);
+          const x = cx + Math.cos(th) * rr, y = cy + Math.sin(th) * rr;
+          const nx = Math.cos(th), ny = Math.sin(th), w = 22 * (1 - 0.65 * t) + 3;
+          L.push([x + nx * w / 2, y + ny * w / 2]);
+          Rr.push([x - nx * w / 2, y - ny * w / 2]);
+        }
+        const d = spline(L, false) + 'L' + spline(Rr.slice().reverse(), false).slice(1) + 'Z';
+        s += P(d, '#5a4a3e', 'stroke="#1a1410" stroke-width="1.4"');
+        s += P(spline(Rr.slice(0, N - 2), false) + 'L' + spline(Rr.map((p, i) => [p[0] + (L[i][0] - p[0]) * 0.4, p[1] + (L[i][1] - p[1]) * 0.4]).slice(0, N - 2).reverse(), false).slice(1) + 'Z', '#2e2620', op(0.7));
+        for (let i = 2; i < N - 2; i += 2) s += S(`M${pt(L[i][0], L[i][1])}L${pt(Rr[i][0], Rr[i][1])}`, '#2a221c', 1.3, op(0.8));
+        s += S(spline(L.slice(0, N - 4), false), '#a8947e', 1.4, op(0.7));
+      });
+      return { back: '', front: s };
+    },
+
     horns(a, hair) {
       const y = Math.max(hair.top + 22, a.crownY + 6);
       let s = '';
@@ -2366,7 +2405,7 @@
 
   /* ---------- assembly ---------- */
 
-  const HIDE_BROWS = ['clown', 'clownPink', 'sugarSkull', 'pumpkin', 'skeletonFull', 'devil'];
+  const HIDE_BROWS = ['clown', 'clownPink', 'sugarSkull', 'pumpkin', 'skeletonFull', 'devil', 'comicDevil'];
 
   function portraitContent(look, id) {
     const a = anchors(look.shape, look.features);

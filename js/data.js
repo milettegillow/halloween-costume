@@ -2,7 +2,7 @@
    Steps are either a string (uses the item's applyOrder) or [order, string].
    Order: 10 prep and safety, 20 base, 30 contour, 40 under-eyes, 50 face paint,
    60 effects, 70 eye makeup, 80 lips, 86-88 setting and blood, 90 lenses,
-   95 fangs, 100 wig, 105 mask, 110 costume, 115 headwear, 120 props, 130 removal.
+   95 fangs, 98 mask, 100 wig, 110 costume, 115 headwear, 120 props, 130 removal.
    Products are kit keys (see kit below) or { name, q } for a search or { name, asin } for one product. */
 
 const AMAZON_TAG = 'milettegillow-21';
@@ -72,6 +72,7 @@ const DATA = {
     colourPaints: { name: 'Bright face paint palette', q: 'face paint palette bright colours' },
     orangePaint: { name: 'Snazaroo orange face paint', asin: 'B000H6OYSQ' },
     redPaint: { name: 'Snazaroo red face paint', asin: 'B000LWGI1M' },
+    bluePaint: { name: 'Snazaroo blue face paint', asin: 'B000H6W2H6' },
     crackedPaint: { name: 'Cracked doll face paint', asin: 'B0HCVMWPGR' },
     dollBlush: { name: 'Pink doll blush', asin: 'B0GH8T5R9W' },
     powder: { name: 'Setting powder', asin: 'B09N2YW2T6' },
@@ -136,8 +137,8 @@ const DATA = {
       },
       {
         id: 'bruised', label: 'Bruised blue', namePart: 'drowned', applyOrder: 20,
-        steps: ['Sponge on a pale foundation, then pat blue and purple eyeshadow over it so you look cold and waterlogged.'],
-        products: ['paleFoundation', 'palette', 'sponges']
+        steps: ['Sponge blue face paint thinly over your face and neck, then pat purple eyeshadow on top so you look cold and waterlogged.'],
+        products: ['bluePaint', 'palette', 'sponges']
       }
     ],
 
@@ -318,6 +319,14 @@ const DATA = {
           'Press black eyeshadow from the palette onto your lips with a brush.'
         ],
         products: ['redPaint', 'palette', 'blackLiner', 'sponges', 'brushes']
+      },
+      {
+        id: 'comicDevil', label: 'Comic devil', namePart: 'impish', applyOrder: 50,
+        steps: [
+          'Sponge red face paint over your whole face and neck.',
+          'Draw pointed brows, a curled moustache and a little goatee with black eyeliner.'
+        ],
+        products: ['redPaint', 'blackLiner', 'sponges', 'brushes']
       }
     ],
 
@@ -397,154 +406,169 @@ const DATA = {
   },
 
   masks: [
-    { id: 'none', label: 'None', namePart: '', applyOrder: 105, steps: [], products: [] },
+    { id: 'none', label: 'None', namePart: '', applyOrder: 98, steps: [], products: [] },
     {
-      id: 'hag', label: 'Hag mask', namePart: 'gnarled', applyOrder: 105,
+      id: 'hag', label: 'Hag mask', namePart: 'gnarled', applyOrder: 98,
       steps: ['Pull the mask on and line up the eye holes before your wig and hood go on.'],
       products: [{ name: 'Hag mask', asin: 'B0H2GVKBQG', note: 'I\'ve bought this exact one.' }]
     },
     {
-      id: 'sheet', label: 'Sheet ghost', namePart: 'draped', applyOrder: 105,
+      id: 'sheet', label: 'Sheet ghost', namePart: 'draped', applyOrder: 98,
       steps: ['Drape an old white sheet over your head, mark where your eyes are with a pencil, then take it off and cut two small holes.'],
       products: [{ name: 'White flat sheet', q: 'white flat sheet single' }]
     },
     {
-      id: 'skeleton', label: 'Skeleton mask', namePart: 'grinning', applyOrder: 105,
+      id: 'skeleton', label: 'Skeleton mask', namePart: 'grinning', applyOrder: 98,
       steps: ['Put the mask on first so the strap sits under your hair or hood.'],
-      products: [{ name: 'Skeleton mask', q: 'skeleton face mask halloween' }]
+      products: ['skeletonMask']
     }
   ],
 
+  // Clothing is mostly from your wardrobe; only a few bought finishing touches have products.
   clothing: [
     { id: 'plain', label: 'Plain dark top', noun: '', applyOrder: 110, steps: [], products: [] },
-    { id: 'tuxedo', label: 'Tuxedo and bow tie', noun: 'aristocrat', applyOrder: 110, steps: [], products: [{ name: 'Black tuxedo jacket', q: 'black tuxedo jacket' }, { name: 'White dress shirt', q: 'white dress shirt' }, { name: 'Black bow tie', q: 'black bow tie' }] },
-    { id: 'shirtTie', label: 'White shirt and tie', noun: 'clerk', applyOrder: 110, steps: [], products: [{ name: 'White dress shirt', q: 'white dress shirt' }, { name: 'Black skinny tie', q: 'black skinny tie' }] },
+    { id: 'tuxedo', label: 'Tuxedo and bow tie', noun: 'aristocrat', applyOrder: 110, steps: [], products: [] },
+    { id: 'shirtTie', label: 'White shirt and tie', noun: 'clerk', applyOrder: 110, steps: [], products: [] },
     {
       id: 'vampire', label: 'High-collared cape', noun: 'aristocrat', applyOrder: 110,
       steps: ['Pin the cape collar to your shoulders so it stands up and frames your face.'],
-      products: [{ name: 'High-collar vampire cape', q: 'high collar vampire cape red lining' }, { name: 'Burgundy brocade waistcoat', q: 'burgundy brocade waistcoat' }, { name: 'White ruffled cravat', q: 'white ruffled cravat jabot' }]
+      products: ['cape']
     },
-    { id: 'velvetCorset', label: 'Velvet corset and capelet', noun: 'temptress', applyOrder: 110, steps: [], products: [{ name: 'Red velvet corset top', q: 'red velvet corset top' }, { name: 'Black lace capelet', q: 'black lace capelet' }, { name: 'Black velvet choker', q: 'black velvet choker' }] },
-    { id: 'cloak', label: 'Brown hooded cloak', noun: 'wanderer', applyOrder: 110, steps: [], products: [{ name: 'Brown hooded cloak', q: 'brown hooded cloak' }] },
-    { id: 'redCape', label: 'Red hooded cape', noun: 'wanderer', applyOrder: 110, steps: [], products: [{ name: 'Red hooded cape', q: 'red hooded cape' }] },
+    { id: 'velvetCorset', label: 'Velvet corset and capelet', noun: 'temptress', applyOrder: 110, steps: [], products: ['corset'] },
+    { id: 'cloak', label: 'Brown hooded cloak', noun: 'wanderer', applyOrder: 110, steps: [], products: ['cloak'] },
+    { id: 'redCape', label: 'Red hooded cape', noun: 'wanderer', applyOrder: 110, steps: [], products: [] },
     {
       id: 'shawl', label: 'Tattered shawl', noun: 'crone', applyOrder: 110,
-      steps: ['Snip the shawl hem into uneven points and pull a few stitches loose.'],
-      products: [{ name: 'Knitted shawl in moss green', q: 'knitted shawl green grey' }, { name: 'Long black dress', q: 'long black witch dress' }]
+      steps: ['Layer the creepy cloth round your shoulders like a shawl.'],
+      products: ['creepyCloth']
     },
     {
       id: 'zombie', label: 'Torn shirt', noun: 'shambler', applyOrder: 110,
       steps: ['Rip an old shirt at the seams, rub in brown eyeshadow and splash a little fake blood round the collar.'],
-      products: [{ name: 'Off-white button-up shirt', q: 'off white cotton shirt' }, 'freshBlood', 'palette']
+      products: ['freshBlood', 'palette']
     },
     {
       id: 'tornJumper', label: 'Torn jumper', noun: 'shambler', applyOrder: 110,
       steps: ['Snip holes in an old jumper, pull a few stitches loose and rub in brown eyeshadow for dirt.'],
-      products: [{ name: 'Grey knitted jumper', q: 'grey knitted jumper' }, 'palette']
+      products: ['palette']
     },
     {
       id: 'bloodTee', label: 'Bloodied T-shirt', noun: 'shambler', applyOrder: 110,
       steps: ['Flick fake blood over a white T-shirt with an old toothbrush and let it dry before you put it on.'],
-      products: [{ name: 'White T-shirt', q: 'plain white t-shirt' }, 'freshBlood']
+      products: ['freshBlood']
     },
-    { id: 'vestTop', label: 'Black vest top', noun: 'shambler', applyOrder: 110, steps: [], products: [{ name: 'Black vest top', q: 'black vest top' }] },
+    { id: 'vestTop', label: 'Black vest top', noun: 'shambler', applyOrder: 110, steps: [], products: [] },
     {
       id: 'nurseDress', label: 'Torn nurse dress', noun: 'nurse', applyOrder: 110,
       steps: ['Rip the hem and sleeves of the nurse dress and splatter it with fake blood.'],
-      products: [{ name: 'White nurse dress', q: 'white nurse dress costume' }, 'freshBlood']
+      products: ['nurseCostume', 'freshBlood']
     },
-    { id: 'clown', label: 'Ruff and stripes', noun: 'jester', applyOrder: 110, steps: [], products: [{ name: 'Red and white striped top', q: 'red white striped long sleeve top' }, { name: 'Pleated ruff collar', q: 'clown ruff collar white' }] },
-    { id: 'harlequin', label: 'Harlequin satin top', noun: 'jester', applyOrder: 110, steps: [], products: [{ name: 'Red and black harlequin top', q: 'red black harlequin top' }] },
+    { id: 'clown', label: 'Ruff and stripes', noun: 'jester', applyOrder: 110, steps: [], products: [] },
+    { id: 'harlequin', label: 'Harlequin satin top', noun: 'jester', applyOrder: 110, steps: [], products: ['harlequin'] },
     {
       id: 'bride', label: 'Ragged lace bodice', noun: 'bride', applyOrder: 110,
-      steps: ['Tear the lace edges and rub grey eyeshadow into the folds so it looks grave-worn.'],
-      products: [{ name: 'Ivory lace corset top', q: 'ivory lace corset top' }]
+      steps: ['Tear the edges of an old dress and rub grey eyeshadow into the folds so it looks grave-worn.'],
+      products: []
     },
-    { id: 'hoodie', label: 'Bone-print hoodie', noun: 'skeleton', applyOrder: 110, steps: [], products: [{ name: 'Skeleton print hoodie', q: 'skeleton print hoodie black' }] },
-    { id: 'blazer', label: 'Blazer and feathers', noun: 'dandy', applyOrder: 110, steps: [], products: [{ name: 'Black blazer', q: 'black blazer' }, { name: 'Black and white striped shirt', q: 'black white vertical striped shirt' }, { name: 'Black feather shoulder piece', q: 'black feather epaulette shoulder' }] },
-    { id: 'doll', label: 'Doll dress', noun: 'doll', applyOrder: 110, steps: [], products: [{ name: 'Pink puff sleeve dress', q: 'pink puff sleeve dress' }, { name: 'White lace Peter Pan collar', q: 'detachable lace peter pan collar' }] },
+    { id: 'hoodie', label: 'Bone-print hoodie', noun: 'skeleton', applyOrder: 110, steps: [], products: [] },
+    { id: 'blazer', label: 'Blazer and feathers', noun: 'dandy', applyOrder: 110, steps: ['Tuck a bunch of black feathers under one shoulder of your jacket.'], products: ['feathers'] },
+    { id: 'doll', label: 'Doll dress', noun: 'doll', applyOrder: 110, steps: [], products: [] },
     {
       id: 'mourning', label: 'Mourning gown', noun: 'mourner', applyOrder: 110,
       steps: ['Brush white powder over the shoulders and folds so the fabric looks faded and dusty.'],
-      products: [{ name: 'Victorian high-neck black dress', q: 'victorian high neck black dress' }]
+      products: []
     },
-    {
-      id: 'pumpkin', label: 'Pumpkin top', noun: 'pumpkin', applyOrder: 110,
-      steps: ['Cut leaf shapes from green felt and stitch them round the neckline.'],
-      products: [{ name: 'Orange long-sleeve top', q: 'orange long sleeve top' }, { name: 'Green felt sheets', q: 'green felt sheets' }]
-    },
-    { id: 'redDress', label: 'Red dress', noun: 'socialite', applyOrder: 110, steps: [], products: [{ name: 'Red satin dress', q: 'red satin dress' }] },
-    { id: 'tulleGown', label: 'Purple tulle gown', noun: 'enchantress', applyOrder: 110, steps: [], products: [{ name: 'Purple tulle gown', q: 'purple tulle gown' }] },
-    { id: 'laceTop', label: 'Black lace top', noun: 'enchantress', applyOrder: 110, steps: [], products: [{ name: 'Black lace top', q: 'black lace top long sleeve' }] },
-    { id: 'velvetTop', label: 'Black velvet top', noun: 'enchantress', applyOrder: 110, steps: [], products: [{ name: 'Black velvet top', q: 'black velvet top' }, { name: 'Black velvet choker', q: 'black velvet choker' }] },
-    { id: 'hatterJacket', label: 'Burgundy jacket and jabot', noun: 'eccentric', applyOrder: 110, steps: [], products: [{ name: 'Burgundy velvet jacket', q: 'burgundy velvet jacket' }, { name: 'White ruffled jabot with bow', q: 'white ruffled jabot' }] },
-    { id: 'highCollar', label: 'High-collared black top', noun: 'fiend', applyOrder: 110, steps: [], products: [{ name: 'Black high-collared top', q: 'black high collar gothic top' }] }
+    { id: 'pumpkin', label: 'Pumpkin top', noun: 'pumpkin', applyOrder: 110, steps: [], products: [] },
+    { id: 'redDress', label: 'Red dress', noun: 'socialite', applyOrder: 110, steps: [], products: [] },
+    { id: 'tulleGown', label: 'Purple tulle gown', noun: 'enchantress', applyOrder: 110, steps: [], products: [] },
+    { id: 'laceTop', label: 'Black lace top', noun: 'enchantress', applyOrder: 110, steps: [], products: [] },
+    { id: 'velvetTop', label: 'Black velvet top', noun: 'enchantress', applyOrder: 110, steps: [], products: [] },
+    { id: 'hatterJacket', label: 'Burgundy jacket and jabot', noun: 'eccentric', applyOrder: 110, steps: [], products: [] },
+    { id: 'highCollar', label: 'High-collared black top', noun: 'fiend', applyOrder: 110, steps: [], products: [] }
   ],
 
   headwear: [
     { id: 'none', label: 'None', applyOrder: 115, steps: [], products: [] },
-    {
-      id: 'witchHat', label: 'Crooked witch hat', applyOrder: 115,
-      steps: ['Push a length of florist wire inside the hat to bend the tip into a crook.'],
-      products: [{ name: 'Crooked witch hat', q: 'crooked witch hat black' }, { name: 'Florist wire', q: 'florist wire' }]
-    },
+    { id: 'witchHat', label: 'Crooked witch hat', applyOrder: 115, steps: [], products: [] },
     { id: 'purpleHat', label: 'Purple witch hat with veil', applyOrder: 115, steps: [], products: [{ name: 'Purple witch hat with feathers and veil', q: 'purple witch hat feathers veil' }] },
-    {
-      id: 'topHat', label: 'Black top hat', applyOrder: 115, steps: [],
-      products: [
-        { name: 'Black top hat', asin: 'B00FFY3HF6', note: 'This one\'s pricey, but it\'s a proper hat rather than a costume replica, and real hats are actually quite cool.' },
-        { name: 'Olive green top hat', asin: 'B00JAB0UBO', note: 'The olive green is divine.' }
-      ]
-    },
-    { id: 'horns', label: 'Devil horns', applyOrder: 115, steps: [], products: [{ name: 'Red devil horns headband', q: 'red devil horns headband' }] },
-    { id: 'redHood', label: 'Red hood', applyOrder: 115, steps: [], products: [{ name: 'Red hooded cape', q: 'red hooded cape' }] },
-    { id: 'brownHood', label: 'Brown hood', applyOrder: 115, steps: [], products: [{ name: 'Brown hooded cloak', q: 'brown hooded cloak' }] },
-    { id: 'nurseCap', label: 'Nurse cap', applyOrder: 115, steps: [], products: [{ name: 'Nurse cap', q: 'nurse hat costume' }] },
+    { id: 'topHat', label: 'Black top hat', applyOrder: 115, steps: [], products: ['blackTopHat', 'oliveTopHat'] },
+    { id: 'ramHorns', label: 'Ram horns', applyOrder: 115, steps: [], products: ['ramHorns'] },
+    { id: 'horns', label: 'Red horns', applyOrder: 115, steps: [], products: ['redHorns'] },
+    { id: 'redHood', label: 'Red hood', applyOrder: 115, steps: [], products: [] },
+    { id: 'brownHood', label: 'Brown hood', applyOrder: 115, steps: [], products: [] },
+    { id: 'nurseCap', label: 'Nurse cap', applyOrder: 115, steps: [], products: [] },
     {
       id: 'cone', label: 'Little cone hat', applyOrder: 115,
       steps: ['Angle the cone hat to one side and tuck the elastic under your hair.'],
       products: [{ name: 'Mini clown cone hat', q: 'mini clown party hat pompom' }]
     },
-    {
-      id: 'veil', label: 'Veil and wilted crown', applyOrder: 115,
-      steps: ['Brush brown and grey eyeshadow onto the flower crown so it looks wilted, then pin the veil underneath.'],
-      products: [{ name: 'Dried flower crown', q: 'dried flower crown' }, { name: 'Long tulle veil', q: 'long ivory tulle veil' }]
-    },
-    { id: 'bow', label: 'Big hair bow', applyOrder: 115, steps: [], products: [{ name: 'Large velvet hair bow', q: 'large burgundy velvet hair bow' }] },
-    { id: 'stalk', label: 'Stalk headband', applyOrder: 115, steps: [], products: [{ name: 'Pumpkin stalk headband', q: 'pumpkin stem headband' }] }
+    { id: 'veil', label: 'Veil and wilted crown', applyOrder: 115, steps: ['Pin the veil in at the crown.'], products: ['veil'] },
+    { id: 'bow', label: 'Big hair bow', applyOrder: 115, steps: [], products: ['bow'] },
+    { id: 'stalk', label: 'Pumpkin headband', applyOrder: 115, steps: [], products: ['pumpkinHeadband'] }
   ],
 
   accessories: [
     { id: 'none', label: 'None', applyOrder: 120, steps: [], products: [] },
     { id: 'choker', label: 'Black choker', applyOrder: 120, steps: [], products: [{ name: 'Black velvet choker', q: 'black velvet choker' }] },
-    { id: 'tulleRuff', label: 'Red and black ruff', applyOrder: 120, steps: [], products: [{ name: 'Red and black tulle ruff collar', q: 'red black tulle ruff collar' }] },
+    { id: 'tulleRuff', label: 'Red and black ruff', applyOrder: 120, steps: [], products: [] },
     { id: 'amulet', label: 'Blood amulet', applyOrder: 120, steps: [], products: [{ name: 'Gothic red gem pendant', q: 'gothic red gem pendant necklace' }] },
     { id: 'bones', label: 'Bone charms', applyOrder: 120, steps: [], products: [{ name: 'Bone charm necklace', q: 'bone charm necklace' }] },
     { id: 'locket', label: 'Pearls and locket', applyOrder: 120, steps: [], products: [{ name: 'Pearl necklace with locket', q: 'pearl necklace heart locket' }] },
-    { id: 'cameo', label: 'Cameo brooch', applyOrder: 120, steps: [], products: [{ name: 'Victorian cameo brooch', q: 'victorian cameo brooch' }] },
+    { id: 'cameo', label: 'Victorian brooch', applyOrder: 120, steps: [], products: ['brooch'] },
     { id: 'key', label: 'Key on a ribbon', applyOrder: 120, steps: [], products: [{ name: 'Skeleton key necklace', q: 'skeleton key necklace ribbon' }] },
     {
       id: 'pompoms', label: 'Pompoms', applyOrder: 120,
       steps: ['Safety-pin two big pompoms down the front of your top.'],
       products: [{ name: 'Large red pompoms', q: 'large red craft pompoms' }]
     },
-    { id: 'lantern', label: 'Green glass lantern', applyOrder: 120, steps: [], products: [{ name: 'Green glass lantern', q: 'green glass lantern battery' }] },
-    { id: 'candlestick', label: 'Candlestick', applyOrder: 120, steps: [], products: [{ name: 'Brass candlestick', q: 'brass candlestick' }, { name: 'LED taper candle', q: 'led taper candle' }] },
-    { id: 'cauldron', label: 'Cauldron', applyOrder: 120, steps: [], products: [{ name: 'Mini cauldron', q: 'halloween cauldron' }] },
-    { id: 'goblet', label: 'Goblet', applyOrder: 120, steps: [], products: [{ name: 'Gold goblet', q: 'gold goblet' }] },
-    { id: 'teapot', label: 'Teapot', applyOrder: 120, steps: [], products: [{ name: 'China teapot', q: 'blue and white china teapot' }] }
+    { id: 'lantern', label: 'Green glass lantern', applyOrder: 120, steps: [], products: [] },
+    { id: 'candlestick', label: 'Candle holder', applyOrder: 120, steps: [], products: ['candleHolder', 'candles'] },
+    { id: 'cauldron', label: 'Cauldron', applyOrder: 120, steps: [], products: [] },
+    { id: 'goblet', label: 'Goblet', applyOrder: 120, steps: [], products: [] },
+    { id: 'teapot', label: 'Teapot', applyOrder: 120, steps: [], products: [] }
   ],
+
+  // Bought costume pieces. alts are shown as "or" options in the same row.
+  costume: {
+    cape: { name: 'Vampire cape', asin: 'B0B4BB199N', alts: [{ label: 'Slightly darker', asin: 'B0H6HD3SD4' }] },
+    brooch: { name: 'Victorian brooch', asin: 'B0CL6T41WT' },
+    corset: { name: 'Overbust corset top', asin: 'B09W4S2ZX7' },
+    ruffle: { name: 'Ruffle collar and cuffs', asin: 'B0F8VBTYT1' },
+    cloak: { name: 'Hooded cloak', asin: 'B0CJHTVSP8', note: 'I got mine from a LARP shop, which was pricier. This is the closest I\'d recommend.', alts: [{ label: 'Cheaper polyester option', asin: 'B0GXYR8N9G' }] },
+    gloves: { name: 'Black gloves with long nails', asin: 'B0H9XZM4W9', note: 'I got these and they were fine.' },
+    creepyCloth: { name: 'Creepy cloth', asin: 'B0D31BZCXK', note: 'I just layered this as a shawl and it worked super well.' },
+    nurseCostume: { name: 'Zombie nurse costume', asin: 'B003DRUG7O', note: 'I\'m fairly sure this is the exact one I wore.' },
+    harlequin: { name: 'Harlequin costume', asin: 'B07JKMRJYK', alts: [{ label: 'Black jester', asin: 'B0027VT5XS' }] },
+    veil: { name: 'Veil', asin: 'B071F7GR8L' },
+    skeletonMask: { name: 'Skeleton mask', asin: 'B0B78GWXGJ' },
+    feathers: { name: 'Black feathers', asin: 'B072KVR5KW', note: 'The ones I bought.' },
+    bow: { name: 'Hair bow', asin: 'B0BK7Z15H9' },
+    nightgown: { name: 'Victorian nightgown', asin: 'B08Q7NVXYQ', note: 'Proper 100% cotton.', alts: [{ label: 'Cheaper option', asin: 'B08FB5LFVF' }] },
+    candleHolder: { name: 'Candle holder', asin: 'B0FQJTDFGV' },
+    candles: { name: 'Candles', asin: 'B09NBZCYMQ', note: 'These should fit the holder.' },
+    pumpkinHeadband: { name: 'Pumpkin headband', asin: 'B09BVQTWV5' },
+    blackTopHat: { name: 'Black top hat', asin: 'B00FFY3HF6', note: 'This one\'s pricey, but it\'s a proper hat rather than a costume replica, and real hats are actually quite cool.', alts: [{ label: 'Cheaper option - not sure how good it is', asin: 'B0BZW6JQV3' }] },
+    oliveTopHat: { name: 'Olive green top hat', asin: 'B00JAB0UBO', note: 'The olive green is divine.' },
+    clock: { name: 'Inflatable clock', asin: 'B06XGTXTS3', note: 'I got this for my Alice in Wonderland party.' },
+    flamingo: { name: 'Inflatable flamingo', asin: 'B001ASG90G' },
+    hedgehog: { name: 'Soft toy hedgehog', asin: 'B00U1GS7TY' },
+    ramHorns: { name: 'Realistic ram horns', asin: 'B0C89V8FTY' },
+    redHorns: { name: 'Red horns headband', asin: 'B0CBLTTRXQ' }
+  },
 
   // Presets have versions; each version is tagged scary, sexy or glam.
   // set lists everything that differs from the neutral default. byFeatures adds to set for each features setting.
+  // wardrobe and products on a preset apply to all its versions; a version can add its own.
   presets: [
     {
       id: 'vampire', label: 'Vampire',
       nouns: { feminine: 'countess', masculine: 'count', androgynous: 'noble' },
+      wardrobe: ['A white shirt', 'A black or red velvet jacket', 'A black or red corset', 'Anything black lace'],
+      products: ['cape', 'brooch'],
       versions: [
         {
           id: 'count', label: 'Count', tag: 'glam',
-          set: { skin: 'corpse', contour: 'redRims', extras: ['fangs', 'elegantDrips'], clothing: 'tuxedo', hairStyle: 'slick', hairColour: 'black' }, products: ['lashes', 'lashGlue'],
+          set: { skin: 'corpse', contour: 'redRims', extras: ['fangs', 'elegantDrips'], clothing: 'tuxedo', hairStyle: 'slick', hairColour: 'black' }, products: ['ruffle', 'lashes', 'lashGlue'],
           byFeatures: {
             masculine: { lips: 'none', eyes: 'none' },
             feminine: { lips: 'blood', eyes: 'smoky' },
@@ -568,16 +592,18 @@ const DATA = {
         {
           id: 'hagMask', label: 'Hag mask', tag: 'scary',
           set: { mask: 'hag', hairStyle: 'long', hairColour: 'silver', clothing: 'cloak', headwear: 'brownHood', accessory: 'lantern' },
-          products: [{ name: 'Black gloves with long nails', q: 'black witch gloves long nails' }]
+          products: ['gloves', 'creepyCloth'],
+          steps: [[110, 'Layer the creepy cloth round your shoulders like a shawl, over the cloak.']]
         }
       ]
     },
     {
       id: 'zombie', label: 'Zombie',
       nouns: { feminine: 'zombie', masculine: 'zombie', androgynous: 'revenant' },
+      wardrobe: ['Literally anything - regular clothes, the more dishevelled the better.'],
       versions: [
         { id: 'oneEyed', label: 'One-eyed', tag: 'scary', set: { skin: 'corpse', lenses: 'whiteoutOne', effects: ['templePeel', 'tornCheeks'], contour: 'bruised', clothing: 'tornJumper' } },
-        { id: 'mauled', label: 'Mauled', tag: 'scary', set: { skin: 'corpse', effects: ['clawRip'], contour: 'bruised', clothing: 'redCape', headwear: 'redHood' } },
+        { id: 'mauled', label: 'Mauled', tag: 'scary', wardrobe: ['A red hoodie or hooded cape'], set: { skin: 'corpse', effects: ['clawRip'], contour: 'bruised', clothing: 'redCape', headwear: 'redHood' } },
         { id: 'bitten', label: 'Bitten', tag: 'scary', set: { skin: 'corpse', effects: ['throatBite'], extras: ['messyFeed'], contour: 'bruised', clothing: 'vestTop' } },
         { id: 'unzipped', label: 'Unzipped', tag: 'scary', set: { skin: 'corpse', effects: ['zipFace'], clothing: 'bloodTee' } },
         {
@@ -590,6 +616,7 @@ const DATA = {
     {
       id: 'clown', label: 'Scary clown',
       nouns: { feminine: 'clown', masculine: 'clown', androgynous: 'clown' },
+      products: ['harlequin'],
       versions: [
         {
           id: 'tornCheeks', label: 'Torn cheeks', tag: 'scary',
@@ -608,6 +635,7 @@ const DATA = {
     {
       id: 'bride', label: 'Corpse bride',
       nouns: { feminine: 'bride', masculine: 'groom', androgynous: 'betrothed' },
+      wardrobe: ['An old white or cream dress.'],
       versions: [
         {
           id: 'dead', label: 'Dead bride', tag: 'scary',
@@ -630,6 +658,7 @@ const DATA = {
     {
       id: 'doll', label: 'Cursed doll',
       nouns: { feminine: 'doll', masculine: 'puppet', androgynous: 'marionette' },
+      wardrobe: ['A cutesy dress you already have.'],
       versions: [
         {
           id: 'cracked', label: 'Cracked doll', tag: 'scary',
@@ -646,12 +675,17 @@ const DATA = {
       nouns: { feminine: 'widow', masculine: 'widower', androgynous: 'spectre' },
       versions: [
         { id: 'sheet', label: 'Sheet ghost', tag: 'scary', nouns: { feminine: 'spook', masculine: 'spook', androgynous: 'spook' }, set: { mask: 'sheet' } },
-        { id: 'greyLady', label: 'Grey lady', tag: 'glam', set: { skin: 'ghostly', lenses: 'whiteRing', clothing: 'mourning', accessory: 'cameo', hairStyle: 'bun', hairColour: 'silver' }, products: ['lashes', 'lashGlue'] }
+        {
+          id: 'greyLady', label: 'Grey lady', tag: 'glam',
+          set: { skin: 'ghostly', lenses: 'whiteRing', clothing: 'mourning', accessory: 'candlestick', hairStyle: 'bun', hairColour: 'silver' },
+          products: ['nightgown', 'lashes', 'lashGlue']
+        }
       ]
     },
     {
       id: 'pumpkin', label: 'Pumpkin',
       nouns: { feminine: 'lantern', masculine: 'lantern', androgynous: 'gourd' },
+      wardrobe: ['Orange clothes.'],
       versions: [
         { id: 'jack', label: 'Jack-o\'-lantern', tag: 'glam', set: { facePaint: 'pumpkin', lenses: 'cat', clothing: 'pumpkin', headwear: 'stalk', hairStyle: 'crop', hairColour: 'black' }, products: ['lashes', 'lashGlue'] }
       ]
@@ -659,10 +693,11 @@ const DATA = {
     {
       id: 'victim', label: 'Murder victim',
       nouns: { feminine: 'victim', masculine: 'victim', androgynous: 'victim' },
+      wardrobe: ['Literally anything.'],
       versions: [
         {
-          id: 'cluedo', label: 'Cluedo victim', tag: 'scary',
-          set: { skin: 'corpse', clothing: 'redDress', effects: ['foreheadGash', 'bloodTears'], extras: ['elegantDrips'], lenses: 'whiteout', accessory: 'candlestick', hairStyle: 'bun', hairColour: 'black' }
+          id: 'cluedo', label: 'Murder victim', tag: 'scary',
+          set: { skin: 'corpse', clothing: 'redDress', effects: ['foreheadGash', 'bloodTears'], extras: ['elegantDrips'], lenses: 'whiteout', hairStyle: 'bun', hairColour: 'black' }
         },
         {
           id: 'elegant', label: 'Elegant corpse', tag: 'glam',
@@ -674,32 +709,45 @@ const DATA = {
     {
       id: 'witch', label: 'Glam witch',
       nouns: { feminine: 'enchantress', masculine: 'sorcerer', androgynous: 'witch' },
+      wardrobe: ['Your most dramatic dress - tulle, velvet or lace.'],
       versions: [
         {
           id: 'purple', label: 'Purple witch', tag: 'glam',
-          set: { facePaint: 'glamWitch', lips: 'blood', clothing: 'tulleGown', headwear: 'purpleHat', accessory: 'cauldron', hairStyle: 'long', hairColour: 'black' }, products: ['lashes', 'lashGlue']
+          set: { facePaint: 'glamWitch', lips: 'blood', clothing: 'tulleGown', headwear: 'purpleHat', hairStyle: 'long', hairColour: 'black' }, products: ['lashes', 'lashGlue']
         },
         { id: 'web', label: 'Web witch', tag: 'sexy', set: { eyes: 'spiderweb', lips: 'blood', clothing: 'laceTop', hairStyle: 'long', hairColour: 'black' } },
-        { id: 'velvet', label: 'Velvet witch', tag: 'glam', set: { eyes: 'berry', lips: 'berry', clothing: 'velvetTop', accessory: 'goblet', hairStyle: 'bob', hairColour: 'black' }, products: ['lashes', 'lashGlue'] }
+        { id: 'velvet', label: 'Velvet witch', tag: 'glam', set: { eyes: 'berry', lips: 'berry', clothing: 'velvetTop', hairStyle: 'bob', hairColour: 'black' }, products: ['lashes', 'lashGlue'] }
       ]
     },
     {
       id: 'hatter', label: 'Mad Hatter',
       nouns: { feminine: 'hatter', masculine: 'hatter', androgynous: 'hatter' },
+      wardrobe: ['A white ruffled shirt or blouse and a burgundy or patterned jacket.'],
       versions: [
         {
           id: 'hatter', label: 'Hatter', tag: 'glam',
-          set: { hairStyle: 'longWavy', hairColour: 'silver', headwear: 'topHat', lenses: 'galaxy', eyes: 'whiteLashes', lips: 'blood', clothing: 'hatterJacket', accessory: 'teapot' }, products: ['lashes', 'lashGlue']
+          set: { hairStyle: 'longWavy', hairColour: 'silver', headwear: 'topHat', lenses: 'galaxy', eyes: 'whiteLashes', lips: 'blood', clothing: 'hatterJacket' },
+          products: ['lashes', 'lashGlue', 'clock', 'flamingo', 'hedgehog'],
+          steps: [[120, 'Props are optional, but a clock, a flamingo or a hedgehog to carry finishes the look.']]
         }
       ]
     },
     {
       id: 'devil', label: 'Devil',
       nouns: { feminine: 'devil', masculine: 'devil', androgynous: 'devil' },
+      wardrobe: ['Something black and/or red.'],
       versions: [
         {
           id: 'scary', label: 'Scary devil', tag: 'scary',
-          set: { facePaint: 'devil', headwear: 'horns', lenses: 'blackout', effects: ['veins'], clothing: 'highCollar', hairStyle: 'slick', hairColour: 'black' }
+          set: { facePaint: 'devil', headwear: 'ramHorns', lenses: 'blackout', effects: ['veins'], clothing: 'highCollar', hairStyle: 'slick', hairColour: 'black' }
+        },
+        {
+          id: 'sexy', label: 'Sexy devil', tag: 'sexy',
+          set: { eyes: 'smoky', lips: 'blood', headwear: 'horns', clothing: 'redDress', hairStyle: 'long', hairColour: 'black' }
+        },
+        {
+          id: 'comic', label: 'Comic devil', tag: 'glam',
+          set: { facePaint: 'comicDevil', headwear: 'horns', clothing: 'highCollar', hairStyle: 'slick', hairColour: 'black' }
         }
       ]
     }

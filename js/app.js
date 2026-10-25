@@ -145,7 +145,7 @@
 
   /* ---------- method and shopping list ---------- */
 
-  const product = p => typeof p === 'string' ? DATA.kit[p] : p;
+  const product = p => typeof p === 'string' ? (DATA.kit[p] || DATA.costume[p]) : p;
 
   function recipe(s) {
     const steps = [];
@@ -192,7 +192,10 @@
     add(byId(DATA.clothing, s.clothing));
     add(byId(DATA.headwear, s.headwear));
     add(byId(DATA.accessories, s.accessory));
+    const preset = v ? presetById(s.preset) : null;
+    if (preset) add({ applyOrder: 110, steps: [], products: preset.products || [] });
     if (v) add(Object.assign({ applyOrder: 110 }, v));
+    const wardrobe = preset ? (preset.wardrobe || []).concat(v.wardrobe || []) : [];
 
     const seen = new Set();
     const method = steps
@@ -203,7 +206,7 @@
 
     const names = new Set();
     const shopping = products.filter(p => !names.has(p.name) && names.add(p.name));
-    return { method, shopping };
+    return { method, shopping, wardrobe };
   }
 
   // Amazon links carry the tag; external links (the lenses) do not.
@@ -221,6 +224,12 @@
     if (p.asin || p.q || p.url) {
       const link = linkFor(p);
       li.appendChild(el('a', { href: link.href, target: '_blank', rel: link.rel }, p.name));
+      // alternatives sit in the same row as "or" options
+      (p.alts || []).forEach(alt => {
+        const l = linkFor(alt);
+        li.appendChild(document.createTextNode(' or '));
+        li.appendChild(el('a', { href: l.href, target: '_blank', rel: l.rel }, alt.label));
+      });
     } else {
       li.appendChild(el('span', {}, p.name));
     }
@@ -411,7 +420,12 @@
 
   function renderNotebook() {
     $('#look-name').textContent = lookName(state);
-    const { method, shopping } = recipe(state);
+    const { method, shopping, wardrobe } = recipe(state);
+
+    const wr = $('#wardrobe');
+    wr.innerHTML = '';
+    wardrobe.forEach(t => wr.appendChild(el('li', {}, t)));
+    $('#wardrobe-section').hidden = !wardrobe.length;
 
     const ol = $('#method');
     ol.innerHTML = '';

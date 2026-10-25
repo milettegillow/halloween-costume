@@ -514,6 +514,19 @@ button {
   margin: 0.8rem 0 0;
 }
 
+.wardrobe {
+  margin: 0;
+  padding-left: 1.3rem;
+}
+
+.wardrobe li {
+  margin-bottom: 0.3rem;
+}
+
+.wardrobe li::marker {
+  color: var(--oxblood);
+}
+
 .product-note {
   margin: 0.1rem 0 0.5rem;
 }
