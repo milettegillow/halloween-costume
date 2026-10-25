@@ -35,15 +35,17 @@
 
         <section class="settings ornate" aria-label="Settings">
           <div class="settings-head">
-            <button id="reset-makeup" type="button" class="filter reset-makeup">
-              Reset makeup
-            </button>
-            <div
-              id="palette-tabs"
-              class="tabs"
-              role="tablist"
-              aria-label="Makeup and costume"
-            ></div>
+            <div class="tab-row">
+              <div
+                id="palette-tabs"
+                class="tabs"
+                role="tablist"
+                aria-label="Makeup and costume"
+              ></div>
+              <button id="reset-makeup" type="button" class="reset-makeup">
+                <span aria-hidden="true">↺</span> Reset makeup
+              </button>
+            </div>
           </div>
           <div id="palette-pans" class="palette-pans" role="tabpanel"></div>
         </section>

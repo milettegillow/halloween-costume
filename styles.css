@@ -179,17 +179,36 @@ button {
 }
 
 /* sits above the tab row, aligned right */
-.reset-makeup {
-  display: block;
-  margin: 0 0 0.7rem auto;
-}
-
-.tabs {
+/* the tabs and the reset button share one wrapping row */
+.tab-row {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.35rem 0.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--gold-shadow);
+}
+
+.tabs {
+  display: contents;
+}
+
+/* an action, not a tab: it never takes the selected-tab colour */
+.reset-makeup {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold-light);
+  font-family: var(--heading);
+  font-style: italic;
+  font-weight: 400;
+  padding: 0.2rem 0.75rem;
+  white-space: nowrap;
+}
+
+.reset-makeup:hover,
+.reset-makeup:active {
+  background: var(--gold);
+  color: var(--panel-deep);
 }
 
 .tab {
@@ -683,7 +702,7 @@ button {
     padding: 1rem 0.8rem 0.4rem;
   }
 
-  .tabs {
+  .tab-row {
     padding-bottom: 0.8rem;
   }
 
