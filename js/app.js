@@ -153,7 +153,7 @@
     const add = item => {
       if (!item) return;
       (item.steps || []).forEach(st => steps.push(typeof st === 'string' ? [item.applyOrder, st] : st));
-      (item.products || []).forEach(p => products.push(product(p)));
+      (item.products || []).forEach(p => products.push(product(p.byFeatures ? p.byFeatures[s.features] : p)));
     };
 
     const masked = s.mask !== 'none';

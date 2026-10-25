@@ -464,7 +464,7 @@ const DATA = {
       products: ['nurseCostume', 'freshBlood']
     },
     { id: 'clown', label: 'Ruff and stripes', noun: 'jester', applyOrder: 110, steps: [], products: [] },
-    { id: 'harlequin', label: 'Harlequin satin top', noun: 'jester', applyOrder: 110, steps: [], products: ['clownCostume'] },
+    { id: 'harlequin', label: 'Harlequin satin top', noun: 'jester', applyOrder: 110, steps: [], products: [{ byFeatures: { feminine: 'harlequin', masculine: 'clownCostume', androgynous: 'harlequinOrClown' } }] },
     {
       id: 'bride', label: 'Ragged lace bodice', noun: 'bride', applyOrder: 110,
       steps: ['Tear the edges of an old dress and rub grey eyeshadow into the folds so it looks grave-worn.'],
@@ -529,6 +529,7 @@ const DATA = {
   ],
 
   // Bought costume pieces. alts are shown as "or" options in the same row.
+  // An item's products can also hold { byFeatures: { feminine, masculine, androgynous } } to pick by the Features setting.
   costume: {
     cape: { name: 'Vampire cape', asin: 'B0B4BB199N', alts: [{ label: 'Slightly darker', asin: 'B0H6HD3SD4' }] },
     brooch: { name: 'Victorian brooch', asin: 'B0CL6T41WT' },
@@ -538,7 +539,9 @@ const DATA = {
     gloves: { name: 'Black gloves with long nails', asin: 'B0H9XZM4W9', note: 'I got these and they were fine.' },
     creepyCloth: { name: 'Creepy cloth', asin: 'B0D31BZCXK', note: 'I just layered this as a shawl and it worked super well.' },
     nurseCostume: { name: 'Zombie nurse costume', asin: 'B003DRUG7O', note: 'I\'m fairly sure this is the exact one I wore.' },
+    harlequin: { name: 'Harlequin costume', asin: 'B07JKMRJYK' },
     clownCostume: { name: 'Clown costume', asin: 'B0DGTC3LCY' },
+    harlequinOrClown: { name: 'Harlequin costume', asin: 'B07JKMRJYK', alts: [{ label: 'Clown costume', asin: 'B0DGTC3LCY' }] },
     veil: { name: 'Veil', asin: 'B071F7GR8L' },
     skeletonMask: { name: 'Skeleton mask', asin: 'B0B78GWXGJ' },
     feathers: { name: 'Black feathers', asin: 'B072KVR5KW', note: 'The ones I bought.' },
@@ -616,7 +619,7 @@ const DATA = {
     {
       id: 'clown', label: 'Scary clown',
       nouns: { feminine: 'clown', masculine: 'clown', androgynous: 'clown' },
-      products: ['clownCostume'],
+      products: [{ byFeatures: { feminine: 'harlequin', masculine: 'clownCostume', androgynous: 'harlequinOrClown' } }],
       versions: [
         {
           id: 'tornCheeks', label: 'Torn cheeks', tag: 'scary',
