@@ -62,10 +62,54 @@
   const isMulti = key => MULTI.includes(key);
   const optionsFor = key => key === 'mask' ? DATA.masks : M[key];
 
-  let state = clone(DATA.defaults);
+  // Two separate looks: "Create your own" (saved in the browser) and the working copy of a loaded preset.
+  // state is whichever one is showing; while in "Create your own", own and state are the same object.
+  const STORE = 'halloween-costume-own';
+  let own = loadOwn();
+  let state = own;
   let activeTab = 'basics';
   let filter = 'all';
   let openPreset = null;
+
+  /* ---------- the "Create your own" look ---------- */
+
+  // Keep only known keys and valid option ids, so an old or edited save can't break the page.
+  function sanitise(saved) {
+    const s = clone(DATA.defaults);
+    if (!saved || typeof saved !== 'object') return s;
+    const lists = {
+      shape: DATA.faceShapes, features: DATA.features, skinTone: DATA.skinTones, hairStyle: DATA.hairStyles, hairColour: DATA.hairColours,
+      contour: M.contour, underEyes: M.underEyes, lenses: M.lenses, eyes: M.eyes, facePaint: M.facePaint, lips: M.lips, fangs: M.fangs,
+      mask: DATA.masks, clothing: DATA.clothing, headwear: DATA.headwear, accessory: DATA.accessories
+    };
+    Object.keys(lists).forEach(k => { if (lists[k].some(o => o.id === saved[k])) s[k] = saved[k]; });
+    MULTI.forEach(k => {
+      if (Array.isArray(saved[k])) s[k] = saved[k].filter(id => id !== 'none' && M[k].some(o => o.id === id));
+    });
+    return s;
+  }
+
+  function loadOwn() {
+    try {
+      return sanitise(JSON.parse(localStorage.getItem(STORE)));
+    } catch (e) {
+      return clone(DATA.defaults);
+    }
+  }
+
+  function saveOwn() {
+    try {
+      localStorage.setItem(STORE, JSON.stringify(own));
+    } catch (e) {
+      // storage can be blocked or full; the look still works for this visit
+    }
+  }
+
+  const inOwn = () => state === own;
+
+  function showOwn() {
+    state = own;
+  }
 
   /* ---------- presets ---------- */
 
@@ -374,17 +418,17 @@
     const grid = $('#preset-grid');
     grid.innerHTML = '';
 
-    const own = el('button', { class: 'preset', type: 'button', 'aria-pressed': String(state.version === null) });
+    const ownCard = el('button', { class: 'preset', type: 'button', 'aria-pressed': String(inOwn()) });
     const ownArt = el('span', { class: 'pan-art' });
-    ownArt.innerHTML = Art.portraitSVG(resolve(clone(DATA.defaults)), 'p_own_', CROP.head, 'aria-hidden="true" focusable="false"');
-    own.appendChild(ownArt);
-    own.appendChild(el('span', { class: 'pan-label' }, 'Create your own'));
-    own.addEventListener('click', () => {
+    ownArt.innerHTML = Art.portraitSVG(resolve(own), 'p_own_', CROP.head, 'aria-hidden="true" focusable="false"');
+    ownCard.appendChild(ownArt);
+    ownCard.appendChild(el('span', { class: 'pan-label' }, 'Create your own'));
+    ownCard.addEventListener('click', () => {
       openPreset = null;
-      if (state.version !== null) state = clone(DATA.defaults);
+      showOwn();
       update();
     });
-    grid.appendChild(own);
+    grid.appendChild(ownCard);
 
     DATA.presets.forEach(p => {
       if (!visibleVersions(p).length) return;
@@ -413,11 +457,12 @@
     versions.appendChild(el('h3', { class: 'versions-heading' }, p.label));
     const row = el('div', { class: 'version-buttons' });
     visibleVersions(p).forEach(v => {
-      const on = state.preset === p.id && state.version === v.id;
+      const on = !inOwn() && state.preset === p.id && state.version === v.id;
       const b = el('button', { class: 'version', type: 'button', 'aria-pressed': String(on) }, v.label);
       b.addEventListener('click', () => {
-        if (on) state = clone(DATA.defaults);
-        else state = versionState(state, p.id, v.id);
+        // the active version deselects back to "Create your own"; any other version loads fresh
+        if (!inOwn() && state.preset === p.id && state.version === v.id) showOwn();
+        else state = versionState(own, p.id, v.id);
         update();
       });
       row.appendChild(b);
@@ -462,6 +507,7 @@
   }
 
   function update() {
+    if (inOwn()) saveOwn();
     renderMirror();
     renderPans();
     renderPresets();
@@ -486,7 +532,7 @@
       if (!(p.id === state.preset && v.id === state.version)) pool.push([p.id, v.id]);
     }));
     const [pid, vid] = pick(pool);
-    let s = clone(state);
+    let s = clone(own);
     s.shape = pick(DATA.faceShapes).id;
     s.features = pick(DATA.features).id;
     s.skinTone = pick(DATA.skinTones).id;
@@ -515,10 +561,16 @@
     update();
   }
 
+  // Reset clears "Create your own", or returns a loaded preset to its version's defaults.
   function reset() {
-    state = clone(DATA.defaults);
-    activeTab = 'basics';
-    openPreset = null;
+    if (inOwn()) {
+      own = clone(DATA.defaults);
+      state = own;
+      activeTab = 'basics';
+      openPreset = null;
+    } else {
+      state = versionState(own, state.preset, state.version);
+    }
     renderTabs();
     update();
   }
@@ -580,7 +632,7 @@
   // Exposed for checking looks in the browser console.
   window.Vanity = {
     get state() { return state; },
-    set: s => { state = Object.assign(clone(DATA.defaults), s); update(); },
+    set: s => { own = Object.assign(clone(DATA.defaults), s); state = own; update(); },
     lookFor: (presetId, versionId, shape, features) => resolve(versionState(Object.assign(clone(DATA.defaults), { shape, features }), presetId, versionId)),
     lookName, recipe
   };
