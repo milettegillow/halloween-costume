@@ -93,7 +93,7 @@
     corpse: { mix: '#e6dfd4', t: 0.74, tint: '#4b3a4a' },
     zombie: { mix: '#9dac86', t: 0.74, tint: '#2c3a22' },
     ghostly: { mix: '#f4f2ee', t: 0.88, tint: '#56607a' },
-    bruised: { mix: '#a9b4cc', t: 0.7, tint: '#2c2d55' }
+    bruised: { mix: '#93acc2', t: 0.86, tint: '#24384e' }
   };
 
   /* ---------- anchors ---------- */
@@ -947,7 +947,7 @@
         break;
       case 'bruised':
         [[CX - 56, a.cheekY - 6, 18, 11], [CX + 62, a.crownY + 66, 14, 10], [CX + 50, a.jawY + 6, 13, 9]].forEach(([x, y, rx, ry]) => {
-          out += E(x, y, rx * 1.4, ry * 1.4, '#a8a654', op(0.22)) + E(x, y, rx, ry, '#5a3a78', op(0.4)) + E(x + 2, y + 1, rx * 0.5, ry * 0.5, '#3d2252', op(0.35));
+          out += E(x, y, rx * 1.4, ry * 1.4, '#7a9ab4', op(0.25)) + E(x, y, rx, ry, '#4a6688', op(0.35)) + E(x + 2, y + 1, rx * 0.5, ry * 0.5, '#2e4462', op(0.3));
         });
         break;
     }
@@ -1435,6 +1435,30 @@
       const s = 1, cx = CX + s * 48, cy = a.cheekY + 20;
       out += tear(sk, R, cx - s * 26, cy - 16, cx + s * 22, cy + 16, 17, 5, 2.4);
       for (let i = 0; i < 9; i++) out += E(cx + r(-22, 22), cy + r(8, 30), r(2, 5.5), r(1.5, 4), BLOOD, op(0.75));
+    }
+    if (has('teethGash')) {
+      // a ragged rip opening onto a row of teeth; on the left cheek if there's already a gash on the right
+      const s = has('cheekGash') ? -1 : 1, cx = CX + s * 46, cy = a.mouthY - 4;
+      const ring = [];
+      for (let i = 0; i < 18; i++) {
+        const th = i / 18 * Math.PI * 2, k = 1 + (R() - 0.5) * 0.35;
+        ring.push([cx + Math.cos(th) * 26 * k, cy + Math.sin(th) * 16 * k]);
+      }
+      const scale = q => ring.map(([x, y]) => [cx + (x - cx) * q, cy + (y - cy) * q]);
+      out += P(spline(scale(1.55), true), '#4a6688', op(0.3)) + P(spline(scale(1.25), true), '#8a3a5a', op(0.25));
+      out += P(spline(scale(1.08), true), sk.light, `stroke="${sk.deep}" stroke-width="0.9"`);
+      out += P(spline(ring, true), BLOOD) + P(spline(scale(0.75), true), BLOOD_DARK);
+      // gums and two rows of teeth with dark gaps
+      const teeth = `<clipPath id="${id}tg"><path d="${spline(scale(0.8), true)}"/></clipPath>`;
+      let t = '';
+      for (let i = -4; i <= 4; i++) {
+        const x = cx + i * 5.6;
+        t += `<rect x="${f(x - 2.5)}" y="${f(cy - 8)}" width="5" height="7.5" rx="1" fill="#f2ecdc" stroke="#1a0a0a" stroke-width="0.7"/>`;
+        t += `<rect x="${f(x - 2.3)}" y="${f(cy + 1)}" width="4.6" height="7" rx="1" fill="#e8e0cc" stroke="#1a0a0a" stroke-width="0.7"/>`;
+      }
+      out += teeth + G(t, `clip-path="url(#${id}tg)"`);
+      out += S(`M${pt(cx - 22, cy)}L${pt(cx + 22, cy)}`, '#1a0204', 1.4, op(0.7));
+      out += drip(cx + s * 6, cy + 11, 16, 2.4) + drip(cx - s * 10, cy + 10, 10, 2);
     }
     if (has('slicedCheeks')) {
       [-1, 1].forEach(s => {

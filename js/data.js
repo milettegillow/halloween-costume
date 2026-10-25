@@ -294,7 +294,7 @@ const DATA = {
       {
         id: 'bruisedBlue', label: 'Bruised blue', namePart: 'drowned', applyOrder: 20,
         base: { cover: 'blue face paint, thinly, right down your neck', product: 'bluePaint' },
-        steps: ['Pat purple eyeshadow over the blue so you look cold and waterlogged.'],
+        steps: ['Pat a little grey-blue eyeshadow over the blue so you look cold and waterlogged.'],
         products: ['palette', 'sponges']
       },
       {
@@ -355,6 +355,7 @@ const DATA = {
       { id: 'cheekGash', label: 'Cheek gash', namePart: 'gashed', applyOrder: 10, patch: true, latexWound: { place: 'Cheek gash: a big rough patch on one cheek.', open: 'Cheek gash: tear it wide so the edges are really ragged.' }, steps: [], products: ['latex', 'toiletPaper', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
       { id: 'slicedCheeks', label: 'Sliced cheeks', namePart: 'sliced', applyOrder: 10, patch: true, latexWound: { place: 'Sliced cheeks: a thin strip down each cheekbone, straight down from your eyes.', open: 'Sliced cheeks: one long slit down the middle of each strip.' }, steps: [], products: ['latex', 'toiletPaper', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
       { id: 'tornCorners', label: 'Sliced mouth corners', namePart: 'slashed', applyOrder: 10, patch: true, latexWound: { place: 'Sliced mouth corners: a thin, curved strip from each corner of your mouth up towards your cheeks.', open: 'Sliced mouth corners: open each one along the curve, starting at the corner of your mouth.' }, steps: [], products: ['latex', 'toiletPaper', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
+      { id: 'teethGash', label: 'Cheek gash with teeth', namePart: 'gaping', applyOrder: 10, patch: true, latexWound: { place: 'Cheek gash with teeth: a big rough patch on one cheek.', open: 'Cheek gash with teeth: tear it wide open so there\'s room for the teeth inside.', colour: 'For the teeth, draw them inside the wound with white eyeliner and outline the gaps between them with black eyeliner.' }, steps: [], products: ['latex', 'toiletPaper', 'redLipstick', 'palette', 'whitePencil', 'blackLiner', 'freshBlood'] },
       { id: 'templePeel', label: 'Temple peel', namePart: 'peeling', applyOrder: 10, patch: true, latexWound: { place: 'Temple peel: a long strip from your lower forehead down through one eye to your upper cheek, keeping clear of the eye itself.', open: 'Temple peel: start small above and below the eye and keep tearing until it opens fully round the eye.' }, steps: [], products: ['latex', 'toiletPaper', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
       { id: 'foreheadGash', label: 'Forehead gash', namePart: 'slain', applyOrder: 10, patch: true, latexWound: { place: 'Forehead gash: a long strip across your forehead.', open: 'Forehead gash: rip it open along its length.' }, steps: [], products: ['latex', 'toiletPaper', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
       // Zip face has its own method and can't be combined with other wounds.
@@ -654,11 +655,11 @@ const DATA = {
       versions: [
         {
           id: 'dead', label: 'Blue bride', tag: 'scary',
-          set: { facePaint: 'bruisedBlue', contour: 'bruised', underEyes: 'hollows', lips: 'blue', clothing: 'bride', headwear: 'veil', accessory: 'locket', hairStyle: 'long', hairColour: 'auburn' }
+          set: { facePaint: 'bruisedBlue', effects: ['teethGash'], contour: 'bruised', underEyes: 'hollows', lips: 'blue', clothing: 'bride', headwear: 'veil', hairStyle: 'long', hairColour: 'auburn' }
         },
         {
           id: 'faded', label: 'Faded bride', tag: 'glam',
-          set: { facePaint: 'paleBase', eyes: ['smoky'], clothing: 'bride', headwear: 'veil', accessory: 'locket', hairStyle: 'bun', hairColour: 'auburn' }, products: ['lashes', 'lashGlue']
+          set: { facePaint: 'paleBase', eyes: ['smoky'], clothing: 'bride', headwear: 'veil', hairStyle: 'bun', hairColour: 'auburn' }, products: ['lashes', 'lashGlue']
         }
       ]
     },

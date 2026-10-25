@@ -268,7 +268,8 @@
       if (wounds.length) {
         const [build, rip, colour, blood] = DATA.latexWoundSteps;
         const lines = key => wounds.map(w => w.latexWound[key]).join('\n');
-        [build + '\n' + lines('place'), rip + '\n' + lines('open'), colour, blood]
+        const extra = wounds.filter(w => w.latexWound.colour).map(w => w.latexWound.colour);
+        [build + '\n' + lines('place'), rip + '\n' + lines('open'), [colour].concat(extra).join('\n'), blood]
           .forEach((text, i) => steps.push([BUILD_ORDER + i * 0.1, text]));
       }
 
