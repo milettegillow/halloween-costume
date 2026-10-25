@@ -623,6 +623,13 @@
     update();
   }
 
+  // Clears every makeup tab on the active look; face, hair, wig, mask and costume stay.
+  const MAKEUP_TABS = ['contour', 'underEyes', 'lenses', 'eyes', 'facePaint', 'effects', 'lips', 'fangs', 'blood'];
+  function resetMakeup() {
+    MAKEUP_TABS.forEach(k => { state[k] = clone(DATA.defaults[k]); });
+    update();
+  }
+
   /* ---------- PNG download ---------- */
 
   function slug(name) {
@@ -672,6 +679,7 @@
     decorate();
     $('#randomise').addEventListener('click', randomise);
     $('#reset').addEventListener('click', reset);
+    $('#reset-makeup').addEventListener('click', resetMakeup);
     $('#download').addEventListener('click', download);
     renderTabs();
     renderEssentials();
