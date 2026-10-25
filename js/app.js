@@ -39,7 +39,7 @@
     { id: 'lenses', label: 'Lenses', groups: [{ key: 'lenses', options: M.lenses, crop: 'eyes' }] },
     { id: 'eyes', label: 'Eye makeup', groups: [{ key: 'eyes', options: M.eyes, crop: 'face' }] },
     { id: 'facePaint', label: 'Face paint', groups: [{ key: 'facePaint', options: M.facePaint, crop: 'head' }] },
-    { id: 'effects', label: 'Effects', groups: [{ key: 'effects', options: M.effects, crop: 'head' }] },
+    { id: 'effects', label: 'Wounds', groups: [{ key: 'effects', options: M.effects, crop: 'head' }] },
     {
       id: 'lips', label: 'Lips', groups: [
         { key: 'lips', label: 'Lips', options: M.lips, crop: 'mouth' },
@@ -335,11 +335,18 @@
     return state[key] === id;
   }
 
+  // An exclusive option (zip face) clears the rest of its tab, and anything else clears it.
+  function exclusive(key, list, added) {
+    const solo = id => (byId(M[key], id) || {}).exclusive;
+    if (solo(added)) return [added];
+    return list.filter(id => !solo(id));
+  }
+
   function choose(key, id) {
     if (isMulti(key)) {
       if (id === 'none') state[key] = [];
       else if (state[key].includes(id)) state[key] = state[key].filter(x => x !== id);
-      else state[key] = state[key].concat(id);
+      else state[key] = exclusive(key, state[key].concat(id), id);
     } else {
       state[key] = id;
       // some versions change with the features setting
@@ -546,7 +553,8 @@
         const t = clone(s);
         if (isMulti(k)) {
           const options = M[k].filter(o => o.id !== 'none' && !s[k].includes(o.id));
-          t[k] = s[k].concat(pick(options).id);
+          const added = pick(options).id;
+          t[k] = exclusive(k, s[k].concat(added), added);
         } else {
           if (s[k] !== 'none') continue;
           t[k] = pick(M[k].filter(o => o.id !== 'none')).id;

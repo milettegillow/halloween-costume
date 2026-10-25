@@ -955,9 +955,6 @@
       case 'clown':
         out += clownPaint(a, id, '#c4161c');
         break;
-      case 'clownPink':
-        out += clownPaint(a, id, '#e88aa8');
-        break;
       case 'skull': {
         const half = `M${CX + 2},0L${CX - 1},${a.browY}L${CX + 3},${a.noseY - 20}L${CX - 1},${a.noseY + 6}L${CX + 2},${a.mouthY - 4}L${CX - 1},${a.chinY + 10}H0V0Z`;
         out += `<clipPath id="${id}sk"><path d="${half}"/></clipPath>`;
@@ -1284,18 +1281,41 @@
   }
 
   // A latex-and-tissue tear: raised skin edge, red inside, a little blood running down.
-  function tear(sk, R, x1, y1, x2, y2, w, drips) {
+  function tear(sk, R, x1, y1, x2, y2, w, drips, rough) {
+    const j = rough || 1;
     const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1;
     let nx = -dy / L, ny = dx / L;
     if (ny < 0) { nx = -nx; ny = -ny; }
     let out = P(spline(tearRing(R, x1, y1, x2, y2, w, 1.9, 0.2), true), '#5a3f7a', op(0.32)) + P(spline(tearRing(R, x1, y1, x2, y2, w, 1.4, 0.2), true), '#8a3a5a', op(0.22));
-    out += P(spline(tearRing(R, x1, y1, x2, y2, w, 1.08, 0.25), true), sk.light, `stroke="${sk.deep}" stroke-width="0.9"`);
-    out += P(spline(tearRing(R, x1, y1, x2, y2, w, 0.66, 0.55), true), BLOOD);
-    out += P(spline(tearRing(R, x1, y1, x2, y2, w, 0.3, 0.6), true), BLOOD_DARK);
+    out += P(spline(tearRing(R, x1, y1, x2, y2, w, 1.08, 0.25 * j), true), sk.light, `stroke="${sk.deep}" stroke-width="0.9"`);
+    out += P(spline(tearRing(R, x1, y1, x2, y2, w, 0.66, 0.55 * j), true), BLOOD);
+    out += P(spline(tearRing(R, x1, y1, x2, y2, w, 0.3, 0.6 * j), true), BLOOD_DARK);
     out += C(x1 + dx * 0.4 - nx * w * 0.2, y1 + dy * 0.4 - ny * w * 0.2, 1.2, BLOOD_WET, op(0.8));
     for (let i = 0; i < (drips === undefined ? 2 : drips); i++) {
       const t = 0.3 + R() * 0.4;
       out += drip(x1 + dx * t + nx * w * 0.45, y1 + dy * t + ny * w * 0.45, 7 + R() * 12, 2.2);
+    }
+    return out;
+  }
+
+  // A thin slice along a quadratic curve, tapered at both ends.
+  function slice(sk, R, p0, c, p1, w, drips) {
+    const at = t => [(1 - t) * (1 - t) * p0[0] + 2 * (1 - t) * t * c[0] + t * t * p1[0], (1 - t) * (1 - t) * p0[1] + 2 * (1 - t) * t * c[1] + t * t * p1[1]];
+    const ring = k => {
+      const A = [], B = [];
+      for (let i = 0; i <= 12; i++) {
+        const t = i / 12, p = at(t), q = at(Math.min(1, t + 0.02)), o = at(Math.max(0, t - 0.02));
+        const tx = q[0] - o[0], ty = q[1] - o[1], l = Math.hypot(tx, ty) || 1, nx = -ty / l, ny = tx / l;
+        const ww = w * k * Math.pow(Math.sin(Math.PI * t), 0.8) + 0.4;
+        A.push([p[0] + nx * ww, p[1] + ny * ww]); B.push([p[0] - nx * ww, p[1] - ny * ww]);
+      }
+      return spline(A.concat(B.reverse().slice(1, -1)), true);
+    };
+    let out = P(ring(2.2), '#5a3f7a', op(0.3)) + P(ring(1.5), '#8a3a5a', op(0.22));
+    out += P(ring(1.05), sk.light, `stroke="${sk.deep}" stroke-width="0.8"`) + P(ring(0.65), BLOOD) + P(ring(0.28), BLOOD_DARK);
+    for (let i = 0; i < drips; i++) {
+      const p = at(0.45 + R() * 0.3);
+      out += drip(p[0], p[1] + w * 0.4, 8 + R() * 10, 2);
     }
     return out;
   }
@@ -1333,32 +1353,36 @@
       }
     }
     if (has('zipFace')) {
-      // closed from between the brows, then open onto bloody flesh round the mouth and chin
-      const y0 = a.browY + 6, y1 = a.chinY - 5, N = 28, L = [], Rt = [], mid = [];
-      const opening = t => t < 0.36 ? 0 : Math.pow(Math.sin(Math.PI * Math.min(1, (t - 0.36) / 0.7)), 0.75);
-      for (let i = 0; i <= N; i++) {
-        const t = i / N, y = y0 + (y1 - y0) * t, x = CX + Math.sin(t * 2.4) * 1.5;
-        const w = 1.4 + opening(t) * (mw + 7);
-        L.push([x - w, y]); Rt.push([x + w, y]); mid.push([x, y, opening(t)]);
+      const top = a.browY + 4, split = a.noseY - 6;
+      const side = s => {
+        const P0 = [CX + s * 1.5, split], P1 = [CX + s * (mw + 18), split + 16], P2 = [CX + s * (mw + 22), a.mouthY + 8], P3 = [CX + s * (mw + 12), a.chinY + 8];
+        return t => {
+          const u = 1 - t;
+          return [0, 1].map(k => u * u * u * P0[k] + 3 * u * u * t * P1[k] + 3 * u * t * t * P2[k] + t * t * t * P3[k]);
+        };
+      };
+      const L = side(-1), Rr = side(1), N = 16;
+      const lp = [], rp = [];
+      for (let i = 0; i <= N; i++) { lp.push(L(i / N)); rp.push(Rr(i / N)); }
+      // the whole inside is red lipstick, with blood over it; the bottom stays open past the chin
+      // open at the bottom: the two ends run off the chin apart, never meeting
+      const insideR = spline(lp, false) + `L${pt(lp[N][0], a.chinY + 30)}L${pt(rp[N][0], a.chinY + 30)}` + 'L' + spline(rp.slice().reverse(), false).slice(1) + 'Z';
+      out += P(insideR, '#5a3f7a', `${op(0.3)} stroke="#5a3f7a" stroke-width="10" stroke-opacity="0.25"`);
+      [lp, rp].forEach(pts => out += S(spline(pts, false), sk.light, 6) + S(spline(pts, false), sk.deep, 0.8, op(0.6)));
+      out += P(insideR, '#a8101c');
+      out += P(insideR, BLOOD, `${op(0.55)} transform="translate(${CX} ${split}) scale(0.7 1) translate(${-CX} ${-split})"`);
+      for (let i = 0; i < 7; i++) out += E(CX + r(-mw, mw), r(a.noseY + 8, a.chinY - 6), r(2, 5), r(2, 4), BLOOD_DARK, op(0.6));
+      out += C(CX - 6, a.mouthY - 4, 1.6, BLOOD_WET, op(0.8)) + C(CX + 8, a.mouthY + 10, 1.2, BLOOD_WET, op(0.7));
+      // teeth: interlocked down the nose, then along each open side
+      for (let y = top, k = 0; y < split; y += 2.8, k++) {
+        out += `<rect x="${f(CX + (k % 2 ? 0.2 : -3.4))}" y="${f(y)}" width="3.2" height="2.4" fill="#e8e0cc" stroke="#7a705c" stroke-width="0.5"/>`;
       }
-      const ring = L.concat(Rt.slice().reverse());
-      out += P(spline(ring.map(p => [CX + (p[0] - CX) * 1.25, p[1]]), true), '#5a3f7a', op(0.3));
-      [L, Rt].forEach(side => out += S(spline(side, false), sk.light, 6) + S(spline(side, false), sk.deep, 0.8, op(0.6)));
-      out += P(spline(ring, true), BLOOD) + P(spline(ring.map(p => [CX + (p[0] - CX) * 0.55, p[1] + 2]), true), BLOOD_DARK, op(0.6));
-      mid.forEach(([x, y, o], i) => {
-        if (o < 0.04) {
-          const dx = i % 2 ? 1.2 : -1.2;
-          out += `<rect x="${f(x + dx - 1.8)}" y="${f(y - 1.3)}" width="3.6" height="2.6" fill="#b9b2a4" stroke="#4a4640" stroke-width="0.5"/>`;
-        } else {
-          out += `<rect x="${f(L[i][0] - 2.6)}" y="${f(y - 1.3)}" width="3.2" height="2.6" fill="#b9b2a4" stroke="#4a4640" stroke-width="0.5"/>` +
-            `<rect x="${f(Rt[i][0] - 0.6)}" y="${f(y - 1.3)}" width="3.2" height="2.6" fill="#b9b2a4" stroke="#4a4640" stroke-width="0.5"/>`;
-        }
-      });
-      const pull = mid[Math.round(N * 0.36)];
-      out += `<rect x="${f(pull[0] - 4)}" y="${f(pull[1] - 4)}" width="8" height="7" fill="#c9c2b4" stroke="#4a4640" stroke-width="0.7"/>` +
-        P(`M${pt(pull[0] - 2.5, pull[1] + 3)}h5l1,12h-7Z`, '#b9b2a4', 'stroke="#4a4640" stroke-width="0.7"');
-      [-6, 2, 8].forEach((dx, i) => out += drip(CX + dx, y1 - 2, 8 + i * 5, 2.2));
-      out += C(CX - 4, a.mouthY, 1.4, BLOOD_WET, op(0.8));
+      [[lp, -1], [rp, 1]].forEach(([pts, s]) => pts.forEach(p => {
+        out += `<rect x="${f(p[0] + (s < 0 ? -3.6 : 0.4))}" y="${f(p[1] - 1.2)}" width="3.2" height="2.4" fill="#e8e0cc" stroke="#7a705c" stroke-width="0.5"/>`;
+      }));
+      out += `<rect x="${f(CX - 4)}" y="${f(split - 4)}" width="8" height="7" fill="#d8d0bc" stroke="#7a705c" stroke-width="0.7"/>` +
+        P(`M${pt(CX - 2.5, split + 3)}h5l1,12h-7Z`, '#e8e0cc', 'stroke="#7a705c" stroke-width="0.7"');
+      [lp[N], rp[N], [CX, a.chinY - 2]].forEach((p, i) => out += drip(p[0], p[1], 10 + i * 6, 2.4));
     }
     if (has('clawRip')) {
       const top = a.eyeY + a.eyeRY + 9, cw = a.widthAt(a.cheekY) - 12;
@@ -1367,11 +1391,16 @@
         out += tear(sk, R, CX - cw, y, CX + cw, y + 15, 4.6, 1);
       }
     }
-    if (has('tornCheeks')) {
+    if (has('cheekGash')) {
+      // on the right cheek, clear of a temple peel on the left
+      const s = 1, cx = CX + s * 48, cy = a.cheekY + 20;
+      out += tear(sk, R, cx - s * 26, cy - 16, cx + s * 22, cy + 16, 17, 5, 2.4);
+      for (let i = 0; i < 9; i++) out += E(cx + r(-22, 22), cy + r(8, 30), r(2, 5.5), r(1.5, 4), BLOOD, op(0.75));
+    }
+    if (has('slicedCheeks')) {
       [-1, 1].forEach(s => {
-        if (s < 0 && has('templePeel')) return;
-        const cx = CX + s * 52, cy = a.cheekY + 10;
-        out += tear(sk, R, cx - s * 16, cy - 6, cx + s * 14, cy + 6, 9, 2);
+        const x = CX + s * (a.eyeDX + 2), y = a.eyeY + a.eyeRY + 7;
+        out += slice(sk, R, [x, y], [x + s * 2, y + 14], [x + s * 1, y + 30], 4.2, 1);
       });
     }
     if (has('templePeel')) {
@@ -1390,7 +1419,7 @@
     }
     if (has('tornCorners')) {
       [-1, 1].forEach(s => {
-        out += tear(sk, R, CX + s * (mw - 2), my, CX + s * (mw + 24), my + 7, 6.5, 1);
+        out += slice(sk, R, [CX + s * (mw - 1), my], [CX + s * (mw + 18), my + 2], [CX + s * (mw + 30), my - 18], 3.4, 1);
       });
     }
     if (has('stitchedSmile')) {
@@ -2580,7 +2609,7 @@
 
   /* ---------- assembly ---------- */
 
-  const HIDE_BROWS = ['clown', 'clownPink', 'sugarSkull', 'pumpkin', 'skeletonFull', 'devil', 'comicDevil'];
+  const HIDE_BROWS = ['clown', 'sugarSkull', 'pumpkin', 'skeletonFull', 'devil', 'comicDevil'];
 
   function portraitContent(look, id) {
     const a = anchors(look.shape, look.features);

@@ -1,7 +1,7 @@
 /* Halloween costume - options, presets, method steps and products.
    Steps are either a string (uses the item's applyOrder) or [order, string].
    Order: 10 prep and safety, 20 base, 30 contour, 40 under-eyes, 50 face paint,
-   60 effects, 70 eye makeup, 80 lips, 86-88 setting and blood, 90 lenses,
+   60 wounds, 70 eye makeup, 80 lips, 86-88 setting and blood, 90 lenses,
    95 fangs, 98 mask, 100 wig, 110 costume, 115 headwear, 120 props, 130 removal.
    Products are kit keys (see kit below) or { name, q } for a search or { name, asin } for one product. */
 
@@ -90,7 +90,7 @@ const DATA = {
     blackLashes: { name: 'Black false eyelashes', asin: 'B0BNPLJLM1' },
     lashGlue: { name: 'Eyelash glue', asin: 'B085L61X9R' },
     fangs: { name: 'Vampire fangs', asin: 'B0H2JR1NDX', note: 'These are the same type I use - you heat the beads and mould them to your own teeth. They look the best, but be careful eating with them in so you don\'t swallow one by accident.' },
-    zip: { name: 'Metal zip, about 20cm', q: 'metal zip 20cm' },
+    zip: { name: 'Zip', asin: 'B0FL19L6D5' },
     wigCap: { name: 'Wig cap', q: 'wig cap' },
     baldCap: { name: 'Latex bald cap', q: 'latex bald cap' },
     wig: { asin: 'B09QKPCL8T', note: 'I\'ve ordered this exact one before. I think these wigs are great - I have this one in several shades.' }
@@ -266,20 +266,12 @@ const DATA = {
         products: ['bluePaint', 'palette', 'sponges']
       },
       {
-        id: 'clown', label: 'Clown, red nose', namePart: 'grinning', applyOrder: 50,
+        id: 'clown', label: 'Clown', namePart: 'grinning', applyOrder: 50,
         steps: [
           'Cover your face in white face paint and set it with powder.',
-          'Draw high arched brows in black, then paint on a red nose and a wide red smile.'
+          'Draw high arched brows in black, then paint a round red nose and a wide red smile on with red lipstick.'
         ],
         products: ['whitePaint', 'powder', 'blackLiner', 'redLipstick', 'sponges', 'brushes', 'blackLashes', 'lashGlue']
-      },
-      {
-        id: 'clownPink', label: 'Clown, pink nose', namePart: 'giggling', applyOrder: 50,
-        steps: [
-          'Cover your face in white face paint and set it with powder.',
-          'Draw high arched brows in black, then paint on a pink nose and a wide red smile.'
-        ],
-        products: ['whitePaint', 'powder', 'blackLiner', 'pinkLipstick', 'redLipstick', 'sponges', 'brushes', 'blackLashes', 'lashGlue']
       },
       {
         id: 'skull', label: 'Skull, half face', namePart: 'skeletal', applyOrder: 50,
@@ -343,11 +335,13 @@ const DATA = {
     effects: [
       { id: 'none', label: 'None', namePart: '', applyOrder: 60, steps: [], products: [] },
       { id: 'clawRip', label: 'Claw rip', namePart: 'mauled', applyOrder: 61, wound: true, patch: true, steps: ['For the claw rip, mark out three diagonal strips across the bridge of your nose and both cheeks, between your eyes and mouth.'], products: [] },
-      { id: 'tornCheeks', label: 'Torn cheeks', namePart: 'torn', applyOrder: 61, wound: true, patch: true, steps: ['For torn cheeks, place a wound on the apple of each cheek.'], products: [] },
-      { id: 'tornCorners', label: 'Torn mouth corners', namePart: 'ragged', applyOrder: 61, wound: true, patch: true, steps: ['For torn mouth corners, place a small wound at each corner of your mouth, ripping it outwards.'], products: [] },
+      { id: 'cheekGash', label: 'Cheek gash', namePart: 'gashed', applyOrder: 61, wound: true, patch: true, steps: ['For the cheek gash, place one big wound on one cheek and rip it roughly so the edges are ragged, then go heavier on the blood.'], products: [] },
+      { id: 'slicedCheeks', label: 'Sliced cheeks', namePart: 'sliced', applyOrder: 61, wound: true, patch: true, steps: ['For sliced cheeks, place a thin vertical wound on each cheekbone, directly below the eyes.'], products: [] },
+      { id: 'tornCorners', label: 'Sliced mouth corners', namePart: 'slashed', applyOrder: 61, wound: true, patch: true, steps: ['For sliced mouth corners, place a thin wound at each corner of your mouth, curving up towards your cheeks like an extended smile.'], products: [] },
       { id: 'templePeel', label: 'Temple peel', namePart: 'peeling', applyOrder: 61, wound: true, patch: true, steps: ['For the temple peel, place one long wound running down through one eye, from your lower forehead to your upper cheek, keeping well clear of the eye itself.'], products: [] },
       { id: 'foreheadGash', label: 'Forehead gash', namePart: 'slain', applyOrder: 61, wound: true, patch: true, steps: ['For the forehead gash, place a long wound across your forehead.'], products: [] },
-      { id: 'zipFace', label: 'Zip face', namePart: 'unzipped', applyOrder: 61, wound: true, patch: true, steps: ['For the zip face, press a zip into the first layer of latex down the centre of your face, from between your brows to your chin, and leave the lower half open.'], products: ['zip'] },
+      // Zip face has its own method and can't be combined with other wounds.
+      { id: 'zipFace', label: 'Zip face', namePart: 'unzipped', applyOrder: 61, patch: true, exclusive: true, steps: ['Stick the zip down with liquid latex underneath it and another layer over the edges. Once dry, open it up and fill the whole inside with red lipstick. Finish with loads of fake blood.'], products: ['zip', 'latex', 'redLipstick', 'freshBlood'] },
       { id: 'throatBite', label: 'Throat bite', namePart: 'bitten', applyOrder: 61, wound: true, patch: true, steps: ['For the throat bite, place a small wound on the side of your neck and pinch two holes instead of one rip.'], products: [] },
       {
         id: 'stitchedSmile', label: 'Stitched smile', namePart: 'stitched', applyOrder: 60,
@@ -613,7 +607,7 @@ const DATA = {
       nouns: { feminine: 'zombie', masculine: 'zombie', androgynous: 'revenant' },
       wardrobe: ['Literally anything - regular clothes, the more dishevelled the better.'],
       versions: [
-        { id: 'oneEyed', label: 'One-eyed', tag: 'scary', set: { facePaint: 'paleBase', lenses: 'whiteoutOne', effects: ['templePeel', 'tornCheeks'], contour: 'bruised', underEyes: 'bruised', clothing: 'tornJumper' } },
+        { id: 'oneEyed', label: 'One-eyed', tag: 'scary', set: { facePaint: 'paleBase', lenses: 'whiteoutOne', effects: ['templePeel', 'cheekGash'], contour: 'bruised', underEyes: 'bruised', clothing: 'tornJumper' } },
         { id: 'mauled', label: 'Mauled', tag: 'scary', wardrobe: ['A red hoodie or hooded cape'], set: { facePaint: 'paleBase', effects: ['clawRip'], contour: 'bruised', underEyes: 'bruised', clothing: 'redCape', headwear: 'redHood' } },
         { id: 'bitten', label: 'Bitten', tag: 'scary', set: { facePaint: 'paleBase', effects: ['throatBite'], blood: ['messyFeed'], contour: 'bruised', underEyes: 'bruised', clothing: 'vestTop' } },
         { id: 'unzipped', label: 'Unzipped', tag: 'scary', set: { facePaint: 'paleBase', effects: ['zipFace'], clothing: 'bloodTee' } },
@@ -630,12 +624,12 @@ const DATA = {
       products: [{ byFeatures: { feminine: 'harlequin', masculine: 'clownCostume', androgynous: 'harlequinOrClown' } }],
       versions: [
         {
-          id: 'tornCheeks', label: 'Torn cheeks', tag: 'scary',
-          set: { facePaint: 'clown', underEyes: 'bruised', effects: ['tornCheeks', 'tornCorners'], lips: 'blood', clothing: 'harlequin', accessory: 'tulleRuff', hairStyle: 'bunches', hairColour: 'black' }, products: ['blackLashes', 'lashGlue']
+          id: 'tornCheeks', label: 'Sliced cheeks', tag: 'scary',
+          set: { facePaint: 'clown', underEyes: 'bruised', effects: ['slicedCheeks', 'tornCorners'], lips: 'blood', clothing: 'harlequin', accessory: 'tulleRuff', hairStyle: 'bunches', hairColour: 'black' }, products: ['blackLashes', 'lashGlue']
         },
         {
           id: 'bloodTears', label: 'Blood tears', tag: 'scary',
-          set: { facePaint: 'clownPink', underEyes: 'bruised', blood: ['bloodEyes'], lips: 'blood', clothing: 'harlequin', accessory: 'tulleRuff', hairStyle: 'ponytail', hairColour: 'black' }, products: ['blackLashes', 'lashGlue']
+          set: { facePaint: 'clown', underEyes: 'bruised', blood: ['bloodEyes'], lips: 'blood', clothing: 'harlequin', accessory: 'tulleRuff', hairStyle: 'ponytail', hairColour: 'black' }, products: ['blackLashes', 'lashGlue']
         },
         {
           id: 'glam', label: 'Glam clown', tag: 'glam',
@@ -784,8 +778,7 @@ const DATA = {
     ['lenses:blackout', 'underEyes:sockets'],
     ['facePaint:pumpkin', 'effects:cracked'],
     ['facePaint:sugarSkull', 'effects:cracked'],
-    ['effects:zipFace', 'effects:templePeel'],
-    ['effects:clawRip', 'effects:tornCheeks']
+    ['effects:clawRip', 'effects:cheekGash']
   ],
 
   defaults: {
