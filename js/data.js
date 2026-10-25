@@ -73,7 +73,7 @@ const DATA = {
 
   // The basic kit. Items list the keys they need, so the shopping list stays short.
   kit: {
-    latex: { name: 'Liquid latex', asin: 'B0B6FWCG5D', note: 'I\'ve bought this exact one.', shopExtra: 'Remember to patch test in case you have a latex allergy.' },
+    latex: { name: 'Liquid latex', asin: 'B0B6FWCG5D', note: 'I\'ve bought this exact one.' },
     toiletPaper: { name: 'Toilet paper' },
     freshBlood: { name: 'Fake blood', asin: 'B0BSXW7GT9', note: 'I\'ve ordered this one before. Honestly, any fake blood works.', shopNote: null },
     paleFoundation: { name: 'Foundation', asin: 'B008BEQFAQ', note: 'This is what I use for costume makeup. Match your skin tone if you can, but it\'s not essential - you\'ll add blue and purple around it anyway.', shopNote: null },
@@ -121,7 +121,7 @@ const DATA = {
   endNote: 'At the end of the night, peel any latex away slowly and remove the rest of the makeup with wipes. I\'d also recommend a shower and a gentle cleanser, as the wipes almost certainly won\'t get it all (but they\'re a strong starting point!)',
   // Shown once under the lens in the shopping list.
   lensNotes: [
-    'I\'ve ordered from here before. I don\'t get any commission on these, but they come in prescription, which is a godsend for a blind bat like me.',
+    'I\'ve ordered from here several times before - I love this place because they do prescription crazy lenses, which is incredibly rare (and I\'m blind as a bat!)',
     'Coloured lenses aren\'t great for your eyes, so use them sparingly and don\'t wear them for long. Wash your hands and dry them on kitchen roll, not a towel, before putting them in. Never wear them more than once, even if they\'re technically monthly.'
   ],
   essentials: {
@@ -137,6 +137,7 @@ const DATA = {
       { key: 'paleFoundation', note: 'This is the one I use for costume makeup.' },
       'tweezers',
       'wipes',
+      'brushes',
       { name: 'Any makeup you normally use' }
     ]
   },

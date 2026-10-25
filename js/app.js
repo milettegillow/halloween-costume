@@ -338,10 +338,9 @@
     } else {
       li.appendChild(el('span', {}, p.name));
     }
-    // the shopping list can have its own note (null for none); the essentials kit always uses note
-    const note = inShop && p.shopNote !== undefined ? p.shopNote : p.note;
+    // in the shopping list only rows with alternatives keep a note; the essentials kit keeps every note
+    const note = inShop ? (p.alts ? p.note : '') : p.note;
     if (note) li.appendChild(el('p', { class: 'product-note' }, note));
-    if (inShop && p.shopExtra) li.appendChild(el('p', { class: 'product-note' }, p.shopExtra));
     return li;
   }
 
@@ -571,19 +570,20 @@
     const ul = $('#shopping');
     ul.innerHTML = '';
     if (!shopping.length) ul.appendChild(el('li', { class: 'empty' }, 'Nothing to buy yet.'));
-    shopping.filter(p => !p.lens).forEach(p => ul.appendChild(productRow(p, true)));
+    // brushes live in the essentials kit rather than every shopping list
+    const listed = shopping.filter(p => p !== DATA.kit.brushes);
+    listed.filter(p => !p.lens).forEach(p => ul.appendChild(productRow(p, true)));
 
-    // lenses get their own section at the bottom, with the lens notes once
-    const lenses = shopping.filter(p => p.lens);
+    // lenses get their own full-width section at the bottom, with the lens notes once below them
+    const lenses = listed.filter(p => p.lens);
     const lul = $('#lenses');
     lul.innerHTML = '';
     lenses.forEach(p => lul.appendChild(productRow(p, true)));
-    if (lenses.length) {
-      const notes = el('li', { class: 'lens-notes' });
-      DATA.lensNotes.forEach(t => notes.appendChild(el('p', {}, t)));
-      lul.appendChild(notes);
-    }
+    const notes = $('#lens-notes');
+    notes.innerHTML = '';
+    DATA.lensNotes.forEach(t => notes.appendChild(el('p', {}, t)));
     $('#lenses-section').hidden = !lenses.length;
+    $('#patch-note').hidden = !listed.includes(DATA.kit.latex);
     $('#affiliate').hidden = !AMAZON_TAG;
     $('#site-foot').hidden = !AMAZON_TAG;
   }
