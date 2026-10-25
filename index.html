@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>The ghoul's vanity</title>
+  <title>Halloween costume</title>
   <meta name="description" content="Design a Halloween costume and makeup look on a portrait, then get the step-by-step method and shopping list to recreate it.">
   <meta name="theme-color" content="#0c1310">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧛🏻</text></svg>">
@@ -15,32 +15,41 @@
 </head>
 <body>
   <header class="site-head">
-    <h1>The ghoul's vanity</h1>
+    <h1>Halloween costume</h1>
   </header>
 
   <main class="vanity">
-    <section class="table" aria-label="Mirror and palette">
-      <div id="mirror" class="mirror"></div>
-      <div class="palette ornate">
-        <div id="palette-tabs" class="tabs" role="tablist" aria-label="Makeup and costume"></div>
-        <div id="palette-pans" class="palette-pans" role="tabpanel"></div>
+    <div class="top">
+      <div class="mirror-wrap">
+        <div id="mirror" class="mirror"></div>
       </div>
-    </section>
+
+      <section class="settings ornate" aria-label="Settings">
+        <div class="settings-head">
+          <h2 class="settings-heading">Outfit</h2>
+          <div id="outfits" class="outfits"></div>
+          <div id="palette-tabs" class="tabs" role="tablist" aria-label="Makeup and costume"></div>
+        </div>
+        <div id="palette-pans" class="palette-pans" role="tabpanel"></div>
+      </section>
+    </div>
 
     <section class="notebook" aria-labelledby="look-name">
       <div class="page">
         <p class="kicker">Your look</p>
         <h2 id="look-name" aria-live="polite"></h2>
 
-        <h3>Outfit</h3>
-        <div id="outfits" class="outfits"></div>
-
-        <h3>Method</h3>
-        <ol id="method" class="method"></ol>
-
-        <h3>Shopping list</h3>
-        <ul id="shopping" class="shopping"></ul>
-        <p id="affiliate" class="affiliate" hidden>Some links are affiliate links.</p>
+        <div class="recipe">
+          <div>
+            <h3>Method</h3>
+            <ol id="method" class="method"></ol>
+          </div>
+          <div>
+            <h3>Shopping list</h3>
+            <ul id="shopping" class="shopping"></ul>
+            <p id="affiliate" class="affiliate" hidden>Some links are affiliate links.</p>
+          </div>
+        </div>
 
         <div class="actions">
           <button id="randomise" type="button" class="btn btn-primary">Randomise</button>

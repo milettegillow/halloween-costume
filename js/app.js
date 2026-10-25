@@ -1,4 +1,4 @@
-/* The ghoul's vanity - state, rendering, controls, look names and PNG download. */
+/* Halloween costume - state, rendering, controls, look names and PNG download. */
 (function () {
   'use strict';
 
@@ -268,7 +268,7 @@
   function renderOutfits() {
     const wrap = $('#outfits');
     wrap.innerHTML = '';
-    DATA.outfits.forEach(o => {
+    [{ id: null, label: 'Create your own' }].concat(DATA.outfits).forEach(o => {
       const b = el('button', { class: 'outfit', type: 'button', 'aria-pressed': String(state.outfit === o.id) }, o.label);
       b.addEventListener('click', () => applyOutfit(o.id));
       wrap.appendChild(b);
@@ -315,8 +315,14 @@
     return next;
   }
 
+  // Picking the selected outfit again, or "Create your own", returns to the neutral default.
   function applyOutfit(id) {
-    state = outfitState(state, id);
+    if (id === null || id === state.outfit) {
+      if (state.outfit === null) return;
+      state = clone(DATA.defaults);
+    } else {
+      state = outfitState(state, id);
+    }
     update();
   }
 

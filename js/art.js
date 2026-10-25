@@ -1,4 +1,4 @@
-/* The ghoul's vanity - SVG drawing.
+/* Halloween costume - SVG drawing.
    Everything is drawn in a 400 x 520 portrait space, centred on x = 200.
    Every layer positions itself from the anchors returned by anchors(). */
 (function (global) {

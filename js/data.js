@@ -1,4 +1,4 @@
-/* The ghoul's vanity - options, outfits, method steps and products.
+/* Halloween costume - options, outfits, method steps and products.
    Steps are either a string (uses the option's applyOrder) or [order, string].
    Order: 10 skin prep, 20 base, 30 contour, 40 under-eyes, 50 face paint,
    60 effects, 70 eye makeup, 80 lips, 85-88 setting and blood, 90 lenses,
