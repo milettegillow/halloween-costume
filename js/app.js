@@ -253,7 +253,10 @@
         const ids = isMulti(k) ? s[k] : s[k] === 'none' ? [] : [s[k]];
         ids.forEach(id => {
           // eye makeup keeps its panel order within the eye step
-          add(byId(M[k], id), STEP_ORDER[k] + (k === 'eyes' ? M.eyes.findIndex(o => o.id === id) / 100 : 0));
+          let item = byId(M[k], id);
+          // red lips only mention the clown smile over clown paint
+          if (item.withClown && s.facePaint === 'clown') item = Object.assign({}, item, { steps: item.withClown });
+          add(item, STEP_ORDER[k] + (k === 'eyes' ? M.eyes.findIndex(o => o.id === id) / 100 : 0));
           if (k !== 'lenses') onSkin = true;
         });
       });
@@ -323,8 +326,10 @@
     } else {
       li.appendChild(el('span', {}, p.name));
     }
-    if (p.note) li.appendChild(el('p', { class: 'product-note' }, p.note));
-    if (inShop && p.shopNote) li.appendChild(el('p', { class: 'product-note' }, p.shopNote));
+    // the shopping list can have its own note (null for none); the essentials kit always uses note
+    const note = inShop && p.shopNote !== undefined ? p.shopNote : p.note;
+    if (note) li.appendChild(el('p', { class: 'product-note' }, note));
+    if (inShop && p.shopExtra) li.appendChild(el('p', { class: 'product-note' }, p.shopExtra));
     return li;
   }
 

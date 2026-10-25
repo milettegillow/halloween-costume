@@ -466,7 +466,7 @@ button {
 
 .recipe {
   display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
   gap: 0 3rem;
 }
 
@@ -592,6 +592,18 @@ button {
 
 .lens-notes p {
   margin: 0 0 0.5rem;
+}
+
+/* the shopping list runs in two columns when there's room */
+#shopping,
+#lenses {
+  columns: 2 15rem;
+  column-gap: 2rem;
+}
+
+#shopping li,
+#lenses li {
+  break-inside: avoid;
 }
 
 .essentials-intro {

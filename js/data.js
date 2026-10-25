@@ -73,12 +73,12 @@ const DATA = {
 
   // The basic kit. Items list the keys they need, so the shopping list stays short.
   kit: {
-    latex: { name: 'Liquid latex', asin: 'B0B6FWCG5D', note: 'I\'ve bought this exact one.', shopNote: 'Remember to patch test in case you have a latex allergy.' },
+    latex: { name: 'Liquid latex', asin: 'B0B6FWCG5D', note: 'I\'ve bought this exact one.', shopExtra: 'Remember to patch test in case you have a latex allergy.' },
     toiletPaper: { name: 'Toilet paper' },
-    freshBlood: { name: 'Fake blood', asin: 'B0BSXW7GT9', note: 'I\'ve ordered this one before. Honestly, any fake blood works.' },
-    paleFoundation: { name: 'Foundation', asin: 'B008BEQFAQ', note: 'This is what I use for costume makeup. Match your skin tone if you can, but it\'s not essential - you\'ll add blue and purple around it anyway.' },
+    freshBlood: { name: 'Fake blood', asin: 'B0BSXW7GT9', note: 'I\'ve ordered this one before. Honestly, any fake blood works.', shopNote: null },
+    paleFoundation: { name: 'Foundation', asin: 'B008BEQFAQ', note: 'This is what I use for costume makeup. Match your skin tone if you can, but it\'s not essential - you\'ll add blue and purple around it anyway.', shopNote: 'This is the one I use for costume makeup.' },
     whitePaint: { name: 'Snazaroo white face paint', asin: 'B0027IVU5C', note: 'I only use Snazaroo. I\'ve used this exact one, just not bought through Amazon.' },
-    primer: { name: 'Eyeshadow primer', asin: 'B01DEYPNPU', note: 'I\'ve used this exact primer for eye makeup.' },
+    primer: { name: 'Eyeshadow primer', asin: 'B01DEYPNPU', note: 'I\'ve used this exact primer for eye makeup.', shopNote: null },
     palette: { name: 'Eyeshadow palette', asin: 'B081D95GMC', note: 'I\'ve got this exact one - it\'s what I use for my signature dead look.' },
     redLipstick: { name: 'Red lipstick', asin: 'B005W1BDI0' },
     pinkLipstick: { name: 'Bright pink lipstick', q: 'bright pink lipstick' },
@@ -93,14 +93,14 @@ const DATA = {
     crackedPaint: { name: 'Cracked doll face paint', asin: 'B0HCVMWPGR' },
     dollBlush: { name: 'Pink doll blush', asin: 'B0GH8T5R9W' },
     powder: { name: 'Setting powder', asin: 'B09N2YW2T6' },
-    sponges: { name: 'Makeup sponges', asin: 'B0CMCKBBRJ', note: 'These look better than mine, to be fair.' },
+    sponges: { name: 'Makeup sponges', asin: 'B0CMCKBBRJ', note: 'These look better than mine, to be fair.', shopNote: null },
     brushes: { name: 'Makeup brushes', asin: 'B07FTB6NKV', note: 'I\'ve bought these exact ones. Just a good-to-have.' },
     tweezers: { name: 'Tweezers', asin: 'B01N5A69RV' },
-    wipes: { name: 'Makeup remover wipes', asin: 'B01IAFEGCO', note: 'These are the exact ones I use.' },
+    wipes: { name: 'Makeup remover wipes', asin: 'B01IAFEGCO', note: 'These are the exact ones I use.', shopNote: null },
     lashes: { name: 'White false eyelashes', asin: 'B0CHFH9CS1', note: 'I\'ve ordered these before.' },
     blackLashes: { name: 'Black false eyelashes', asin: 'B0BNPLJLM1' },
     lashGlue: { name: 'Eyelash glue', asin: 'B085L61X9R' },
-    fangs: { name: 'Vampire fangs', asin: 'B0H2JR1NDX', note: 'These are the same type I use - you heat the beads and mould them to your own teeth. They look the best, but be careful eating with them in so you don\'t swallow one by accident.' },
+    fangs: { name: 'Vampire fangs', asin: 'B0H2JR1NDX', note: 'These are the same type I use - you heat the beads and mould them to your own teeth. They look the best, but be careful eating with them in so you don\'t swallow one by accident.', shopNote: 'These are definitively the best type of fangs to get, just make sure you don\'t accidentally swallow one (a.k.a. take them out when eating).' },
     zip: { name: 'Zip', asin: 'B0FL19L6D5' },
     baldCap: { name: 'Latex bald cap', q: 'latex bald cap' },
     wig: { asin: 'B09QKPCL8T', note: 'I\'ve ordered this exact one before. I think these wigs are great - I have this one in several shades.' }
@@ -365,7 +365,7 @@ const DATA = {
     lips: [
       { id: 'none', label: 'Natural', namePart: '', applyOrder: 80, steps: [], products: [] },
       { id: 'black', label: 'Black', namePart: 'inky', applyOrder: 80, steps: ['Press eyeshadow from the palette onto your lips with a brush.'], products: ['palette'] },
-      { id: 'blood', clears: { effects: 'tornCorners' }, label: 'Blood red', namePart: 'scarlet', applyOrder: 80, steps: ['Line and fill your lips with red lipstick, blot, then add a second coat. Over clown paint, take it out past your lips into a wide smile.'], products: ['redLipstick'] },
+      { id: 'blood', clears: { effects: 'tornCorners' }, label: 'Blood red', namePart: 'scarlet', applyOrder: 80, steps: ['Line and fill your lips with red lipstick, blot, then add a second coat.'], withClown: ['Line and fill your lips with red lipstick, blot, then add a second coat. Over clown paint, take it out past your lips into a wide smile.'], products: ['redLipstick'] },
       { id: 'berry', label: 'Berry', namePart: 'berry-stained', applyOrder: 80, steps: ['Press eyeshadow from the palette onto your lips with a brush.'], products: ['palette'] },
       { id: 'blue', label: 'Blue-dead', namePart: 'breathless', applyOrder: 80, steps: ['Press eyeshadow from the palette onto your lips with a brush.'], products: ['palette'] },
       { id: 'stitched', label: 'Stitched', namePart: 'silenced', applyOrder: 80, steps: ['Dab foundation over your lips, then draw black stitches across them with eyeliner.'], products: ['paleFoundation', 'blackLiner'] }
