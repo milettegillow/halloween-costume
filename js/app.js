@@ -113,6 +113,38 @@
 
   /* ---------- presets ---------- */
 
+  // Every option id a preset version uses must exist; anything that doesn't is logged at startup.
+  function validatePresets() {
+    const lists = {
+      shape: DATA.faceShapes, features: DATA.features, skinTone: DATA.skinTones, hairStyle: DATA.hairStyles, hairColour: DATA.hairColours,
+      facePaint: M.facePaint, contour: M.contour, underEyes: M.underEyes, lenses: M.lenses, eyes: M.eyes, effects: M.effects,
+      lips: M.lips, fangs: M.fangs, blood: M.blood, mask: DATA.masks, clothing: DATA.clothing, headwear: DATA.headwear, accessory: DATA.accessories
+    };
+    const problems = [];
+    const checkSet = (where, set) => Object.entries(set || {}).forEach(([k, val]) => {
+      if (!lists[k]) return problems.push(`${where}: unknown setting "${k}"`);
+      [].concat(val).forEach(id => {
+        if (!lists[k].some(o => o.id === id)) problems.push(`${where}: ${k} "${id}" does not exist`);
+      });
+    });
+    const checkProducts = (where, list) => (list || []).forEach(p => {
+      [].concat(p && p.byFeatures ? Object.values(p.byFeatures) : p).forEach(k => {
+        if (typeof k === 'string' && !DATA.kit[k] && !DATA.costume[k]) problems.push(`${where}: product "${k}" does not exist`);
+      });
+    });
+    DATA.presets.forEach(p => {
+      checkProducts(p.id, p.products);
+      p.versions.forEach(v => {
+        const where = `${p.id}/${v.id}`;
+        checkSet(where, v.set);
+        Object.entries(v.byFeatures || {}).forEach(([f, set]) => checkSet(`${where} (${f})`, set));
+        checkProducts(where, v.products);
+      });
+    });
+    problems.forEach(msg => console.warn('Preset check:', msg));
+    return problems;
+  }
+
   const presetById = id => DATA.presets.find(p => p.id === id);
   const versionOf = s => {
     const p = presetById(s.preset);
@@ -440,19 +472,22 @@
 
     DATA.presets.forEach(p => {
       if (!visibleVersions(p).length) return;
-      const loaded = state.preset === p.id && state.version !== null;
+      // only the loaded look is highlighted: this card, or "Create your own"
+      const loaded = !inOwn() && state.preset === p.id;
       const b = el('button', {
-        class: 'preset' + (loaded ? ' is-loaded' : ''), type: 'button',
+        class: 'preset', type: 'button', 'aria-pressed': String(loaded),
         'aria-expanded': String(openPreset === p.id), 'aria-controls': 'preset-versions'
       });
       const art = el('span', { class: 'pan-art' });
       art.innerHTML = presetThumb(p);
       b.appendChild(art);
       b.appendChild(el('span', { class: 'pan-label' }, p.label));
+      // a card loads its first version straight away and shows the others to choose from
       b.addEventListener('click', () => {
-        openPreset = openPreset === p.id ? null : p.id;
-        renderPresets();
-        if (openPreset) $('#preset-versions').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        openPreset = p.id;
+        if (!loaded) state = versionState(own, p.id, visibleVersions(p)[0].id);
+        update();
+        $('#preset-versions').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       });
       grid.appendChild(b);
     });
@@ -629,6 +664,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    validatePresets();
     decorate();
     $('#randomise').addEventListener('click', randomise);
     $('#reset').addEventListener('click', reset);
@@ -643,6 +679,6 @@
     get state() { return state; },
     set: s => { own = Object.assign(clone(DATA.defaults), s); state = own; update(); },
     lookFor: (presetId, versionId, shape, features) => resolve(versionState(Object.assign(clone(DATA.defaults), { shape, features }), presetId, versionId)),
-    lookName, recipe
+    lookName, recipe, validatePresets
   };
 })();

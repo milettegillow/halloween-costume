@@ -355,15 +355,10 @@ button {
   transform: translateY(-2px);
 }
 
-.preset[aria-expanded='true'],
 .preset[aria-pressed='true'] {
   border-color: var(--gold-light);
   box-shadow: 0 0 0 2px var(--gold), inset 0 0 0 1px var(--gold);
   background: #1c2b23;
-}
-
-.preset.is-loaded .pan-label {
-  color: var(--gold-light);
 }
 
 .versions {
