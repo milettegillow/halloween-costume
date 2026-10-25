@@ -574,6 +574,7 @@ const DATA = {
 
   // Presets have versions; each version is tagged scary, sexy or glam.
   // set lists everything that differs from the neutral default. byFeatures adds to set for each features setting.
+  // name, if given, replaces the generated look name for that version.
   // wardrobe and products on a preset apply to all its versions; a version can add its own.
   presets: [
     {
@@ -654,7 +655,7 @@ const DATA = {
       wardrobe: ['An old white or cream dress.'],
       versions: [
         {
-          id: 'dead', label: 'Blue bride', tag: 'scary',
+          id: 'dead', label: 'Blue bride', tag: 'scary', name: 'The blue bride',
           set: { facePaint: 'bruisedBlue', effects: ['teethGash'], contour: 'bruised', underEyes: 'hollows', lips: 'blue', clothing: 'bride', headwear: 'veil', hairStyle: 'long', hairColour: 'auburn' }
         },
         {

@@ -197,6 +197,9 @@
   }
 
   function lookName(s) {
+    // a version can fix its own name instead of the generated one
+    const fixed = versionOf(s);
+    if (fixed && fixed.name) return fixed.name;
     const firstOrder = ['mask', 'effects', 'fangs', 'blood', 'eyes', 'lenses', 'contour', 'underEyes', 'lips', 'facePaint'];
     const secondOrder = ['facePaint', 'contour', 'underEyes', 'lips', 'lenses', 'eyes', 'blood', 'fangs', 'effects'];
     const d = DATA.defaults;
