@@ -1567,7 +1567,10 @@
         sh += P(`M${pt(ex - 10, a.eyeY - 2)}C${pt(ex - 11, a.eyeY - 18)} ${pt(ex + 10, a.eyeY - 18)} ${pt(ex + 10, a.eyeY)}C${pt(ex + 11, a.eyeY + 15)} ${pt(ex - 9, a.eyeY + 16)} ${pt(ex - 10, a.eyeY - 2)}Z`, '#0e0b0c');
         sh += S(`M${pt(ex - 11, a.eyeY + 4)}Q${pt(ex, a.eyeY + 20)} ${pt(ex + 11, a.eyeY + 4)}`, '#bcb8ae', 1.6);
       });
-      sh += E(CX, a.mouthY + 4, 7, 10, '#0e0b0c', op(0.9));
+      // a long open wail, with the sheet folding in at its rim
+      sh += E(CX, a.mouthY + 14, 14, 30, '#0e0b0c');
+      sh += S(`M${pt(CX - 15, a.mouthY + 4)}Q${pt(CX - 17, a.mouthY + 16)} ${pt(CX - 13, a.mouthY + 32)}`, '#bcb8ae', 1.6);
+      sh += E(CX + 3, a.mouthY + 22, 6, 14, '#2a2426', op(0.6));
       s += G(sh, `clip-path="url(#${id}sh)"`);
       return { svg: s, overHair: true };
     }
