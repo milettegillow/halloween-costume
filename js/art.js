@@ -729,6 +729,8 @@
   function bodySkin(a, sk) {
     const d = bodice(a, { nlW: a.neckW - 2, nlY: a.collarY - 26, nlD: a.collarY - 26 });
     let out = P(d, sk.base, `stroke="${sk.line}" stroke-width="1.5"`);
+    // fill the base of the neck behind the lifted necklines, so no gap shows between neck and collar
+    out += `<rect x="${f(CX - a.neckW - 2)}" y="${f(a.collarY - 30 - DRESS_UP)}" width="${f(a.neckW * 2 + 4)}" height="${f(DRESS_UP + 8)}" fill="${sk.base}"/>`;
     // collarbones and chest shading
     const y = a.collarY + 18;
     out += S(`M${pt(CX - 14, y + 4)}Q${pt(CX - 44, y - 6)} ${pt(CX - 84, y + 2)}`, sk.shade, 2.4, op(0.8));
@@ -738,10 +740,16 @@
     return out;
   }
 
+  // Outline of the neck column, shared by the neck and anything that wraps it.
+  function neckPath(a) {
+    const nw = a.neckW, top = a.jawY - 30, bot = a.collarY + 12;
+    return `M${pt(CX - nw, top)}C${pt(CX - nw, top + 40)} ${pt(CX - nw - 1, bot - 30)} ${pt(CX - nw - 10, bot)}L${pt(CX + nw + 10, bot)}` +
+      `C${pt(CX + nw + 1, bot - 30)} ${pt(CX + nw, top + 40)} ${pt(CX + nw, top)}Z`;
+  }
+
   function neck(a, sk, id) {
     const nw = a.neckW, top = a.jawY - 30, bot = a.collarY + 12;
-    const col = `M${pt(CX - nw, top)}C${pt(CX - nw, top + 40)} ${pt(CX - nw - 1, bot - 30)} ${pt(CX - nw - 10, bot)}L${pt(CX + nw + 10, bot)}` +
-      `C${pt(CX + nw + 1, bot - 30)} ${pt(CX + nw, top + 40)} ${pt(CX + nw, top)}Z`;
+    const col = neckPath(a);
     let out = `<clipPath id="${id}nk"><path d="${col}"/></clipPath>`;
     out += P(col, sk.base);
     // shadow side of the neck and the cast shadow of the chin
@@ -1727,11 +1735,17 @@
       E(x, y, 4 * k, 5 * k, mix(colour, '#000000', 0.3)) + S(`M${x - 13 * k},${y - 4 * k}L${x - 4 * k},${y - 1}`, '#ffffff', 0.8, op(0.25));
   }
 
-  function choker(a, dy) {
-    const y = a.chinY + (a.collarY - DRESS_UP - a.chinY) * 0.5 + (dy || 0), w = a.neckW + 0.5;
-    return P(`M${pt(CX - w, y - 3)}Q${pt(CX, y + 4)} ${pt(CX + w, y - 3)}L${pt(CX + w, y + 3)}Q${pt(CX, y + 10)} ${pt(CX - w, y + 3)}Z`, '#121014') +
-      S(`M${pt(CX - w + 4, y - 1)}Q${pt(CX, y + 5)} ${pt(CX + w - 4, y - 1)}`, '#4a4050', 0.8, op(0.7));
+  // A band round the middle of the neck, clipped to the neck so it's exactly its width.
+  // dy undoes the lift when it's drawn inside a garment.
+  function choker(a, dy, id) {
+    dy = dy || 0;
+    const y = a.chinY + (a.collarY - DRESS_UP - a.chinY) * 0.5 + dy, w = a.neckW + 8;
+    const band = `M${pt(CX - w, y - 4)}Q${pt(CX, y + 3)} ${pt(CX + w, y - 4)}L${pt(CX + w, y + 3)}Q${pt(CX, y + 10)} ${pt(CX - w, y + 3)}Z`;
+    return `<clipPath id="${id}ck"><path d="${neckPath(a)}" transform="translate(0 ${dy})"/></clipPath>` +
+      G(P(band, '#121014') + S(`M${pt(CX - w, y - 2)}Q${pt(CX, y + 5)} ${pt(CX + w, y - 2)}`, '#4a4050', 0.8, op(0.7)) +
+        S(`M${pt(CX - w, y + 3)}Q${pt(CX, y + 10)} ${pt(CX + w, y + 3)}`, '#000000', 0.8, op(0.5)), `clip-path="url(#${id}ck)"`);
   }
+
 
   // Feathers fanned over one shoulder.
   function feathers(x, y) {
@@ -2143,7 +2157,7 @@
         }
       });
       cape += bowTie(CX, y - 10, '#141014', 0.7) + S(`M${CX - 2},${y - 8}l-5,22M${CX + 2},${y - 8}l6,20`, '#141014', 2);
-      g.collar = choker(a, DRESS_UP) + cape;
+      g.collar = choker(a, DRESS_UP, id) + cape;
       g.clip = neckClip({ nlW: nw + 4, nlY: y - 20, nlD: y - 20 });
       return g;
     },
@@ -2287,7 +2301,7 @@
       let det = S(`M${CX - 90},${y + 40}C${CX - 70},${y + 80} ${CX - 66},${y + 120} ${CX - 70},640`, '#4a3a52', 6, op(0.45));
       det += S(`M${CX - 20},${y + 50}C${CX - 10},${y + 90} ${CX - 14},${y + 120} ${CX - 16},640`, '#4a3a52', 3, op(0.35));
       const g = garment(a, id, { nl, fill: '#151216', dark: '#060507', fold: '#000000', light: '#2e2436', line: '#000000', detail: det });
-      g.collar = choker(a, DRESS_UP);
+      g.collar = choker(a, DRESS_UP, id);
       return g;
     },
 
@@ -2586,8 +2600,8 @@
       });
       return s;
     },
-    choker(a) {
-      return choker(a);
+    choker(a, id) {
+      return choker(a, 0, id);
     },
     tulleRuff(a) {
       return ruff(a, '#a3121c', '#141014');
@@ -2687,7 +2701,7 @@
     const hair = (HAIR[look.hairStyle] || HAIR.crop)(a, h, id);
     const cloth = (CLOTHES[look.clothing] || CLOTHES.plain)(a, id + 'c');
     const hw = HEADWEAR[look.headwear] ? HEADWEAR[look.headwear](a, hair, id + 'h') : { back: '', front: '' };
-    const acc = ACCESSORIES[look.accessory] ? ACCESSORIES[look.accessory](a) : '';
+    const acc = ACCESSORIES[look.accessory] ? ACCESSORIES[look.accessory](a, id + 'a') : '';
     // garments are drawn from collarY and lifted so the neckline meets the base of the neck
     const up = `transform="translate(0 ${-DRESS_UP})"`;
     const mask = MASKS[look.mask] ? MASKS[look.mask](a, id + 'k', id) : null;
