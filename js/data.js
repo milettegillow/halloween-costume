@@ -490,7 +490,7 @@ const DATA = {
   headwear: [
     { id: 'none', label: 'None', applyOrder: 115, steps: [], products: [] },
     { id: 'witchHat', label: 'Crooked witch hat', applyOrder: 115, steps: [], products: [] },
-    { id: 'purpleHat', label: 'Purple witch hat with veil', applyOrder: 115, steps: [], products: [{ name: 'Purple witch hat with feathers and veil', q: 'purple witch hat feathers veil' }] },
+    { id: 'veilHat', label: 'Witch hat with veil', applyOrder: 115, steps: [], products: ['witchHatVeil'] },
     { id: 'topHat', label: 'Black top hat', applyOrder: 115, steps: [], products: ['blackTopHat', 'oliveTopHat'] },
     { id: 'ramHorns', label: 'Ram horns', applyOrder: 115, steps: [], products: ['ramHorns'] },
     { id: 'horns', label: 'Red horns', applyOrder: 115, steps: [], products: ['redHorns'] },
@@ -525,7 +525,8 @@ const DATA = {
     { id: 'candlestick', label: 'Candle holder', applyOrder: 120, steps: [], products: ['candleHolder', 'candles'] },
     { id: 'cauldron', label: 'Cauldron', applyOrder: 120, steps: [], products: [] },
     { id: 'goblet', label: 'Goblet', applyOrder: 120, steps: [], products: [] },
-    { id: 'teapot', label: 'Teapot', applyOrder: 120, steps: [], products: [] }
+    { id: 'teapot', label: 'Teapot', applyOrder: 120, steps: [], products: [] },
+    { id: 'webCape', label: 'Spider web cape', applyOrder: 120, steps: [], products: ['webCape'] }
   ],
 
   // Bought costume pieces. alts are shown as "or" options in the same row.
@@ -541,6 +542,8 @@ const DATA = {
     nurseCostume: { name: 'Zombie nurse costume', asin: 'B003DRUG7O', note: 'I\'m fairly sure this is the exact one I wore.' },
     harlequin: { name: 'Harlequin costume', asin: 'B07JKMRJYK' },
     clownCostume: { name: 'Clown costume', asin: 'B0DGTC3LCY' },
+    witchHatVeil: { name: 'Witch hat with veil and feathers', asin: 'B08CF1NXGQ' },
+    webCape: { name: 'Spider web lace cape', asin: 'B00F9IPFK8' },
     harlequinOrClown: { name: 'Harlequin costume', asin: 'B07JKMRJYK', alts: [{ label: 'Clown costume', asin: 'B0DGTC3LCY' }] },
     veil: { name: 'Veil', asin: 'B071F7GR8L' },
     skeletonMask: { name: 'Skeleton mask', asin: 'B0B78GWXGJ' },
@@ -713,13 +716,14 @@ const DATA = {
       id: 'witch', label: 'Glam witch',
       nouns: { feminine: 'enchantress', masculine: 'sorcerer', androgynous: 'witch' },
       wardrobe: ['Your most dramatic dress - tulle, velvet or lace.'],
+      products: ['witchHatVeil', 'webCape'],
       versions: [
         {
           id: 'purple', label: 'Purple witch', tag: 'glam',
-          set: { facePaint: 'glamWitch', lips: 'blood', clothing: 'tulleGown', headwear: 'purpleHat', hairStyle: 'long', hairColour: 'black' }, products: ['lashes', 'lashGlue']
+          set: { facePaint: 'glamWitch', lips: 'blood', clothing: 'tulleGown', headwear: 'veilHat', accessory: 'webCape', hairStyle: 'long', hairColour: 'black' }, products: ['lashes', 'lashGlue']
         },
-        { id: 'web', label: 'Web witch', tag: 'sexy', set: { eyes: 'spiderweb', lips: 'blood', clothing: 'laceTop', hairStyle: 'long', hairColour: 'black' } },
-        { id: 'velvet', label: 'Velvet witch', tag: 'glam', set: { eyes: 'berry', lips: 'berry', clothing: 'velvetTop', hairStyle: 'bob', hairColour: 'black' }, products: ['lashes', 'lashGlue'] }
+        { id: 'web', label: 'Web witch', tag: 'sexy', set: { eyes: 'spiderweb', lips: 'blood', clothing: 'laceTop', headwear: 'veilHat', accessory: 'webCape', hairStyle: 'long', hairColour: 'black' } },
+        { id: 'velvet', label: 'Velvet witch', tag: 'glam', set: { eyes: 'berry', lips: 'berry', clothing: 'velvetTop', headwear: 'veilHat', accessory: 'webCape', hairStyle: 'bob', hairColour: 'black' }, products: ['lashes', 'lashGlue'] }
       ]
     },
     {

@@ -2195,15 +2195,15 @@
       return { back: '', front: s };
     },
 
-    purpleHat(a, hair, id) {
+    veilHat(a, hair, id) {
       const by = a.hairlineY - 8;
-      const brim = E(CX, by, 168, 26, '#3a1656', `transform="rotate(-4 ${CX} ${by})"`);
-      const under = E(CX, by + 4, 164, 22, '#22083a', `transform="rotate(-4 ${CX} ${by + 4})"`);
+      const brim = E(CX, by, 168, 26, '#18161c', `transform="rotate(-4 ${CX} ${by})"`);
+      const under = E(CX, by + 4, 164, 22, '#0a090c', `transform="rotate(-4 ${CX} ${by + 4})"`);
       const crown = `M${pt(CX - 96, by + 2)}C${pt(CX - 70, by - 34)} ${pt(CX - 42, by - 66)} ${pt(CX - 14, by - 84)}C${pt(CX + 4, by - 94)} ${pt(CX + 22, by - 96)} ${pt(CX + 40, by - 92)}` +
         `C${pt(CX + 28, by - 82)} ${pt(CX + 24, by - 70)} ${pt(CX + 30, by - 56)}C${pt(CX + 48, by - 36)} ${pt(CX + 76, by - 20)} ${pt(CX + 94, by - 10)}Z`;
-      let c = P(crown, '#4a1f6a', 'stroke="#7a4aa0" stroke-width="1.6"');
-      c += shade(crown, id + 'ph', P(`M${CX + 14},${by - 80}C${CX + 34},${by - 40} ${CX + 56},${by - 20} ${CX + 70},${by}H${CX + 110}V${by - 100}Z`, '#2a0c40', op(0.8)) +
-        S(`M${CX - 50},${by - 24}C${CX - 40},${by - 50} ${CX - 26},${by - 68} ${CX - 8},${by - 80}`, '#7a4aa0', 2.4, op(0.7)) +
+      let c = P(crown, '#1b1a20', 'stroke="#4a4552" stroke-width="1.6"');
+      c += shade(crown, id + 'ph', P(`M${CX + 14},${by - 80}C${CX + 34},${by - 40} ${CX + 56},${by - 20} ${CX + 70},${by}H${CX + 110}V${by - 100}Z`, '#0c0b0e', op(0.8)) +
+        S(`M${CX - 50},${by - 24}C${CX - 40},${by - 50} ${CX - 26},${by - 68} ${CX - 8},${by - 80}`, '#3a3640', 2.4, op(0.7)) +
         P(`M${CX - 100},${by - 18}C${CX - 30},${by - 30} ${CX + 30},${by - 34} ${CX + 100},${by - 26}V${by - 6}C${CX + 30},${by - 14} ${CX - 30},${by - 12} ${CX - 100},${by + 2}Z`, '#141014'));
       // feathers at the band
       let fe = '';
@@ -2211,8 +2211,8 @@
         const x = CX + 54, y = by - 22, th = deg * Math.PI / 180;
         const tx = x + Math.cos(th) * len, ty = y + Math.sin(th) * len, nx = -Math.sin(th), ny = Math.cos(th);
         const mx = (x + tx) / 2, my = (y + ty) / 2;
-        fe += P(`M${pt(x, y)}Q${pt(mx + nx * 10, my + ny * 10)} ${pt(tx, ty)}Q${pt(mx - nx * 8, my - ny * 8)} ${pt(x, y)}Z`, i % 2 ? '#141018' : '#5a2a7a', 'stroke="#000000" stroke-width="0.5"') +
-          S(`M${pt(x, y)}L${pt(tx, ty)}`, '#9a7ac0', 0.8, op(0.8));
+        fe += P(`M${pt(x, y)}Q${pt(mx + nx * 10, my + ny * 10)} ${pt(tx, ty)}Q${pt(mx - nx * 8, my - ny * 8)} ${pt(x, y)}Z`, i % 2 ? '#141018' : '#2a2630', 'stroke="#000000" stroke-width="0.5"') +
+          S(`M${pt(x, y)}L${pt(tx, ty)}`, '#6a6478', 0.8, op(0.8));
       });
       // net veil over the upper face
       const vy = by + 18, vb = a.noseY - 4;
@@ -2221,7 +2221,7 @@
       const veilArea = `M${CX - 106},${vy}C${CX - 110},${vb - 20} ${CX - 80},${vb} ${CX},${vb + 4}C${CX + 80},${vb} ${CX + 110},${vb - 20} ${CX + 106},${vy}Z`;
       const veil = `<clipPath id="${id}pv"><path d="${veilArea}"/></clipPath>` + G(S(net, '#141014', 0.6, op(0.7)), `clip-path="url(#${id}pv)"`) +
         S(`M${CX - 106},${vy}C${CX - 110},${vb - 20} ${CX - 80},${vb} ${CX},${vb + 4}C${CX + 80},${vb} ${CX + 110},${vb - 20} ${CX + 106},${vy}`, '#141014', 1, op(0.6));
-      const front = veil + under + brim + E(CX, by, 168, 26, 'none', `stroke="#7a4aa0" stroke-width="1.4" transform="rotate(-4 ${CX} ${by})"`) + c + fe;
+      const front = veil + under + brim + E(CX, by, 168, 26, 'none', `stroke="#4a4552" stroke-width="1.4" transform="rotate(-4 ${CX} ${by})"`) + c + fe;
       return { back: '', front, clipHair: by - 4 };
     },
 
@@ -2392,6 +2392,42 @@
       return P(`M${x - 16},${y - 40}H${x + 16}C${x + 16},${y - 20} ${x + 8},${y - 12} ${x + 2},${y - 10}V${y}H${x + 10}V${y + 4}H${x - 10}V${y}H${x - 2}V${y - 10}C${x - 8},${y - 12} ${x - 16},${y - 20} ${x - 16},${y - 40}Z`,
         '#b8923a', 'stroke="#6a5018" stroke-width="1"') + E(x, y - 40, 16, 4, '#6a0a18') +
         S(`M${x - 11},${y - 34}C${x - 11},${y - 24} ${x - 6},${y - 16} ${x - 2},${y - 14}`, '#ecd590', 1.4, op(0.7)) + C(x, y - 26, 2.4, '#a3101d');
+    },
+    webCape(a) {
+      const y = a.collarY, nw = a.neckW, sw = a.shoulderW;
+      let out = '';
+      [-1, 1].forEach(sd => {
+        const X = v => CX + sd * v;
+        // scalloped hem between the web's spokes
+        let hem = '';
+        const n = 6;
+        for (let i = 0; i <= n; i++) {
+          const t = i / n, x = X(14 + (sw + 18 - 14) * t), yy = y + 58 + Math.sin(t * Math.PI) * 10;
+          hem += i ? `Q${pt(X(14 + (sw + 18 - 14) * (t - 0.5 / n)), yy - 12)} ${pt(x, yy)}` : `L${pt(x, yy)}`;
+        }
+        const d = `M${pt(X(nw + 2), y - 16)}C${pt(X(nw + 26), y - 8)} ${pt(X(sw - 26), y + 6)} ${pt(X(sw + 18), y + 26)}` + hem.replace(/^L/, 'L') + `L${pt(X(nw - 4), y - 6)}Z`;
+        out += P(d, '#0e0c10', op(0.4));
+        // spokes from the neck and the threads between them
+        let web = '';
+        const hub = [X(4), y - 4];
+        const spokes = [];
+        for (let i = 0; i <= n; i++) {
+          const t = i / n;
+          spokes.push([X(14 + (sw + 18 - 14) * t), y + 58 + Math.sin(t * Math.PI) * 10]);
+        }
+        spokes.forEach(p => web += `M${pt(hub[0], hub[1])}L${pt(p[0], p[1])}`);
+        [0.35, 0.6, 0.85].forEach(k => {
+          for (let i = 1; i < spokes.length; i++) {
+            const p0 = [hub[0] + (spokes[i - 1][0] - hub[0]) * k, hub[1] + (spokes[i - 1][1] - hub[1]) * k];
+            const p1 = [hub[0] + (spokes[i][0] - hub[0]) * k, hub[1] + (spokes[i][1] - hub[1]) * k];
+            const pm = [(p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2 - 6 * k];
+            web += `M${pt(p0[0], p0[1])}Q${pt(pm[0], pm[1])} ${pt(p1[0], p1[1])}`;
+          }
+        });
+        out += S(web, '#0a080c', 1.1) + S(d, '#0a080c', 1.4);
+      });
+      out += C(CX, y - 6, 4, '#141014') + S(`M${CX - 2},${y - 3}l-4,16M${CX + 2},${y - 3}l5,14`, '#141014', 1.6);
+      return out;
     },
     teapot(a) {
       const x = CX - 62, y = a.collarY + 66;
