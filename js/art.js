@@ -610,6 +610,30 @@
       return { back, front, top };
     },
 
+    longCentre(a, h) {
+      const R = rng(223), r = (x, y) => x + R() * (y - x);
+      const top = a.crownY - 14;
+      const sil = mirrorPts([[CX, top], [CX + 76, top + 12], [CX + 104, 140], [CX + 112, 250], [CX + 118, 560], [CX, 560]]);
+      let back = P(spline(sil, true), h.deep);
+      for (let i = 0; i < 10; i++) {
+        const s = i % 2 ? 1 : -1, x = CX + s * r(64, 98);
+        back += lock(h, R, x, r(200, 240), x + s * r(4, 12), r(500, 560), r(16, 22), 0, 0, { hl: 1, blunt: true });
+      }
+      let front = hairCap(a, h, { top: a.crownY - 10 });
+      [-1, 1].forEach(s => {
+        // combed down from the centre parting, then hanging straight past the face
+        for (let i = 0; i < 6; i++) {
+          front += lock(h, R, CX + s * r(1, 8), r(98, 108), CX + s * r(78, 92), r(150, 176), r(26, 32), -s * r(0.16, 0.22), s * r(0, 0.04));
+        }
+        for (let i = 0; i < 7; i++) {
+          const rx = r(76, 94);
+          front += lock(h, R, CX + s * rx, r(134, 158), CX + s * Math.min(118, rx + r(10, 22)), r(470, 540), r(16, 22), -s * r(0.01, 0.03), s * r(0, 0.02), { blunt: true });
+        }
+      });
+      front += S(`M${pt(CX, a.crownY - 8)}L${pt(CX, a.hairlineY - 4)}`, h.deep, 1.4);
+      return { back, front, top };
+    },
+
     longWavy(a, h) {
       const R = rng(97), r = (x, y) => x + R() * (y - x);
       const top = a.crownY - 22;
@@ -776,7 +800,7 @@
 
   function eyes(a, look, sk, id) {
     const ft = a.ft;
-    const white = look.eyes === 'whiteLashes';
+    const white = (look.eyes || []).includes('whiteLashes');
     const lashes = white ? Math.max(ft.lashes, 4) + 1 : ft.lashes;
     const lashLen = white ? Math.max(ft.lashLen, 7) : ft.lashLen;
     let out = '';
@@ -903,6 +927,10 @@
           out += cheekHollow(a, s, '#5a3f7a', 0.5) + cheekHollow(a, s, '#36285e', 0.25);
           out += E(CX + s * (a.mouthW + 3), a.mouthY + 1, 8, 6, '#5a3a78', op(0.5));
           break;
+        case 'darkHollows':
+          out += cheekHollow(a, s, '#5a0a12', 0.55) + cheekHollow(a, s, '#0a0606', 0.5);
+          out += E(CX + s * 84, a.browY + 6, 15, 30, '#0a0606', op(0.5)) + E(CX + s * 80, a.browY + 10, 10, 20, '#5a0a12', op(0.4));
+          break;
         case 'sunken':
           out += cheekHollow(a, s, '#4a3630', 0.55);
           out += E(CX + s * 84, a.browY + 6, 14, 28, '#4a3630', op(0.35));
@@ -981,32 +1009,6 @@
         out += G(s, clip);
         break;
       }
-      case 'sugarSkull': {
-        let s = P(hp, '#f2ede3');
-        [-1, 1].forEach(sd => {
-          const ex = CX + sd * a.eyeDX, ey = a.eyeY;
-          const c1 = sd < 0 ? '#2a8a99' : '#a3307a', c2 = sd < 0 ? '#e0a21c' : '#3f8a3a';
-          for (let i = 0; i < 9; i++) {
-            const th = i / 9 * Math.PI * 2;
-            s += E(ex + Math.cos(th) * 31, ey + Math.sin(th) * 29, 7, 5, c2, `transform="rotate(${f(th * 180 / Math.PI)} ${f(ex + Math.cos(th) * 31)} ${f(ey + Math.sin(th) * 29)})"`);
-          }
-          s += E(ex, ey, 30, 28, c1) + E(ex, ey, 30, 28, 'none', `stroke="#141014" stroke-width="1.4"`);
-          s += S(`M${pt(ex - 22, a.browY - 4)}q7,-8 14,0 q7,-8 14,0 q7,-8 14,0`, '#141014', 1.6);
-        });
-        s += skullNose(a, '#141014');
-        const fy = a.crownY + 66;
-        for (let i = 0; i < 6; i++) {
-          const th = i / 6 * Math.PI * 2;
-          s += E(CX + Math.cos(th) * 9, fy + Math.sin(th) * 9, 6, 4, '#c43d3d', `transform="rotate(${f(th * 180 / Math.PI)} ${f(CX + Math.cos(th) * 9)} ${f(fy + Math.sin(th) * 9)})"`);
-        }
-        s += C(CX, fy, 4.5, '#e0a21c');
-        for (let i = -2; i <= 2; i++) s += C(CX + i * 9, a.chinY - 14 + Math.abs(i) * -2, 2.4, '#2a8a99');
-        [-1, 1].forEach(sd => {
-          s += S(`M${pt(CX + sd * 70, a.cheekY + 6)}c${sd * -8},-6 ${sd * -16},2 ${sd * -10},8 c${sd * 4},4 ${sd * 10},0 ${sd * 6},-4`, '#a3307a', 1.6);
-        });
-        out += G(s, clip);
-        break;
-      }
       case 'pumpkin': {
         let s = P(hp, '#e2741f');
         [-62, -30, 0, 30, 62].forEach(dx => {
@@ -1023,46 +1025,30 @@
         out += G(s, clip);
         break;
       }
-      case 'glamWitch':
-        [-1, 1].forEach(sd => {
-          const g = eyeGeom(a, sd), ey = a.eyeY, ry = a.eyeRY;
-          out += P(`M${pt(g.x1, ey + 2)}C${pt(g.x1, ey - ry - 16)} ${pt(g.x2 + sd * 10, ey - ry - 18)} ${pt(g.x2 + sd * 16, ey - 8)}` +
-            `C${pt(g.x2 + sd * 4, ey - 4)} ${pt(g.x1 + (g.x2 - g.x1) * 0.3, ey - 2)} ${pt(g.x1, ey + 2)}Z`, '#4a1f6a', op(0.85));
-          out += P(`M${pt(g.x1 + (g.x2 - g.x1) * 0.2, ey - ry - 2)}C${pt(g.x1 + (g.x2 - g.x1) * 0.4, ey - ry - 12)} ${pt(g.x2, ey - ry - 12)} ${pt(g.x2 + sd * 14, ey - 9)}` +
-            `C${pt(g.x2, ey - ry - 4)} ${pt(g.x1 + (g.x2 - g.x1) * 0.4, ey - ry - 4)} ${pt(g.x1 + (g.x2 - g.x1) * 0.2, ey - ry - 2)}Z`, '#26093a', op(0.7));
-          out += E(g.ex + sd * 4, a.browY + 8, 12, 4, '#efe2ff', op(0.35));
-          out += P(`M${pt(g.x2 - sd * 10, ey - ry * 0.75)}L${pt(g.x2 + sd * 22, ey - 16)}L${pt(g.x2 + sd * 2, ey + 1)}Z`, '#0c080e');
-        });
-        break;
-      case 'comicDevil': {
-        let s = P(hp, '#c4161c');
-        s += P(`M${pt(CX + 44, a.crownY - 10)}C${pt(CX + 72, 150)} ${pt(CX + 68, a.eyeY)} ${pt(CX + 70, a.cheekY)}C${pt(CX + 70, a.jawY)} ${pt(CX + 40, a.chinY - 20)} ${pt(CX + 8, a.chinY + 4)}H${CX + 140}V${a.crownY - 10}Z`, '#8e0d18', op(0.45));
-        s += E(CX - 20, a.crownY + 58, 30, 14, '#e85050', op(0.4));
-        [-1, 1].forEach(sd => {
-          const ex = CX + sd * a.eyeDX;
-          s += P(`M${pt(ex - sd * a.eyeRX * 0.9, a.browY + 2)}Q${pt(ex + sd * 2, a.browY - 10)} ${pt(ex + sd * a.eyeRX * 1.3, a.browY - 18)}L${pt(ex + sd * a.eyeRX * 1.05, a.browY - 6)}Q${pt(ex, a.browY - 2)} ${pt(ex - sd * a.eyeRX * 0.9, a.browY + 6)}Z`, '#0a0202');
-          // curled moustache
-          s += S(`M${pt(CX, a.noseY + 9)}Q${pt(CX + sd * 14, a.noseY + 6)} ${pt(CX + sd * 24, a.noseY + 12)}Q${pt(CX + sd * 30, a.noseY + 4)} ${pt(CX + sd * 26, a.noseY - 2)}`, '#0a0202', 2.4);
-        });
-        out += G(s, clip);
-        // little pointed goatee
-        out += G(P(`M${pt(CX - 9, a.mouthY + a.lipBot + 6)}Q${pt(CX, a.mouthY + a.lipBot + 10)} ${pt(CX + 9, a.mouthY + a.lipBot + 6)}L${pt(CX + 1, a.chinY + 6)}Z`, '#0a0202'), clip);
+      case 'redPaint': {
+        let p = P(hp, '#c4161c');
+        p += P(`M${pt(CX + 44, a.crownY - 10)}C${pt(CX + 72, 150)} ${pt(CX + 68, a.eyeY)} ${pt(CX + 70, a.cheekY)}C${pt(CX + 70, a.jawY)} ${pt(CX + 40, a.chinY - 20)} ${pt(CX + 8, a.chinY + 4)}H${CX + 140}V${a.crownY - 10}Z`, '#8e0d18', op(0.45));
+        p += E(CX - 20, a.crownY + 58, 30, 14, '#e85050', op(0.4));
+        out += G(p, clip);
         break;
       }
-      case 'devil': {
-        let s = P(hp, '#8e1a1a');
-        s += P(`M${pt(CX + 44, a.crownY - 10)}C${pt(CX + 72, 150)} ${pt(CX + 68, a.eyeY)} ${pt(CX + 70, a.cheekY)}C${pt(CX + 70, a.jawY)} ${pt(CX + 40, a.chinY - 20)} ${pt(CX + 8, a.chinY + 4)}H${CX + 140}V${a.crownY - 10}Z`, '#3a0606', op(0.5));
-        s += G(S(hp, '#1a0303', 16, op(0.7)), `clip-path="url(#${id}jw)"`);
-        s += E(CX - 18, a.crownY + 58, 30, 14, '#c0392b', op(0.4));
-        [-1, 1].forEach(sd => {
-          const ex = CX + sd * a.eyeDX;
-          s += cheekHollow(a, sd, '#1a0404', 0.75);
-          s += E(CX + sd * 84, a.browY + 6, 14, 28, '#1a0404', op(0.55));
-          s += E(ex + sd * 2, a.eyeY, a.eyeRX + 14, a.eyeRY + 16, '#120303', op(0.85));
-          s += P(`M${pt(ex - sd * a.eyeRX * 0.9, a.browY + 4)}L${pt(ex + sd * a.eyeRX * 1.4, a.browY - 16)}L${pt(ex + sd * a.eyeRX * 1.25, a.browY - 7)}L${pt(ex - sd * a.eyeRX * 0.9, a.browY + 9)}Z`, '#0a0202');
-        });
-        s += S(`M${pt(CX + 5, a.noseTop)}C${pt(CX + 10, a.noseTop + 14)} ${pt(CX + 12, a.noseY - 14)} ${pt(CX + 10, a.noseY - 3)}`, '#1a0303', 3, op(0.7));
-        out += G(s, clip);
+      case 'cracked': {
+        // the crackle paint sets the porcelain base; the bigger cracks are drawn on top
+        let c = '';
+
+      [
+        [[CX - 58, a.hairlineY - 6], [CX - 50, a.hairlineY + 14], [CX - 56, a.browY - 8], [CX - 46, a.browY + 4]],
+        [[CX - 50, a.hairlineY + 14], [CX - 30, a.hairlineY + 18], [CX - 20, a.hairlineY + 30]],
+        [[CX - 70, a.eyeY + 24], [CX - 60, a.cheekY + 4], [CX - 40, a.cheekY + 18], [CX - 30, a.cheekY + 40]],
+        [[CX - 60, a.cheekY + 4], [CX - 78, a.cheekY + 18], [CX - 74, a.jawY - 4]],
+        [[CX - 40, a.cheekY + 18], [CX - 26, a.cheekY + 12]]
+      ].forEach(line => {
+        const d = 'M' + line.map(p => pt(p[0], p[1])).join('L');
+        c += S(d, '#ffffff', 1.1, `${op(0.9)} transform="translate(1,1)"`) + S(d, '#2b2226', 1.2);
+      });
+      const chip = `M${pt(CX + 54, a.crownY + 48)}L${pt(CX + 70, a.crownY + 56)}L${pt(CX + 66, a.crownY + 70)}L${pt(CX + 74, a.crownY + 82)}L${pt(CX + 56, a.crownY + 80)}L${pt(CX + 50, a.crownY + 64)}Z`;
+      c += P(chip, '#1a1214') + S(chip, sk.light, 1, `${op(0.8)} transform="translate(-1,-1)"`);
+            out += G(c, clip);
         break;
       }
     }
@@ -1085,12 +1071,6 @@
         const t = i / 8, x = CX + t * (w - 4), y = my - 12 * t * t + 2 * (1 - t * t) - 1;
         const h = 9 - Math.abs(t) * 4;
         out += S(`M${pt(x, y - h)}V${f(y + h)}`, '#0f1220', 1.3);
-      }
-    } else if (look.facePaint === 'sugarSkull') {
-      out += S(`M${pt(CX - mw - 30, my - 2)}Q${pt(CX, my + 4)} ${pt(CX + mw + 30, my - 2)}`, '#141014', 2);
-      for (let i = -6; i <= 6; i++) {
-        const x = CX + i * ((mw + 26) / 6);
-        out += S(`M${pt(x, my - 6)}V${f(my + 7)}`, '#141014', 1.4);
       }
     } else if (look.facePaint === 'pumpkin') {
       out += P(`M${pt(CX - mw - 30, my - 14)}Q${pt(CX, my + 2)} ${pt(CX + mw + 30, my - 14)}L${pt(CX + mw + 18, my + 2)}Q${pt(CX + mw + 6, my + 14)} ${pt(CX + 8, my + 16)}` +
@@ -1148,69 +1128,83 @@
     let out = '';
     const lid = (g, up, out_, colour, o) => P(`M${pt(g.x1 - g.side * 2, g.ey + 4)}C${pt(g.x1, g.ey - g.ry - up)} ${pt(g.x2 + g.side * 6, g.ey - g.ry - up - 2)} ${pt(g.x2 + g.side * out_, g.ey - 6)}` +
       `C${pt(g.x2 + g.side * (out_ - 4), g.ey + g.ry + 6)} ${pt(g.x1, g.ey + g.ry + 8)} ${pt(g.x1 - g.side * 2, g.ey + 4)}Z`, colour, op(o));
+    // drawn in a fixed order, so multiple choices layer sensibly
+    const ORDER = ['sockets', 'smoky', 'redSmoky', 'heavyGlam', 'glamWitch', 'diamonds', 'redLiner', 'spiderweb', 'whiteLashes', 'devilBrows'];
+    const chosen = ORDER.filter(k => (look.eyes || []).includes(k));
     [-1, 1].forEach(s => {
       const g = eyeGeom(a, s);
       const ex = g.ex, ey = g.ey, rx = g.rx, ry = g.ry;
-      switch (look.eyes) {
-        case 'smoky':
-          out += lid(g, 18, 14, '#141012', 0.38) + lid(g, 10, 8, '#141012', 0.82);
-          out += S(upperLid(g, 6), '#0a0809', 3.4);
-          break;
-        case 'softSmoky':
-          out += lid(g, 16, 12, '#4a3346', 0.4) + lid(g, 8, 6, '#2a1c26', 0.55);
-          out += S(upperLid(g, 4), '#1a1216', 2.6);
-          break;
-        case 'redPink':
-          out += lid(g, 20, 16, '#e06a8a', 0.35) + lid(g, 10, 8, '#b02a44', 0.55);
-          break;
-        case 'berry':
-          out += lid(g, 18, 14, '#7a2a52', 0.35) + lid(g, 9, 7, '#4e0f30', 0.55);
-          break;
-        case 'redLiner':
-          out += P(upperLid(g) + `L${pt(g.x2 + s * 14, ey - 14)}L${pt(g.x2 - s * 4, ey - ry * 0.55)}` +
-            `C${pt(g.x2 - (g.x2 - g.x1) * 0.15, ey - ry - 3)} ${pt(g.x1 + (g.x2 - g.x1) * 0.15, ey - ry - 2)} ${pt(g.x1, g.y1)}Z`, '#a3101d');
-          out += S(lowerLid(g), '#a3101d', 2.6);
-          if (s > 0) out += P(`M${pt(g.x2 - 3, ey + 6)}q-3,14 -1,22q4,4 6,0q1,-10 -5,-22Z`, '#8e0d18') + C(g.x2 - 1, ey + 26, 1.2, '#ff6b6b', op(0.7));
-          break;
-        case 'glitter': {
-          const R = rng(s > 0 ? 7 : 3);
-          out += P(`M${pt(g.x1, ey + 1)}C${pt(g.x1, ey - ry - 12)} ${pt(g.x2, ey - ry - 14)} ${pt(g.x2 + s * 6, ey - 2)}C${pt(g.x2, ey - ry * 0.4)} ${pt(g.x1, ey - ry * 0.4)} ${pt(g.x1, ey + 1)}Z`, '#6b4c8f', op(0.75));
-          for (let i = 0; i < 26; i++) {
-            const t = R(), x = g.x1 + (g.x2 - g.x1) * t, y = ey - ry * (0.9 + R() * 0.45) * (1 - Math.pow(t - 0.5, 2) * 1.6) + R() * 6;
-            out += `<rect x="${f(x)}" y="${f(y)}" width="1.6" height="1.6" fill="${['#e9d8ff', '#ffd1e8', '#d8c27a', '#ffffff'][i % 4]}" transform="rotate(45 ${f(x)} ${f(y)})"/>`;
+      chosen.forEach(kind => {
+        switch (kind) {
+          case 'smoky':
+            out += lid(g, 18, 14, '#141012', 0.38) + lid(g, 10, 8, '#141012', 0.82);
+            out += S(upperLid(g, 6), '#0a0809', 3.4);
+            break;
+          case 'redSmoky':
+            out += lid(g, 20, 16, '#8a1020', 0.4) + lid(g, 10, 8, '#5a0612', 0.6);
+            out += S(upperLid(g, 5), '#2a0408', 2.6);
+            break;
+          case 'heavyGlam':
+            out += lid(g, 20, 16, '#3a2430', 0.45) + lid(g, 9, 7, '#1a1014', 0.75);
+            out += P(upperLid(g) + `L${pt(g.x2 + s * 18, ey - 15)}L${pt(g.x2 - s * 4, ey - ry * 0.6)}` +
+              `C${pt(g.x2 - (g.x2 - g.x1) * 0.15, ey - ry - 2)} ${pt(g.x1 + (g.x2 - g.x1) * 0.15, ey - ry - 1)} ${pt(g.x1, g.y1)}Z`, '#0a0809');
+            // a dense row of false lashes along the outer half
+            for (let i = 0; i < 9; i++) {
+              const t = 0.35 + i * 0.075, x = g.x1 + (g.x2 - g.x1) * t;
+              const yTop = ey - ry * (1 - Math.pow((t - 0.5) * 2, 2)) * 0.98 - 1, len = 7 + t * 6;
+              out += S(`M${pt(x, yTop)}q${f(s * len * 0.35)},${f(-len * 0.5)} ${f(s * len * 0.85)},${f(-len * 0.8)}`, '#0a0809', 1.3);
+            }
+            break;
+          case 'glamWitch':
+            out += P(`M${pt(g.x1, ey + 2)}C${pt(g.x1, ey - ry - 16)} ${pt(g.x2 + s * 10, ey - ry - 18)} ${pt(g.x2 + s * 16, ey - 8)}` +
+              `C${pt(g.x2 + s * 4, ey - 4)} ${pt(g.x1 + (g.x2 - g.x1) * 0.3, ey - 2)} ${pt(g.x1, ey + 2)}Z`, '#4a1f6a', op(0.85));
+            out += P(`M${pt(g.x1 + (g.x2 - g.x1) * 0.2, ey - ry - 2)}C${pt(g.x1 + (g.x2 - g.x1) * 0.4, ey - ry - 12)} ${pt(g.x2, ey - ry - 12)} ${pt(g.x2 + s * 14, ey - 9)}` +
+              `C${pt(g.x2, ey - ry - 4)} ${pt(g.x1 + (g.x2 - g.x1) * 0.4, ey - ry - 4)} ${pt(g.x1 + (g.x2 - g.x1) * 0.2, ey - ry - 2)}Z`, '#26093a', op(0.7));
+            out += E(g.ex + s * 4, a.browY + 8, 12, 4, '#efe2ff', op(0.35));
+            out += P(`M${pt(g.x2 - s * 10, ey - ry * 0.75)}L${pt(g.x2 + s * 22, ey - 16)}L${pt(g.x2 + s * 2, ey + 1)}Z`, '#0c080e');
+            break;
+          case 'sockets':
+            out += G(E(ex + s * 2, ey - 1, rx + 13, ry + 15, '#0a0606', op(0.85)), `filter="url(#${id}soft)"`);
+            break;
+          case 'devilBrows': {
+            const bx = ex - s * rx * 0.95, by = a.browY;
+            out += P(`M${pt(bx, by + 6)}Q${pt(ex - s * 4, by - 2)} ${pt(ex + s * rx * 0.75, by - 20)}L${pt(ex + s * rx * 1.25, by - 26)}L${pt(ex + s * rx * 0.9, by - 12)}Q${pt(ex - s * 2, by + 4)} ${pt(bx, by + 10)}Z`, '#0a0606');
+            break;
           }
-          const sx = g.x2 - s * 2, sy = ey - ry - 4;
-          out += P(`M${pt(sx, sy - 6)}L${pt(sx + 1.2, sy - 1.2)}L${pt(sx + 6, sy)}L${pt(sx + 1.2, sy + 1.2)}L${pt(sx, sy + 6)}L${pt(sx - 1.2, sy + 1.2)}L${pt(sx - 6, sy)}L${pt(sx - 1.2, sy - 1.2)}Z`, '#ffffff', op(0.95));
-          for (let i = 0; i < 8; i++) out += C(ex + (R() - 0.5) * rx * 1.6, ey + ry + 2 + R() * 6, 0.8, '#e9d8ff', op(0.9));
-          break;
-        }
-        case 'diamonds':
-          out += P(`M${pt(ex, a.browY - 18)}L${pt(ex + rx * 0.82, ey)}L${pt(ex, ey + ry + 30)}L${pt(ex - rx * 0.82, ey)}Z`, '#1c2a6b', `stroke="#0e1433" stroke-width="1"`);
-          break;
-        case 'whiteLashes':
-          out += lid(g, 14, 10, '#d0486e', 0.5) + lid(g, 6, 4, '#a8243e', 0.4);
-          break;
-        case 'spiderweb':
-          if (s > 0) {
-            out += S(upperLid(g, 8), '#0a0809', 2.8);
-            const cx = g.x2 - 2, cy = ey - 2;
-            const spokes = [-1.9, -1.35, -0.85, -0.4, 0.05, 0.5, 0.95].map(th => [th, 42 + (th + 2) * 4]);
-            let d = '';
-            spokes.forEach(([th, len]) => d += `M${pt(cx, cy)}L${pt(cx + Math.cos(th) * len, cy + Math.sin(th) * len)}`);
-            [10, 20, 31].forEach(rr => {
-              spokes.forEach(([th], i) => {
-                if (!i) return;
-                const t0 = spokes[i - 1][0];
-                const p0 = [cx + Math.cos(t0) * rr, cy + Math.sin(t0) * rr], p1 = [cx + Math.cos(th) * rr, cy + Math.sin(th) * rr];
-                const tm = (t0 + th) / 2, pm = [cx + Math.cos(tm) * rr * 0.78, cy + Math.sin(tm) * rr * 0.78];
-                d += `M${pt(p0[0], p0[1])}Q${pt(pm[0], pm[1])} ${pt(p1[0], p1[1])}`;
+          case 'redLiner':
+            out += P(upperLid(g) + `L${pt(g.x2 + s * 14, ey - 14)}L${pt(g.x2 - s * 4, ey - ry * 0.55)}` +
+              `C${pt(g.x2 - (g.x2 - g.x1) * 0.15, ey - ry - 3)} ${pt(g.x1 + (g.x2 - g.x1) * 0.15, ey - ry - 2)} ${pt(g.x1, g.y1)}Z`, '#a3101d');
+            out += S(lowerLid(g), '#a3101d', 2.6);
+            if (s > 0) out += P(`M${pt(g.x2 - 3, ey + 6)}q-3,14 -1,22q4,4 6,0q1,-10 -5,-22Z`, '#8e0d18') + C(g.x2 - 1, ey + 26, 1.2, '#ff6b6b', op(0.7));
+            break;
+          case 'diamonds':
+            out += P(`M${pt(ex, a.browY - 18)}L${pt(ex + rx * 0.82, ey)}L${pt(ex, ey + ry + 30)}L${pt(ex - rx * 0.82, ey)}Z`, '#1c2a6b', `stroke="#0e1433" stroke-width="1"`);
+            break;
+          case 'whiteLashes':
+            out += lid(g, 14, 10, '#d0486e', 0.5) + lid(g, 6, 4, '#a8243e', 0.4);
+            break;
+          case 'spiderweb':
+            if (s > 0) {
+              out += S(upperLid(g, 8), '#0a0809', 2.8);
+              const cx = g.x2 - 2, cy = ey - 2;
+              const spokes = [-1.9, -1.35, -0.85, -0.4, 0.05, 0.5, 0.95].map(th => [th, 42 + (th + 2) * 4]);
+              let d = '';
+              spokes.forEach(([th, len]) => d += `M${pt(cx, cy)}L${pt(cx + Math.cos(th) * len, cy + Math.sin(th) * len)}`);
+              [10, 20, 31].forEach(rr => {
+                spokes.forEach(([th], i) => {
+                  if (!i) return;
+                  const t0 = spokes[i - 1][0];
+                  const p0 = [cx + Math.cos(t0) * rr, cy + Math.sin(t0) * rr], p1 = [cx + Math.cos(th) * rr, cy + Math.sin(th) * rr];
+                  const tm = (t0 + th) / 2, pm = [cx + Math.cos(tm) * rr * 0.78, cy + Math.sin(tm) * rr * 0.78];
+                  d += `M${pt(p0[0], p0[1])}Q${pt(pm[0], pm[1])} ${pt(p1[0], p1[1])}`;
+                });
               });
-            });
-            out += S(d, '#0a0809', 0.9);
-            out += C(cx + 30, cy + 38, 2.6, '#0a0809') + S(`M${pt(cx + 30, cy + 36)}V${f(cy + 18)}`, '#0a0809', 0.5);
-          }
-          break;
-      }
+              out += S(d, '#0a0809', 0.9);
+              out += C(cx + 30, cy + 38, 2.6, '#0a0809') + S(`M${pt(cx + 30, cy + 36)}V${f(cy + 18)}`, '#0a0809', 0.5);
+            }
+            break;
+        }
+      });
     });
     if (!out) return '';
     return eyeClip(a, id) + G(out, `clip-path="url(#${id}nx)"`);
@@ -1231,16 +1225,16 @@
     let colour = LIPS[look.lips];
     if (!colour) {
       if (look.lips === 'stitched') colour = mix(sk.lip, '#6a5a6e', 0.55);
-      else if (look.facePaint === 'glamWitch') colour = LIPS.blood;
-      else if (look.facePaint === 'devil') colour = LIPS.black;
-      else if (look.facePaint === 'comicDevil') colour = '#7a0a12';
       else if (look.facePaint === 'skeletonFull') colour = '#d8d6d0';
+      else if (look.facePaint === 'redPaint') colour = '#7a0a12';
       else colour = a.features === 'masculine' ? mix(sk.lip, sk.base, 0.4) : sk.lip;
     }
     const upper = `M${pt(CX - mw, my)}C${pt(CX - mw * 0.6, my - lt * 0.9)} ${pt(CX - mw * 0.32, my - lt - 0.5)} ${pt(CX - 3, my - lt + 0.4)}Q${pt(CX, my - lt + 1.6)} ${pt(CX + 3, my - lt + 0.4)}` +
       `C${pt(CX + mw * 0.32, my - lt - 0.5)} ${pt(CX + mw * 0.6, my - lt * 0.9)} ${pt(CX + mw, my)}Q${pt(CX, my + 2)} ${pt(CX - mw, my)}Z`;
     const lower = `M${pt(CX - mw, my)}Q${pt(CX, my + 2)} ${pt(CX + mw, my)}C${pt(CX + mw * 0.6, my + lb * 1.35)} ${pt(CX - mw * 0.6, my + lb * 1.35)} ${pt(CX - mw, my)}Z`;
-    let out = E(CX, my + lb + 4, mw * 0.5, 2.6, sk.shade, op(0.7));
+    // on face paint the shadow under the lip is a neutral darkening, not a skin tone
+    const painted = look.facePaint && look.facePaint !== 'none';
+    let out = E(CX, my + lb + 4, mw * 0.5, 2.6, painted ? '#000000' : sk.shade, op(painted ? 0.2 : 0.7));
     out += P(lower, colour) + P(upper, mix(colour, '#000000', 0.12));
     out += E(CX - 3, my + lb * 0.5, mw * 0.32, lb * 0.22, '#ffffff', op(colour === LIPS.black ? 0.18 : 0.28));
     out += S(`M${pt(CX - mw, my)}Q${pt(CX - mw * 0.5, my + 2)} ${pt(CX, my + 1)}Q${pt(CX + mw * 0.5, my + 2)} ${pt(CX + mw, my)}`, mix(colour, '#1a0a0a', 0.6), 1.5);
@@ -1327,20 +1321,6 @@
     const mw = a.mouthW, my = a.mouthY;
     let out = '', neckFx = '';
 
-    if (has('cracked')) {
-      [
-        [[CX - 58, a.hairlineY - 6], [CX - 50, a.hairlineY + 14], [CX - 56, a.browY - 8], [CX - 46, a.browY + 4]],
-        [[CX - 50, a.hairlineY + 14], [CX - 30, a.hairlineY + 18], [CX - 20, a.hairlineY + 30]],
-        [[CX - 70, a.eyeY + 24], [CX - 60, a.cheekY + 4], [CX - 40, a.cheekY + 18], [CX - 30, a.cheekY + 40]],
-        [[CX - 60, a.cheekY + 4], [CX - 78, a.cheekY + 18], [CX - 74, a.jawY - 4]],
-        [[CX - 40, a.cheekY + 18], [CX - 26, a.cheekY + 12]]
-      ].forEach(line => {
-        const d = 'M' + line.map(p => pt(p[0], p[1])).join('L');
-        out += S(d, '#ffffff', 1.1, `${op(0.9)} transform="translate(1,1)"`) + S(d, '#2b2226', 1.2);
-      });
-      const chip = `M${pt(CX + 54, a.crownY + 48)}L${pt(CX + 70, a.crownY + 56)}L${pt(CX + 66, a.crownY + 70)}L${pt(CX + 74, a.crownY + 82)}L${pt(CX + 56, a.crownY + 80)}L${pt(CX + 50, a.crownY + 64)}Z`;
-      out += P(chip, '#1a1214') + S(chip, sk.light, 1, `${op(0.8)} transform="translate(-1,-1)"`);
-    }
     if (has('scar')) {
       const x0 = CX - 74, y0 = a.eyeY + 26, x1 = CX - 34, y1 = a.cheekY + 42;
       const d = `M${pt(x0, y0)}Q${pt(CX - 60, a.cheekY + 20)} ${pt(x1, y1)}`;
@@ -1490,6 +1470,12 @@
         out += drip(x, edge - 1.5, len, r(1.6, 2.8));
       }
     }
+    if ((look.details || []).includes('goatee')) {
+      [-1, 1].forEach(s => {
+        out += S(`M${pt(CX, a.noseY + 9)}Q${pt(CX + s * 14, a.noseY + 6)} ${pt(CX + s * 24, a.noseY + 12)}Q${pt(CX + s * 30, a.noseY + 4)} ${pt(CX + s * 26, a.noseY - 2)}`, '#0a0202', 2.4);
+      });
+      out += P(`M${pt(CX - 9, a.mouthY + a.lipBot + 6)}Q${pt(CX, a.mouthY + a.lipBot + 10)} ${pt(CX + 9, a.mouthY + a.lipBot + 6)}L${pt(CX + 1, Math.min(a.chinY + 4, a.mouthY + 52))}Z`, '#0a0202');
+    }
     if (look.fangs === 'fangs') {
       [-1, 1].forEach(s => {
         const x = CX + s * mw * 0.42;
@@ -1513,34 +1499,56 @@
 
   const MASKS = {
     hag(a, id, base) {
-      const pal = { base: '#c9a088', shade: '#a07a64', deep: '#6e4a3a', light: '#e2c4aa', line: '#4a3024' };
-      const tf = `transform="translate(${CX} ${a.eyeY}) scale(1.06) translate(${-CX} ${-a.eyeY})"`;
-      let s = `<clipPath id="${id}hg"><path d="${a.headPath}" ${tf}/></clipPath>`;
-      s += P(a.headPath, pal.base, `${tf} stroke="${pal.line}" stroke-width="1.5"`);
-      let sh = P(`M${CX + 40},40C${CX + 74},150 ${CX + 70},${a.eyeY} ${CX + 72},${a.cheekY}C${CX + 72},${a.jawY} ${CX + 44},${a.chinY} ${CX + 10},${a.chinY + 10}H${CX + 140}V40Z`, pal.shade, op(0.7));
-      // deep forehead furrows
-      [0, 8, 16, 24].forEach(k => sh += S(`M${CX - 56},${a.crownY + 46 + k}Q${CX - 20},${a.crownY + 38 + k} ${CX},${a.crownY + 46 + k}Q${CX + 24},${a.crownY + 38 + k} ${CX + 56},${a.crownY + 48 + k}`, pal.deep, 1.5, op(0.75)));
-      [-1, 1].forEach(sd => {
-        const ex = CX + sd * a.eyeDX;
-        // sunken sockets and bags
-        sh += G(E(ex, a.eyeY, a.eyeRX + 7, a.eyeRY + 7, '#3a2218', op(0.5)), `filter="url(#${base}soft)"`);
-        [0, 6, 12].forEach(k => sh += S(`M${pt(ex - a.eyeRX + 2, a.eyeY + a.eyeRY + 2 + k)}Q${pt(ex, a.eyeY + a.eyeRY + 10 + k)} ${pt(ex + a.eyeRX - 2, a.eyeY + a.eyeRY + k)}`, pal.deep, 1.3, op(0.8)));
-        for (let i = 0; i < 4; i++) sh += S(`M${pt(ex + sd * (a.eyeRX + 6), a.eyeY - 6 + i * 6)}l${sd * 12},${(i - 1.5) * 4}`, pal.deep, 1.2);
-        // cheek and jowl folds
-        sh += S(`M${pt(CX + sd * 18, a.noseY + 6)}C${pt(CX + sd * 32, a.mouthY - 10)} ${pt(CX + sd * 34, a.mouthY + 6)} ${pt(CX + sd * 28, a.mouthY + 20)}`, pal.deep, 2);
-        sh += S(`M${pt(CX + sd * 56, a.cheekY - 4)}C${pt(CX + sd * 52, a.cheekY + 20)} ${pt(CX + sd * 48, a.jawY)} ${pt(CX + sd * 40, a.chinY - 10)}`, pal.deep, 1.4, op(0.7));
-        sh += S(`M${pt(ex - a.eyeRX, a.browY - 2)}Q${pt(ex, a.browY - 10)} ${pt(ex + a.eyeRX, a.browY)}`, pal.deep, 2.4, op(0.6));
-        sh += E(ex + 2, a.eyeY + 1, a.eyeRX * 0.6, a.eyeRY * 0.42, '#120a06') + C(ex - 1, a.eyeY, 1.5, '#f0e2c8', op(0.8));
+      const pal = { base: '#d2b294', shade: '#a8866a', deep: '#6e4c38', light: '#e8d0b4', line: '#4a3024' };
+      const wart = '#4a2e1e';
+      const tf = `transform="translate(${CX} ${a.eyeY}) scale(1.05) translate(${-CX} ${-a.eyeY})"`;
+      // the mask covers the whole face and juts out below the chin
+      const chin = `M${pt(CX - 30, a.chinY - 18)}C${pt(CX - 26, a.chinY + 10)} ${pt(CX - 6, a.chinY + 22)} ${pt(CX + 6, a.chinY + 20)}C${pt(CX + 20, a.chinY + 18)} ${pt(CX + 28, a.chinY + 4)} ${pt(CX + 30, a.chinY - 18)}Z`;
+      let s = `<clipPath id="${id}hg"><path d="${a.headPath}" ${tf}/><path d="${chin}"/></clipPath>`;
+      s += P(chin, pal.base, `stroke="${pal.line}" stroke-width="1.5"`) + P(a.headPath, pal.base, `${tf} stroke="${pal.line}" stroke-width="1.5"`);
+      let sh = P(`M${CX + 40},40C${CX + 74},150 ${CX + 70},${a.eyeY} ${CX + 72},${a.cheekY}C${CX + 72},${a.jawY} ${CX + 44},${a.chinY} ${CX + 10},${a.chinY + 24}H${CX + 140}V40Z`, pal.shade, op(0.65));
+      // deep horizontal forehead furrows
+      [0, 9, 18, 27].forEach(k => {
+        const y = a.crownY + 42 + k;
+        sh += S(`M${CX - 60},${y + 4}Q${CX - 30},${y - 4} ${CX},${y + 2}Q${CX + 30},${y - 4} ${CX + 60},${y + 4}`, pal.deep, 2, op(0.75)) +
+          S(`M${CX - 56},${y + 7}Q${CX - 28},${y - 1} ${CX},${y + 5}Q${CX + 28},${y - 1} ${CX + 56},${y + 7}`, pal.light, 1.2, op(0.6));
       });
-      // thin downturned mouth with lip lines
-      sh += S(`M${pt(CX - a.mouthW - 4, a.mouthY + 3)}Q${pt(CX, a.mouthY - 2)} ${pt(CX + a.mouthW + 4, a.mouthY + 4)}`, '#3a1e14', 2.2);
-      for (let i = -3; i <= 3; i++) sh += S(`M${pt(CX + i * 5, a.mouthY - 3)}l${f(i * 0.4)},-5M${pt(CX + i * 5, a.mouthY + 4)}l${f(i * 0.4)},5`, pal.deep, 0.9, op(0.7));
-      for (let i = 0; i < 3; i++) sh += S(`M${pt(CX - 10, a.chinY - 16 + i * 5)}Q${pt(CX, a.chinY - 12 + i * 5)} ${pt(CX + 10, a.chinY - 16 + i * 5)}`, pal.deep, 1, op(0.6));
+      [-1, 1].forEach(sd => {
+        const ex = CX + sd * a.eyeDX, ey = a.eyeY + 4;
+        // sunken sockets under heavy drooping brows
+        sh += G(E(ex, ey, a.eyeRX + 8, a.eyeRY + 6, '#2e1a10', op(0.6)), `filter="url(#${base}soft)"`);
+        sh += E(ex + 2, ey + 2, a.eyeRX * 0.55, a.eyeRY * 0.36, '#0e0804') + C(ex - 1, ey + 1, 1.4, '#f0e2c8', op(0.8));
+        const brow = `M${pt(ex - sd * (a.eyeRX + 2), a.browY + 14)}Q${pt(ex, a.browY - 6)} ${pt(ex + sd * (a.eyeRX + 10), a.browY + 22)}` +
+          `Q${pt(ex + sd * 4, a.browY + 14)} ${pt(ex - sd * (a.eyeRX + 2), a.browY + 22)}Z`;
+        // the brow ridge overhangs the eye and casts a shadow onto it
+        sh += P(`M${pt(ex - sd * (a.eyeRX + 4), a.browY + 20)}Q${pt(ex, a.browY + 10)} ${pt(ex + sd * (a.eyeRX + 12), a.browY + 28)}Q${pt(ex, a.browY + 30)} ${pt(ex - sd * (a.eyeRX + 4), a.browY + 26)}Z`, '#2e1a10', op(0.55));
+        sh += P(brow, pal.light, `stroke="${pal.deep}" stroke-width="1.4"`);
+        // bushy grey brow hair drooping outwards
+        for (let i = 0; i < 12; i++) {
+          const x = ex - sd * (a.eyeRX - 2) + sd * i * 4.4, y = a.browY + 6 + Math.pow(i / 11, 2) * 12;
+          sh += S(`M${pt(x, y)}q${f(sd * 4)},2 ${f(sd * 6)},${f(8 + (i % 3) * 2)}`, i % 2 ? '#8a847a' : '#c8c2b6', 1.6);
+        }
+        // scowl lines between the brows
+        sh += S(`M${pt(CX + sd * 5, a.browY + 6)}l${f(sd * 2)},14`, pal.deep, 1.6);
+        // wrinkles round the eyes and cheeks
+        [0, 6, 12].forEach(k => sh += S(`M${pt(ex - a.eyeRX + 2, ey + a.eyeRY + 2 + k)}Q${pt(ex, ey + a.eyeRY + 9 + k)} ${pt(ex + a.eyeRX - 2, ey + a.eyeRY + k)}`, pal.deep, 1.3, op(0.8)));
+        for (let i = 0; i < 4; i++) sh += S(`M${pt(ex + sd * (a.eyeRX + 6), ey - 6 + i * 6)}l${sd * 13},${(i - 1.5) * 4}`, pal.deep, 1.2);
+        sh += S(`M${pt(CX + sd * 18, a.noseY + 10)}C${pt(CX + sd * 34, a.mouthY - 10)} ${pt(CX + sd * 34, a.mouthY + 8)} ${pt(CX + sd * 26, a.mouthY + 22)}`, pal.deep, 2.2);
+        sh += S(`M${pt(CX + sd * 58, a.cheekY - 6)}C${pt(CX + sd * 54, a.cheekY + 18)} ${pt(CX + sd * 48, a.jawY)} ${pt(CX + sd * 36, a.chinY - 8)}`, pal.deep, 1.5, op(0.7));
+        sh += S(`M${pt(CX + sd * 46, a.cheekY + 6)}q${f(sd * 6)},10 ${f(sd * 2)},22`, pal.deep, 1.1, op(0.6));
+      });
+      // pinched, downturned mouth
+      const mw = a.mouthW - 3, my = a.mouthY + 12;
+      sh += S(`M${pt(CX - mw, my + 5)}Q${pt(CX - mw / 2, my - 1)} ${pt(CX, my)}Q${pt(CX + mw / 2, my - 1)} ${pt(CX + mw, my + 5)}`, '#3a1e14', 2.4);
+      for (let i = -3; i <= 3; i++) sh += S(`M${pt(CX + i * 4.5, my - 2)}l${f(i * 0.4)},-6M${pt(CX + i * 4.5, my + 3)}l${f(i * 0.4)},6`, pal.deep, 0.9, op(0.75));
+      [0, 5, 10].forEach(k => sh += S(`M${pt(CX - 12, a.chinY - 4 + k)}Q${pt(CX, a.chinY + k)} ${pt(CX + 12, a.chinY - 4 + k)}`, pal.deep, 1, op(0.6)));
       s += G(sh, `clip-path="url(#${id}hg)"`);
-      // long hooked nose with a wart
+      // long hooked nose and two dark warts
       const nosePal = Object.assign({}, pal, { shade: '#8a5e48', line: '#3a2018' });
-      s += G(hookedNose(a, nosePal), `transform="translate(${CX} ${a.noseTop - 4}) scale(1.4 1.55) translate(${-CX} ${-a.noseTop})"`);
-      s += wart(CX + 22, a.noseY + 20, nosePal) + wart(CX - 30, a.chinY - 18, nosePal);
+      s += G(hookedNose(a, nosePal), `transform="translate(${CX} ${a.noseTop - 4}) scale(1.35 1.3) translate(${-CX} ${-a.noseTop})"`);
+      const darkWart = (x, y) => C(x, y, 4.2, wart, `stroke="#2a1810" stroke-width="0.6"`) + C(x - 1.2, y - 1.2, 1.2, '#7a5640', op(0.7)) +
+        S(`M${pt(x + 1, y - 3)}q2,-5 5,-6M${pt(x - 1, y - 3)}q-1,-4 1,-8`, '#2a2018', 0.7);
+      s += darkWart(CX + 18, a.noseY + 12) + darkWart(CX - 10, a.chinY + 8);
       return { svg: s, overHair: false };
     },
 
@@ -2609,12 +2617,12 @@
 
   /* ---------- assembly ---------- */
 
-  const HIDE_BROWS = ['clown', 'sugarSkull', 'pumpkin', 'skeletonFull', 'devil', 'comicDevil'];
+  const HIDE_BROWS = ['clown', 'pumpkin', 'skeletonFull'];
 
   function portraitContent(look, id) {
     const a = anchors(look.shape, look.features);
     // the crackle paint leaves a porcelain base when no other base is chosen
-    const porcelain = look.skin === 'none' && (look.effects || []).includes('cracked') && !MASKS[look.mask];
+    const porcelain = look.skin === 'none' && look.facePaint === 'cracked' && !MASKS[look.mask];
     const sm = porcelain ? { mix: '#f3eee8', t: 0.6, tint: '#6a5a62' } : SKIN_MAKEUP[look.skin];
     const skinBase = sm ? mix(look.skinTone, sm.mix, sm.t) : look.skinTone;
     const sk = skinPalette(skinBase, sm && sm.tint);
@@ -2626,7 +2634,9 @@
     // garments are drawn from collarY and lifted so the neckline meets the base of the neck
     const up = `transform="translate(0 ${-DRESS_UP})"`;
     const mask = MASKS[look.mask] ? MASKS[look.mask](a, id + 'k', id) : null;
-    const l = Object.assign({}, look, { hideBrows: HIDE_BROWS.includes(look.facePaint), effects: look.effects || [], blood: look.blood || [] });
+    const eyesOn = look.eyes || [];
+    // devil brows are drawn over the natural ones, which are hidden
+    const l = Object.assign({}, look, { hideBrows: HIDE_BROWS.includes(look.facePaint) || eyesOn.includes('devilBrows'), eyes: eyesOn, effects: look.effects || [], blood: look.blood || [] });
 
     let hairClip = `<filter id="${id}soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.6"/></filter>`;
     if (hw.clipHair) hairClip += `<clipPath id="${id}hc"><rect x="-100" y="${hw.clipHair}" width="600" height="800"/></clipPath>`;

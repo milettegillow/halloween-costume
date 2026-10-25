@@ -5,7 +5,7 @@
   const M = DATA.makeup;
   // Face makeup categories, in the order they are listed. A mask hides all of these.
   const MAKEUP_KEYS = ['facePaint', 'contour', 'underEyes', 'lenses', 'eyes', 'effects', 'lips', 'fangs', 'blood'];
-  const MULTI = ['effects', 'blood'];
+  const MULTI = ['eyes', 'effects', 'blood'];
   // Face paint options the art treats as a skin base rather than paint.
   const SKIN_BASES = { paleBase: 'corpse', ghostly: 'ghostly', bruisedBlue: 'bruised' };
 
@@ -79,7 +79,7 @@
     if (!saved || typeof saved !== 'object') return s;
     const lists = {
       shape: DATA.faceShapes, features: DATA.features, skinTone: DATA.skinTones, hairStyle: DATA.hairStyles, hairColour: DATA.hairColours,
-      contour: M.contour, underEyes: M.underEyes, lenses: M.lenses, eyes: M.eyes, facePaint: M.facePaint, lips: M.lips, fangs: M.fangs,
+      contour: M.contour, underEyes: M.underEyes, lenses: M.lenses, facePaint: M.facePaint, lips: M.lips, fangs: M.fangs,
       mask: DATA.masks, clothing: DATA.clothing, headwear: DATA.headwear, accessory: DATA.accessories
     };
     Object.keys(lists).forEach(k => { if (lists[k].some(o => o.id === saved[k])) s[k] = saved[k]; });
@@ -142,7 +142,8 @@
       hairColour: colour.hex,
       browColour: colour.brow,
       skin: SKIN_BASES[s.facePaint] || 'none', facePaint: SKIN_BASES[s.facePaint] ? 'none' : s.facePaint,
-      contour: s.contour, underEyes: s.underEyes, lenses: s.lenses, eyes: s.eyes,
+      contour: s.contour, underEyes: s.underEyes, lenses: s.lenses, eyes: s.eyes.slice(),
+      details: (versionOf(s) || {}).details || [],
       effects: s.effects.slice(), lips: s.lips, fangs: s.fangs, blood: s.blood.slice(), mask: s.mask,
       clothing: s.clothing, headwear: s.headwear, accessory: s.accessory
     };
