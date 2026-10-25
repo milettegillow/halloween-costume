@@ -376,6 +376,17 @@
     return list.filter(id => !opt(id).exclusive && (id === added || !type || type === 'detail' || opt(id).type !== type));
   }
 
+  // Some options can't sit together (sliced mouth corners and red lips): choosing one clears the other.
+  function clearClashes(key, id) {
+    if (id === 'none' || !optionsFor(key)) return;
+    const picked = isMulti(key) ? state[key].includes(id) : state[key] === id;
+    const clears = picked && (byId(optionsFor(key), id) || {}).clears;
+    Object.entries(clears || {}).forEach(([k, other]) => {
+      if (isMulti(k)) state[k] = state[k].filter(x => x !== other);
+      else if (state[k] === other) state[k] = clone(DATA.defaults[k]);
+    });
+  }
+
   function choose(key, id) {
     if (isMulti(key)) {
       if (id === 'none') state[key] = [];
@@ -388,6 +399,7 @@
       const v = versionOf(state);
       if (key === 'features' && v && v.byFeatures) Object.assign(state, clone(v.byFeatures[id] || {}));
     }
+    clearClashes(key, id);
     update();
   }
 

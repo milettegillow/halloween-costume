@@ -994,17 +994,18 @@
     return P(`M${pt(CX, a.noseY + 6)}C${pt(CX - 16, a.noseY - 4)} ${pt(CX - 10, a.noseY - 18)} ${pt(CX, a.noseY - 10)}C${pt(CX + 10, a.noseY - 18)} ${pt(CX + 16, a.noseY - 4)} ${pt(CX, a.noseY + 6)}Z`, colour);
   }
 
-  function clownPaint(a, id, nose) {
+  function clownPaint(a, id, nose, smile) {
     let out = P(a.headPath, '#f3efe6');
     [-1, 1].forEach(s => {
       const ex = CX + s * a.eyeDX;
       out += S(`M${pt(ex - s * 20, a.browY - 4)}Q${pt(ex + s * 2, a.browY - 34)} ${pt(ex + s * 24, a.browY - 10)}`, '#141014', 3.4);
     });
     const mw = a.mouthW, my = a.mouthY;
-    out += P(`M${pt(CX - mw - 18, my - 14)}C${pt(CX - mw - 6, my - 6)} ${pt(CX - 10, my - 7)} ${pt(CX, my - 7)}C${pt(CX + 10, my - 7)} ${pt(CX + mw + 6, my - 6)} ${pt(CX + mw + 18, my - 14)}` +
+    if (smile) out += P(`M${pt(CX - mw - 18, my - 14)}C${pt(CX - mw - 6, my - 6)} ${pt(CX - 10, my - 7)} ${pt(CX, my - 7)}C${pt(CX + 10, my - 7)} ${pt(CX + mw + 6, my - 6)} ${pt(CX + mw + 18, my - 14)}` +
       `C${pt(CX + mw + 18, my + 10)} ${pt(CX + 12, my + 16)} ${pt(CX, my + 16)}C${pt(CX - 12, my + 16)} ${pt(CX - mw - 18, my + 10)} ${pt(CX - mw - 18, my - 14)}Z`,
       '#b3141c', `stroke="#141014" stroke-width="1.6"`);
-    out += C(CX + 1, a.noseY - 4, 11.5, nose, `stroke="${mix(nose, '#000000', 0.45)}" stroke-width="1.2"`) + C(CX - 3, a.noseY - 8, 3.2, '#ffffff', op(0.5));
+    // the nose tip is painted on, so it has soft edges and no outline
+    out += G(C(CX + 1, a.noseY - 4, 10.5, nose), `filter="url(#${id}soft)"`) + C(CX + 1, a.noseY - 4, 7.5, nose, op(0.8));
     return G(out, `clip-path="url(#${id}hd)"`);
   }
 
@@ -1014,7 +1015,7 @@
     let out = '';
     switch (look.facePaint) {
       case 'clown':
-        out += clownPaint(a, id, '#c4161c');
+        out += clownPaint(a, id, '#c4161c', look.lips === 'blood');
         break;
       case 'skull': {
         const half = `M${CX + 2},0L${CX - 1},${a.browY}L${CX + 3},${a.noseY - 20}L${CX - 1},${a.noseY + 6}L${CX + 2},${a.mouthY - 4}L${CX - 1},${a.chinY + 10}H0V0Z`;
@@ -1435,6 +1436,12 @@
           sk.base, `stroke="${sk.deep}" stroke-width="0.8"`);
       });
     }
+    if (has('bulletWound')) {
+      const x = CX + 2, y = a.hairlineY + 22;
+      out += G(C(x, y, 15, '#5a3f7a', op(0.4)) + C(x, y, 10, '#8a3a5a', op(0.3)), `filter="url(#${id}soft)"`);
+      out += C(x, y, 7, sk.light, `stroke="${sk.deep}" stroke-width="0.8"`) + C(x, y, 5.2, BLOOD) + C(x, y, 2.8, '#1a0204') + C(x - 1.6, y - 1.6, 0.9, BLOOD_WET, op(0.8));
+      out += drip(x - 1, y + 4, a.noseTop - y + 18, 2.4) + drip(x + 3, y + 5, 14, 1.8);
+    }
     if (has('foreheadGash')) {
       const y = a.hairlineY + 18;
       out += tear(sk, R, CX - 30, y + 4, CX + 30, y - 4, 8, 3);
@@ -1456,15 +1463,16 @@
       });
     }
     if (has('throatBite')) {
-      const x = CX + a.neckW * 0.35, y = a.chinY + (a.collarY - a.chinY) * 0.45 + 4;
-      neckFx += E(x, y, 13, 9, '#5a3a78', op(0.35)) + E(x, y, 8, 6, '#8a2a3a', op(0.35));
+      // just under the jaw, so it shows above high necklines and chokers
+      const x = CX + a.neckW * 0.4, y = a.chinY + 9;
+      neckFx += E(x, y, 12, 7, '#5a3a78', op(0.35)) + E(x, y, 8, 6, '#8a2a3a', op(0.35));
       [-4.5, 4.5].forEach(d => neckFx += C(x + d, y + d * 0.2, 3, '#a03a3a', op(0.5)) + C(x + d, y + d * 0.2, 1.8, BLOOD_DARK));
       neckFx += drip(x - 4.5, y, 18, 2.2) + drip(x + 4.5, y + 1, 26, 2.4);
     }
 
     let res = '';
     if (out) res += eyeClip(a, id + 'w') + G(G(out, `clip-path="url(#${id}wnx)"`), `clip-path="url(#${id}hd)"`);
-    if (neckFx) res += G(G(neckFx, `clip-path="url(#${id}nk)"`), `clip-path="url(#${id}ncl)"`);
+    if (neckFx) res += G(neckFx, `clip-path="url(#${id}nk)"`);
     return res;
   }
 
@@ -2037,29 +2045,36 @@
       return { back: '', main, collar, clip: neckClip({ nlW: nw + 4, nlY: y - 18, nlD: y - 14 }) };
     },
 
-    mourning(a, id) {
+    nightgown(a, id) {
+      return CLOTHES.mourning(a, id, {
+        body: '#ece6da', dark: '#cfc6b4', light: '#ffffff', mid: '#e0d8c8', line: '#8a8070', puff: '#f4efe4', puffDark: '#d8cfbe', fold: '#bdb3a0', button: '#f8f4ec'
+      });
+    },
+
+    mourning(a, id, c) {
+      c = c || { body: '#3a3d47', dark: '#24262d', light: '#4a4e5a', mid: '#30333b', line: '#121318', puff: '#454955', puffDark: '#2e3038', fold: '#1d1f25', button: '#0a0a0c' };
       const nw = a.neckW, y = a.collarY, sw = a.shoulderW;
       const o = { nlW: nw + 6, nlY: y - 12, nlD: y };
       const d = bodice(a, o);
-      let s = P(`M${CX + 36},${y}C${CX + 66},${y + 40} ${CX + 76},${y + 90} ${CX + 66},560H460V${y - 40}Z`, '#24262d');
-      for (let i = -4; i <= 4; i++) if (i) s += S(`M${CX + i * 8},${y + 20}V560`, i < 0 ? '#4a4e5a' : '#30333b', 1.2);
-      for (let i = 0; i < 6; i++) s += C(CX, y + 26 + i * 18, 3, '#0a0a0c') + C(CX - 1, y + 25 + i * 18, 1, '#8a8e9a');
-      let main = P(d, '#3a3d47') + shade(d, id + 'ms', s) + P(d, 'none', 'stroke="#121318" stroke-width="1.2"');
+      let s = P(`M${CX + 36},${y}C${CX + 66},${y + 40} ${CX + 76},${y + 90} ${CX + 66},560H460V${y - 40}Z`, c.dark);
+      for (let i = -4; i <= 4; i++) if (i) s += S(`M${CX + i * 8},${y + 20}V560`, i < 0 ? c.light : c.mid, 1.2);
+      for (let i = 0; i < 6; i++) s += C(CX, y + 26 + i * 18, 3, c.button, `stroke="${c.line}" stroke-width="0.5"`) + C(CX - 1, y + 25 + i * 18, 1, '#8a8e9a');
+      let main = P(d, c.body) + shade(d, id + 'ms', s) + P(d, 'none', `stroke="${c.line}" stroke-width="1.2"`);
       [-1, 1].forEach(sd => {
         const px = CX + sd * (sw - 2), py = y + 40;
         const puff = `M${pt(px - sd * 30, py - 26)}C${pt(px - sd * 6, py - 50)} ${pt(px + sd * 40, py - 36)} ${pt(px + sd * 42, py + 4)}C${pt(px + sd * 42, py + 40)} ${pt(px + sd * 20, py + 60)} ${pt(px - sd * 6, py + 60)}C${pt(px - sd * 26, py + 40)} ${pt(px - sd * 40, py - 6)} ${pt(px - sd * 30, py - 26)}Z`;
-        main += P(puff, sd > 0 ? '#2e3038' : '#454955', 'stroke="#121318" stroke-width="1.2"');
-        for (let i = 0; i < 3; i++) main += S(`M${pt(px - sd * 14 + sd * i * 14, py - 32)}Q${pt(px + sd * i * 12, py + 4)} ${pt(px - sd * 4 + sd * i * 12, py + 54)}`, '#1d1f25', 1.4, op(0.8));
+        main += P(puff, sd > 0 ? c.puffDark : c.puff, `stroke="${c.line}" stroke-width="1.2"`);
+        for (let i = 0; i < 3; i++) main += S(`M${pt(px - sd * 14 + sd * i * 14, py - 32)}Q${pt(px + sd * i * 12, py + 4)} ${pt(px - sd * 4 + sd * i * 12, py + 54)}`, c.fold, 1.4, op(0.8));
       });
       // high lace collar up the neck
       const top = a.chinY + 16, cw = nw + 3;
       const band = `M${pt(CX - cw, top)}Q${pt(CX, top + 8)} ${pt(CX + cw, top)}L${pt(CX + cw + 8, y + 2)}Q${pt(CX, y + 14)} ${pt(CX - cw - 8, y + 2)}Z`;
-      let collar = P(band, '#2e3038', 'stroke="#121318" stroke-width="1.2"');
-      collar += shade(band, id + 'mc', P(`M${CX + 10},${top}L${CX + cw + 10},${top}L${CX + cw + 10},${y + 20}L${CX + 16},${y + 20}Z`, '#1d1f25', op(0.7)) +
-        [-2, -1, 0, 1, 2].map(i => S(`M${CX + i * 11},${top + 4}V${y + 10}`, '#4a4e5a', 1)).join(''));
+      let collar = P(band, c.puffDark, `stroke="${c.line}" stroke-width="1.2"`);
+      collar += shade(band, id + 'mc', P(`M${CX + 10},${top}L${CX + cw + 10},${top}L${CX + cw + 10},${y + 20}L${CX + 16},${y + 20}Z`, c.fold, op(0.7)) +
+        [-2, -1, 0, 1, 2].map(i => S(`M${CX + i * 11},${top + 4}V${y + 10}`, c.light, 1)).join(''));
       for (let i = 0; i <= 8; i++) {
         const x = CX - cw + i * (cw * 2 / 8);
-        collar += C(x, top + 1 + Math.sin(i / 8 * Math.PI) * 3, 3.4, '#5a5e6a', 'stroke="#1d1f25" stroke-width="0.6"');
+        collar += C(x, top + 1 + Math.sin(i / 8 * Math.PI) * 3, 3.4, c.puff, `stroke="${c.fold}" stroke-width="0.6"`);
       }
       return { back: '', main, collar, clip: `M-60,-60H460V${top + 2}H-60Z` };
     },

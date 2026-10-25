@@ -227,12 +227,12 @@ const DATA = {
         products: ['palette', 'blackLiner', 'lashes', 'lashGlue']
       },
       {
-        id: 'sockets', type: 'eyeshadow', label: 'Blackened sockets', namePart: 'hollow-eyed', applyOrder: 69,
+        id: 'sockets', type: 'detail', label: 'Blackened sockets', namePart: 'hollow-eyed', applyOrder: 69,
         steps: ['Blend black eyeshadow right round each eye socket, from the brow bone to the top of the cheek, softening the edges.'],
         products: ['palette', 'brushes']
       },
       {
-        id: 'glitter', type: 'eyeshadow', label: 'Glitter', namePart: 'glittering', applyOrder: 70,
+        id: 'glitter', type: 'detail', label: 'Glitter', namePart: 'glittering', applyOrder: 70,
         steps: ['Use a primer on your lids (or foundation if you don\'t have one), then pat on a glittery eyeshadow.'],
         products: ['palette']
       },
@@ -268,7 +268,7 @@ const DATA = {
       { id: 'none', label: 'None', namePart: '', applyOrder: 50, steps: [], products: [] },
       {
         id: 'paleBase', label: 'Pale base', namePart: 'pallid', applyOrder: 20,
-        steps: ['Sponge on a foundation a shade or two paler than your skin, right down your neck.'],
+        steps: ['Use your normal foundation shade and skip any bronzer, then add the blue and purple.'],
         products: ['paleFoundation', 'sponges']
       },
       {
@@ -285,7 +285,8 @@ const DATA = {
         id: 'clown', label: 'Clown', namePart: 'grinning', applyOrder: 50,
         steps: [
           'Cover your face in white face paint and set it with powder.',
-          'Draw high arched brows in black, then paint a round red nose and a wide red smile on with red lipstick.'
+          'Draw high arched brows in black.',
+          'Paint the tip of your nose red with lipstick.'
         ],
         products: ['whitePaint', 'powder', 'blackLiner', 'redLipstick', 'sponges', 'brushes', 'blackLashes', 'lashGlue']
       },
@@ -334,11 +335,12 @@ const DATA = {
       { id: 'clawRip', label: 'Claw rip', namePart: 'mauled', applyOrder: 10, patch: true, steps: ['Rip toilet paper into three long, thin strips with no hard edges and peel the plies apart. Lay them diagonally across your nose and cheeks, alternating with liquid latex and finishing with latex. Once dry, cover with foundation, then use tweezers to rip each strip open along its length. Fill with red lipstick, shade the edges blue and purple, and finish with fake blood.'], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
       { id: 'cheekGash', label: 'Cheek gash', namePart: 'gashed', applyOrder: 10, patch: true, steps: ['Rip a big rough patch of toilet paper with no hard edges and peel the plies apart. Build it up on one cheek, alternating with liquid latex and finishing with latex. Once dry, cover with foundation, then tear it wide open with tweezers so the edges are really ragged. Fill with red lipstick, shade the edges blue and purple, and go heavy on the fake blood.'], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
       { id: 'slicedCheeks', label: 'Sliced cheeks', namePart: 'sliced', applyOrder: 10, patch: true, steps: ['Rip two thin strips of toilet paper with no hard edges and peel the plies apart. Lay one down each cheekbone, straight down from your eyes, alternating with liquid latex and finishing with latex. Once dry, cover with foundation, then slice each one open lengthways with tweezers. Fill with red lipstick, shade the edges blue and purple, and let a drop of fake blood run down.'], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
-      { id: 'tornCorners', label: 'Sliced mouth corners', namePart: 'slashed', applyOrder: 10, patch: true, steps: ['Rip two thin, curved strips of toilet paper with no hard edges and peel the plies apart. Lay one from each corner of your mouth curving up towards your cheeks, alternating with liquid latex and finishing with latex. Once dry, cover with foundation, then open each one along the curve with tweezers. Fill with red lipstick, shade the edges blue and purple, and add fake blood.'], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
+      { id: 'tornCorners', clears: { lips: 'blood' }, label: 'Sliced mouth corners', namePart: 'slashed', applyOrder: 10, patch: true, steps: ['Rip two thin, curved strips of toilet paper with no hard edges and peel the plies apart. Lay one from each corner of your mouth curving up towards your cheeks, alternating with liquid latex and finishing with latex. Once dry, cover with foundation, then open each one along the curve with tweezers. Fill with red lipstick, shade the edges blue and purple, and add fake blood.'], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
       { id: 'templePeel', label: 'Temple peel', namePart: 'peeling', applyOrder: 10, patch: true, steps: ['Rip a long strip of toilet paper with no hard edges and peel the plies apart. Lay it from your lower forehead down through one eye to your upper cheek, keeping well clear of the eye itself, alternating with liquid latex and finishing with latex. Once dry, cover with foundation, then tear it open above and below the eye with tweezers and peel the edges back. Fill with red lipstick, shade the edges blue and purple, and finish with fake blood.'], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
       { id: 'foreheadGash', label: 'Forehead gash', namePart: 'slain', applyOrder: 10, patch: true, steps: ['Rip a long strip of toilet paper with no hard edges and peel the plies apart. Lay it across your forehead, alternating with liquid latex and finishing with latex. Once dry, cover with foundation, then rip it open along its length with tweezers. Fill with red lipstick, shade the edges blue and purple, and let fake blood run down from it.'], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
       // Zip face has its own method and can't be combined with other wounds.
       { id: 'zipFace', label: 'Zip face', namePart: 'unzipped', applyOrder: 61, patch: true, exclusive: true, steps: ['Put liquid latex on your face, press the zip into it, then add more latex over the top. If the edges look rough, layer the thinnest possible plies of toilet paper over them so you can\'t see the hard edge of the zip, finishing with latex. Once it\'s dry, cover with foundation. Colour in the skin inside the zip with red lipstick or red face paint, then cover with fake blood.'], products: ['zip', 'latex', 'toiletPaper', 'paleFoundation', 'redLipstick', 'freshBlood'] },
+      { id: 'bulletWound', label: 'Forehead bullet wound', namePart: 'shot', applyOrder: 10, patch: true, steps: ['Build a small round patch of latex and toilet paper in the middle of your forehead. Once dry, cover with foundation, pinch a small round hole with tweezers and fill it with red lipstick, with black eyeshadow in the very centre. Shade blue and purple around the edge, then let fake blood trickle down your face.'], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
       { id: 'throatBite', label: 'Throat bite', namePart: 'bitten', applyOrder: 10, patch: true, steps: ['On the side of your neck, build a small patch of latex and toilet paper. Once dry, cover with foundation, then use tweezers to rip two small holes next to each other so they look like fang marks. Fill them with red lipstick and drip fake blood from each one.'], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
       {
         id: 'stitchedSmile', label: 'Stitched smile', namePart: 'stitched', applyOrder: 60,
@@ -355,7 +357,7 @@ const DATA = {
     lips: [
       { id: 'none', label: 'Natural', namePart: '', applyOrder: 80, steps: [], products: [] },
       { id: 'black', label: 'Black', namePart: 'inky', applyOrder: 80, steps: ['Press eyeshadow from the palette onto your lips with a brush.'], products: ['palette'] },
-      { id: 'blood', label: 'Blood red', namePart: 'scarlet', applyOrder: 80, steps: ['Line and fill your lips with red lipstick, blot, then add a second coat.'], products: ['redLipstick'] },
+      { id: 'blood', clears: { effects: 'tornCorners' }, label: 'Blood red', namePart: 'scarlet', applyOrder: 80, steps: ['Line and fill your lips with red lipstick, blot, then add a second coat. Over clown paint, take it out past your lips into a wide smile.'], products: ['redLipstick'] },
       { id: 'berry', label: 'Berry', namePart: 'berry-stained', applyOrder: 80, steps: ['Press eyeshadow from the palette onto your lips with a brush.'], products: ['palette'] },
       { id: 'blue', label: 'Blue-dead', namePart: 'breathless', applyOrder: 80, steps: ['Press eyeshadow from the palette onto your lips with a brush.'], products: ['palette'] },
       { id: 'stitched', label: 'Stitched', namePart: 'silenced', applyOrder: 80, steps: ['Dab foundation over your lips, then draw black stitches across them with eyeliner.'], products: ['paleFoundation', 'blackLiner'] }
@@ -469,6 +471,7 @@ const DATA = {
       steps: ['Brush white powder over the shoulders and folds so the fabric looks faded and dusty.'],
       products: []
     },
+    { id: 'nightgown', label: 'Victorian nightgown', noun: 'sleepwalker', applyOrder: 110, steps: [], products: ['nightgown'] },
     { id: 'pumpkin', label: 'Pumpkin top', noun: 'pumpkin', applyOrder: 110, steps: [], products: [] },
     { id: 'redDress', label: 'Red dress', noun: 'socialite', applyOrder: 110, steps: [], products: [] },
     { id: 'tulleGown', label: 'Purple tulle gown', noun: 'enchantress', applyOrder: 110, steps: [], products: [] },
@@ -575,7 +578,7 @@ const DATA = {
         },
         {
           id: 'velvet', label: 'Velvet vampire', tag: 'sexy',
-          set: { facePaint: 'paleBase', clothing: 'velvetCorset', lips: 'berry', eyes: ['redSmoky'], hairStyle: 'long', hairColour: 'black' }
+          set: { facePaint: 'paleBase', clothing: 'velvetCorset', lips: 'berry', eyes: ['redSmoky'], effects: ['throatBite'], hairStyle: 'long', hairColour: 'black' }
         }
       ]
     },
@@ -598,7 +601,6 @@ const DATA = {
       versions: [
         { id: 'oneEyed', label: 'One-eyed', tag: 'scary', set: { facePaint: 'paleBase', lenses: 'whiteoutOne', effects: ['templePeel', 'cheekGash'], contour: 'bruised', underEyes: 'bruised', clothing: 'tornJumper' } },
         { id: 'mauled', label: 'Mauled', tag: 'scary', wardrobe: ['A red hoodie or hooded cape'], set: { facePaint: 'paleBase', effects: ['clawRip'], contour: 'bruised', underEyes: 'bruised', clothing: 'redCape', headwear: 'redHood' } },
-        { id: 'bitten', label: 'Bitten', tag: 'scary', set: { facePaint: 'paleBase', effects: ['throatBite'], blood: ['messyFeed'], contour: 'bruised', underEyes: 'bruised', clothing: 'vestTop' } },
         { id: 'unzipped', label: 'Unzipped', tag: 'scary', set: { facePaint: 'paleBase', effects: ['zipFace'], clothing: 'bloodTee' } },
         {
           id: 'nurse', label: 'Zombie nurse', tag: 'sexy',
@@ -614,15 +616,15 @@ const DATA = {
       versions: [
         {
           id: 'tornCheeks', label: 'Sliced cheeks', tag: 'scary',
-          set: { facePaint: 'clown', eyes: [], underEyes: 'bruised', effects: ['slicedCheeks', 'tornCorners'], lips: 'blood', clothing: 'harlequin', accessory: 'tulleRuff', hairStyle: 'bunches', hairColour: 'black' }, products: ['blackLashes', 'lashGlue']
+          set: { facePaint: 'clown', eyes: [], underEyes: 'bruised', effects: ['slicedCheeks'], lips: 'blood', clothing: 'harlequin', accessory: 'tulleRuff', hairStyle: 'bunches', hairColour: 'black' }, products: ['blackLashes', 'lashGlue']
         },
         {
           id: 'bloodTears', label: 'Blood tears', tag: 'scary',
-          set: { facePaint: 'clown', underEyes: 'bruised', blood: ['bloodEyes'], lips: 'blood', clothing: 'harlequin', accessory: 'tulleRuff', hairStyle: 'ponytail', hairColour: 'black' }, products: ['blackLashes', 'lashGlue']
+          set: { facePaint: 'clown', underEyes: 'bruised', blood: ['bloodEyes'], effects: ['tornCorners'], clothing: 'harlequin', accessory: 'tulleRuff', hairStyle: 'ponytail', hairColour: 'black' }, products: ['blackLashes', 'lashGlue']
         },
         {
           id: 'glam', label: 'Glam clown', tag: 'glam',
-          set: { facePaint: 'clown', lips: 'blood', clothing: 'harlequin', accessory: 'whiteRuff', wig: 'red' }, products: ['blackLashes', 'lashGlue']
+          set: { facePaint: 'clown', eyes: ['diamonds'], lips: 'blood', clothing: 'harlequin', accessory: 'whiteRuff', wig: 'red' }, products: ['blackLashes', 'lashGlue']
         }
       ]
     },
@@ -632,7 +634,7 @@ const DATA = {
       wardrobe: ['An old white or cream dress.'],
       versions: [
         {
-          id: 'dead', label: 'Dead bride', tag: 'scary',
+          id: 'dead', label: 'Blue bride', tag: 'scary',
           set: { facePaint: 'bruisedBlue', contour: 'bruised', underEyes: 'hollows', lips: 'blue', clothing: 'bride', headwear: 'veil', accessory: 'locket', hairStyle: 'long', hairColour: 'auburn' }
         },
         {
@@ -665,14 +667,14 @@ const DATA = {
       ]
     },
     {
-      id: 'ghost', label: 'Victorian ghost',
+      id: 'ghost', label: 'Ghost',
       nouns: { feminine: 'widow', masculine: 'widower', androgynous: 'spectre' },
       versions: [
         { id: 'sheet', label: 'Ghost', tag: 'scary', nouns: { feminine: 'spook', masculine: 'spook', androgynous: 'spook' }, set: { mask: 'sheet' } },
         {
-          id: 'greyLady', label: 'Grey lady', tag: 'glam',
-          set: { facePaint: 'ghostly', lenses: 'whiteRing', clothing: 'mourning', accessory: 'candlestick', hairStyle: 'bun', hairColour: 'silver' },
-          products: ['nightgown', 'lashes', 'lashGlue']
+          id: 'victorian', label: 'Victorian ghost', tag: 'scary',
+          set: { contour: 'bruised', underEyes: 'bruised', lenses: 'whiteout', clothing: 'nightgown', accessory: 'candlestick', hairStyle: 'bun', hairColour: 'silver' },
+          products: ['nightgown']
         }
       ]
     },
@@ -691,12 +693,7 @@ const DATA = {
       versions: [
         {
           id: 'cluedo', label: 'Murder victim', tag: 'scary',
-          set: { facePaint: 'paleBase', clothing: 'redDress', effects: ['foreheadGash'], blood: ['bloodEyes', 'elegantDrips'], lenses: 'whiteout', hairStyle: 'bun', hairColour: 'black' }
-        },
-        {
-          id: 'elegant', label: 'Elegant corpse', tag: 'glam',
-          nouns: { feminine: 'corpse', masculine: 'corpse', androgynous: 'corpse' },
-          set: { clothing: 'redDress', effects: ['foreheadGash'], lips: 'blood', hairStyle: 'bun', hairColour: 'black' }, products: ['lashes', 'lashGlue']
+          set: { facePaint: 'paleBase', clothing: 'redDress', effects: ['bulletWound'], blood: ['bloodEyes', 'elegantDrips'], lenses: 'whiteout', hairStyle: 'bun', hairColour: 'black' }
         }
       ]
     },
@@ -734,18 +731,15 @@ const DATA = {
       versions: [
         {
           id: 'scary', label: 'Scary devil', tag: 'scary',
-          set: { facePaint: 'redPaint', contour: 'darkHollows', eyes: ['sockets', 'devilBrows'], lips: 'black', lenses: 'blackout', headwear: 'ramHorns', clothing: 'highCollar', hairStyle: 'slick', hairColour: 'black' }
+          set: { contour: 'darkHollows', eyes: ['redSmoky', 'sockets', 'devilBrows'], lips: 'black', lenses: 'blackout', headwear: 'ramHorns', clothing: 'highCollar', hairStyle: 'slick', hairColour: 'black' }
         },
         {
           id: 'sexy', label: 'Sexy devil', tag: 'sexy',
           set: { eyes: ['heavyGlam'], lips: 'blood', headwear: 'horns', clothing: 'redDress', hairStyle: 'long', hairColour: 'black' }
         },
         {
-          id: 'comic', label: 'Comic devil', tag: 'glam',
-          set: { facePaint: 'redPaint', eyes: ['devilBrows'], headwear: 'horns', clothing: 'highCollar', hairStyle: 'slick', hairColour: 'black' },
-          details: ['goatee'],
-          steps: [[55, 'Add a curled moustache and a little pointed goatee with black eyeliner.']],
-          products: ['blackLiner']
+          id: 'comic', label: 'Campy devil', tag: 'glam',
+          set: { facePaint: 'redPaint', eyes: ['heavyGlam', 'glitter', 'devilBrows'], headwear: 'horns', clothing: 'highCollar', hairStyle: 'slick', hairColour: 'black' }
         }
       ]
     }
