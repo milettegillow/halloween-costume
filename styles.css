@@ -394,6 +394,26 @@ button {
   border: 1px solid var(--gold-shadow);
 }
 
+/* a second sheet below the notebook */
+.essentials-card {
+  margin-top: 1.4rem;
+}
+
+#essentials-heading {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+}
+
+.essentials {
+  columns: 2 18rem;
+  column-gap: 3rem;
+}
+
+.essentials li {
+  break-inside: avoid;
+}
+
 /* stitched leather binding */
 .notebook::before {
   content: '';

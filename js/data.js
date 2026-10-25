@@ -111,7 +111,18 @@ const DATA = {
   ],
   essentials: {
     intro: 'The things I always have in the drawer for Halloween.',
-    products: ['latex', 'whitePaint', 'palette', 'blackLiner', 'paleFoundation', 'redLipstick', 'powder', 'sponges', 'brushes', 'freshBlood', 'tweezers', 'wipes']
+    // kit keys, optionally with a different name or note for the kit; a bare name is shown as plain text
+    products: [
+      { key: 'palette', name: 'Big makeup palette' },
+      'latex',
+      { key: 'toiletPaper', note: 'I\'m concerned if you don\'t have this already' },
+      'freshBlood',
+      'redLipstick',
+      'paleFoundation',
+      'tweezers',
+      'wipes',
+      { name: 'Any makeup you normally use' }
+    ]
   },
   setting: {
     steps: [

@@ -503,7 +503,7 @@
     $('#essentials-intro').textContent = DATA.essentials.intro;
     const ul = $('#essentials');
     ul.innerHTML = '';
-    DATA.essentials.products.forEach(k => ul.appendChild(productRow(product(k))));
+    DATA.essentials.products.forEach(k => ul.appendChild(productRow(typeof k === 'string' ? product(k) : Object.assign({}, k.key ? product(k.key) : {}, k))));
   }
 
   function update() {
