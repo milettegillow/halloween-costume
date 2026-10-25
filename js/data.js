@@ -111,7 +111,7 @@ const DATA = {
     'Rip toilet paper into rough shapes with no hard edges and peel the plies apart. Paint a layer of liquid latex where each wound will go, press a ply of tissue over it and let it dry. Add another layer of latex and more tissue, and repeat a few times. Finish with a layer of liquid latex and let it dry.',
     'Cover your face with your normal foundation, blending over the latex so it\'s as hidden as possible.',
     'Use tweezers to rip holes in the latex.',
-    'Fill the inside of every hole with red lipstick. Dab blue and purple eyeshadow onto the ripped skin around it so it looks more damaged. For extra depth, line the inside corners of each wound with a darker eyeshadow like black or brown.',
+    'Fill the inside of every wound with red lipstick. Dab blue and purple eyeshadow onto the ripped skin around it so it looks more damaged. For extra depth, line the inside corners of each wound with a darker eyeshadow like black or brown.',
     'Add fake blood over the whole thing and dab a little inside each wound. Don\'t overdo it.'
   ],
 
