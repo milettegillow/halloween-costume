@@ -39,6 +39,12 @@ const DATA = {
     { id: 'ponytail', label: 'Ponytail', namePart: 'swinging', wig: 'high ponytail wig' },
     { id: 'witch', label: 'Wild witch hair', namePart: 'tangled', wig: 'long messy witch wig' },
     { id: 'bunches', label: 'Bunches', namePart: 'pigtailed', wig: 'pigtail wig with fringe' },
+    { id: 'curls50s', label: '1950s curls', namePart: 'pin-curled', wig: '1950s pin curl wig' },
+    { id: 'tousledCurls', label: 'Long tousled curls', namePart: 'ringleted', wig: 'long curly wig' },
+    { id: 'sidePart', label: 'Classic side parting', namePart: 'dapper', wig: 'short side parting wig' },
+    { id: 'quiff', label: 'Swept-back quiff', namePart: 'quiffed', wig: 'quiff wig' },
+    { id: 'curlyCrop', label: 'Short curly crop', namePart: 'curly', wig: 'short curly wig' },
+    { id: 'undercut', label: 'Undercut', namePart: 'undercut', wig: 'undercut wig' },
     { id: 'shaved', label: 'Shaved', namePart: 'shorn', wig: 'bald cap' }
   ],
 
@@ -118,45 +124,16 @@ const DATA = {
   baldCap: { steps: [[100, 'Slick your hair down under a bald cap, stick the edges down with liquid latex and blend foundation over the join.']], products: ['baldCap', 'latex', 'paleFoundation'], patch: true },
 
   makeup: {
-    skin: [
-      { id: 'none', label: 'Natural', namePart: '', applyOrder: 20, steps: [], products: [] },
-      {
-        id: 'corpse', label: 'Pale base', namePart: 'pallid', applyOrder: 20,
-        steps: ['Sponge on a foundation a shade or two paler than your skin, right down your neck.'],
-        products: ['paleFoundation', 'sponges']
-      },
-      {
-        id: 'zombie', label: 'Zombie grey-green', namePart: 'rotting', applyOrder: 20,
-        steps: ['Mix a little green and grey eyeshadow into a pale foundation and sponge it over your face and neck.'],
-        products: ['paleFoundation', 'palette', 'sponges']
-      },
-      {
-        id: 'ghostly', label: 'Ghostly white', namePart: 'spectral', applyOrder: 20,
-        steps: ['Sponge white face paint thinly over your face, neck and ears.'],
-        products: ['whitePaint', 'sponges']
-      },
-      {
-        id: 'bruised', label: 'Bruised blue', namePart: 'drowned', applyOrder: 20,
-        steps: ['Sponge blue face paint thinly over your face and neck, then pat purple eyeshadow on top so you look cold and waterlogged.'],
-        products: ['bluePaint', 'palette', 'sponges']
-      }
-    ],
-
     contour: [
       { id: 'none', label: 'None', namePart: '', applyOrder: 30, steps: [], products: [] },
       {
         id: 'bruised', label: 'Bruised hollows', namePart: 'bruised', applyOrder: 30,
-        steps: ['Add blue and purple eyeshadow under your eyes, in the hollows of your cheeks and at the corners of your mouth.'],
+        steps: ['Add blue and purple eyeshadow in the hollows of your cheeks and at the corners of your mouth, blending the edges out softly.'],
         products: ['palette']
       },
       {
         id: 'sunken', label: 'Sunken cheeks', namePart: 'gaunt', applyOrder: 30,
         steps: ['Brush grey-brown eyeshadow under your cheekbones and into your temples, and blend until there\'s no hard line.'],
-        products: ['palette']
-      },
-      {
-        id: 'redRims', label: 'Reddened eye rims', namePart: 'sleepless', applyOrder: 30,
-        steps: ['Smudge red eyeshadow along your lower lashes and into the inner corners so your eyes look sore.'],
         products: ['palette']
       },
       {
@@ -169,14 +146,19 @@ const DATA = {
     underEyes: [
       { id: 'none', label: 'None', namePart: '', applyOrder: 40, steps: [], products: [] },
       {
-        id: 'hollows', label: 'Dead hollows', namePart: 'hollow', applyOrder: 40,
-        steps: ['Pat purple and grey eyeshadow under your eyes and into the inner corners, blending it down towards your cheeks.'],
+        id: 'bruised', label: 'Bruised', namePart: 'battered', applyOrder: 40,
+        steps: ['Pat blue and purple eyeshadow under your eyes with a brush and blend the edges out softly.'],
+        products: ['palette', 'sponges']
+      },
+      {
+        id: 'redRims', label: 'Reddened eye rims', namePart: 'sleepless', applyOrder: 40,
+        steps: ['Smudge red eyeshadow along your lower lashes and into the inner corners so your eyes look sore.'],
         products: ['palette']
       },
       {
-        id: 'bruised', label: 'Bruised', namePart: 'battered', applyOrder: 40,
-        steps: ['Dab blue and purple eyeshadow all round your eyes with a sponge, keeping it patchy.'],
-        products: ['palette', 'sponges']
+        id: 'hollows', label: 'Dead hollows', namePart: 'hollow', applyOrder: 40,
+        steps: ['Pat purple and grey eyeshadow under your eyes and into the inner corners, blending it down towards your cheeks.'],
+        products: ['palette']
       },
       {
         id: 'kohl', label: 'Smudged kohl', namePart: 'smudged', applyOrder: 40,
@@ -254,8 +236,24 @@ const DATA = {
       }
     ],
 
+    // Pale base, ghostly white and bruised blue are skin bases; the art treats them as skin.
     facePaint: [
       { id: 'none', label: 'None', namePart: '', applyOrder: 50, steps: [], products: [] },
+      {
+        id: 'paleBase', label: 'Pale base', namePart: 'pallid', applyOrder: 20,
+        steps: ['Sponge on a foundation a shade or two paler than your skin, right down your neck.'],
+        products: ['paleFoundation', 'sponges']
+      },
+      {
+        id: 'ghostly', label: 'Ghostly white', namePart: 'spectral', applyOrder: 20,
+        steps: ['Sponge white face paint thinly over your face, neck and ears.'],
+        products: ['whitePaint', 'sponges']
+      },
+      {
+        id: 'bruisedBlue', label: 'Bruised blue', namePart: 'drowned', applyOrder: 20,
+        steps: ['Sponge blue face paint thinly over your face and neck, then pat purple eyeshadow on top so you look cold and waterlogged.'],
+        products: ['bluePaint', 'palette', 'sponges']
+      },
       {
         id: 'clown', label: 'Clown, red nose', namePart: 'grinning', applyOrder: 50,
         steps: [
@@ -333,18 +331,13 @@ const DATA = {
     // Effects can be combined.
     effects: [
       { id: 'none', label: 'None', namePart: '', applyOrder: 60, steps: [], products: [] },
-      { id: 'clawRip', label: 'Claw rip', namePart: 'mauled', applyOrder: 61, wound: true, patch: true, steps: ['For the claw rip, mark out three diagonal strips across the middle of your face, over your nose and cheeks.'], products: [] },
+      { id: 'clawRip', label: 'Claw rip', namePart: 'mauled', applyOrder: 61, wound: true, patch: true, steps: ['For the claw rip, mark out three diagonal strips across the bridge of your nose and both cheeks, between your eyes and mouth.'], products: [] },
       { id: 'tornCheeks', label: 'Torn cheeks', namePart: 'torn', applyOrder: 61, wound: true, patch: true, steps: ['For torn cheeks, place a wound on the apple of each cheek.'], products: [] },
       { id: 'tornCorners', label: 'Torn mouth corners', namePart: 'ragged', applyOrder: 61, wound: true, patch: true, steps: ['For torn mouth corners, place a small wound at each corner of your mouth, ripping it outwards.'], products: [] },
-      { id: 'templePeel', label: 'Temple peel', namePart: 'peeling', applyOrder: 61, wound: true, patch: true, steps: ['For the temple peel, place a wound from your temple round the outside of one eye.'], products: [] },
+      { id: 'templePeel', label: 'Temple peel', namePart: 'peeling', applyOrder: 61, wound: true, patch: true, steps: ['For the temple peel, place one long wound running down through one eye, from your lower forehead to your upper cheek, keeping well clear of the eye itself.'], products: [] },
       { id: 'foreheadGash', label: 'Forehead gash', namePart: 'slain', applyOrder: 61, wound: true, patch: true, steps: ['For the forehead gash, place a long wound across your forehead.'], products: [] },
-      { id: 'zipFace', label: 'Zip face', namePart: 'unzipped', applyOrder: 61, wound: true, patch: true, steps: ['For the zip face, press a zip into the first layer of latex down one side of your face and build the wound round it.'], products: ['zip'] },
+      { id: 'zipFace', label: 'Zip face', namePart: 'unzipped', applyOrder: 61, wound: true, patch: true, steps: ['For the zip face, press a zip into the first layer of latex down the centre of your face, from between your brows to your chin, and leave the lower half open.'], products: ['zip'] },
       { id: 'throatBite', label: 'Throat bite', namePart: 'bitten', applyOrder: 61, wound: true, patch: true, steps: ['For the throat bite, place a small wound on the side of your neck and pinch two holes instead of one rip.'], products: [] },
-      {
-        id: 'bloodTears', label: 'Blood tears', namePart: 'bleeding', applyOrder: 60,
-        steps: ['Dot fake blood on your lower lash line and let it run down your cheeks.'],
-        products: ['freshBlood', 'brushes']
-      },
       {
         id: 'stitchedSmile', label: 'Stitched smile', namePart: 'stitched', applyOrder: 60,
         steps: ['Draw a line from each corner of your mouth up towards your ears, then add little black stitches across it.'],
@@ -362,11 +355,6 @@ const DATA = {
           'Draw a few bigger cracks from your hairline down across one cheek with black eyeliner, with a fine line of white eyeliner beside each one.'
         ],
         products: ['crackedPaint', 'sponges', 'blackLiner', 'whitePencil', 'brushes']
-      },
-      {
-        id: 'veins', label: 'Veins', namePart: 'veined', applyOrder: 60,
-        steps: ['Draw thin branching lines in purple and blue eyeshadow with a fine brush, starting at your temples and under your eyes.'],
-        products: ['palette', 'brushes']
       }
     ],
 
@@ -379,14 +367,19 @@ const DATA = {
       { id: 'stitched', label: 'Stitched', namePart: 'silenced', applyOrder: 80, steps: ['Dab foundation over your lips, then draw black stitches across them with eyeliner.'], products: ['paleFoundation', 'blackLiner'] }
     ],
 
-    // Extras can be combined.
-    extras: [
-      { id: 'none', label: 'None', namePart: '', applyOrder: 60, steps: [], products: [] },
+    // Shown on the lips tab and combines with any lip option.
+    fangs: [
+      { id: 'none', label: 'No fangs', namePart: '', applyOrder: 95, steps: [], products: [] },
       {
         id: 'fangs', label: 'Fangs', namePart: 'fanged', applyOrder: 95,
         steps: ['Warm the fitting beads in hot water, press them into the fangs and onto your teeth, then hold until set.'],
         products: ['fangs']
-      },
+      }
+    ],
+
+    // Blood can be combined.
+    blood: [
+      { id: 'none', label: 'None', namePart: '', applyOrder: 88, steps: [], products: [] },
       {
         id: 'elegantDrips', label: 'Elegant drips', namePart: 'dripping', applyOrder: 88,
         steps: ['Dot fake blood at both corners of your mouth and let it run down in thin lines.'],
@@ -394,13 +387,18 @@ const DATA = {
       },
       {
         id: 'messyFeed', label: 'Messy feed', namePart: 'gorged', applyOrder: 88,
-        steps: ['Smear fake blood round your mouth and chin with your fingers, then let a few drips run down.'],
-        products: ['freshBlood']
+        steps: ['Dab fake blood all along your bottom lip and let lots of little drips run down, some right off your chin.'],
+        products: ['freshBlood', 'brushes']
       },
       {
         id: 'trickle', label: 'Single trickle', namePart: 'trickling', applyOrder: 88,
         steps: ['Dot fake blood at one corner of your mouth and let a single line run down your chin.'],
         products: ['freshBlood']
+      },
+      {
+        id: 'bloodEyes', label: 'Blood from the eyes', namePart: 'bleeding', applyOrder: 88,
+        steps: ['Dot fake blood on your lower lash line and let it run down your cheeks.'],
+        products: ['freshBlood', 'brushes']
       }
     ]
   },
@@ -413,9 +411,9 @@ const DATA = {
       products: [{ name: 'Hag mask', asin: 'B0H2GVKBQG', note: 'I\'ve bought this exact one.' }]
     },
     {
-      id: 'sheet', label: 'Sheet ghost', namePart: 'draped', applyOrder: 98,
+      id: 'sheet', label: 'Ghost', namePart: 'draped', applyOrder: 98,
       steps: ['Drape an old white sheet over your head, mark where your eyes are with a pencil, then take it off and cut two small holes.'],
-      products: [{ name: 'White flat sheet', q: 'white flat sheet single' }]
+      products: [{ name: 'Ghost', asin: 'B000JFM8NI' }]
     },
     {
       id: 'skeleton', label: 'Skeleton mask', namePart: 'grinning', applyOrder: 98,
@@ -496,6 +494,7 @@ const DATA = {
     { id: 'horns', label: 'Red horns', applyOrder: 115, steps: [], products: ['redHorns'] },
     { id: 'redHood', label: 'Red hood', applyOrder: 115, steps: [], products: [] },
     { id: 'brownHood', label: 'Brown hood', applyOrder: 115, steps: [], products: [] },
+    { id: 'blackHood', label: 'Black hood', applyOrder: 115, steps: [], products: [] },
     { id: 'nurseCap', label: 'Nurse cap', applyOrder: 115, steps: [], products: [] },
     {
       id: 'cone', label: 'Little cone hat', applyOrder: 115,
@@ -574,7 +573,7 @@ const DATA = {
       versions: [
         {
           id: 'count', label: 'Count', tag: 'glam',
-          set: { skin: 'corpse', contour: 'redRims', extras: ['fangs', 'elegantDrips'], clothing: 'tuxedo', hairStyle: 'slick', hairColour: 'black' }, products: ['ruffle', 'lashes', 'lashGlue'],
+          set: { facePaint: 'paleBase', underEyes: 'redRims', fangs: 'fangs', blood: ['elegantDrips'], clothing: 'tuxedo', hairStyle: 'slick', hairColour: 'black' }, products: ['ruffle', 'lashes', 'lashGlue'],
           byFeatures: {
             masculine: { lips: 'none', eyes: 'none' },
             feminine: { lips: 'blood', eyes: 'smoky' },
@@ -583,11 +582,11 @@ const DATA = {
         },
         {
           id: 'messyFeed', label: 'Messy feed', tag: 'scary',
-          set: { skin: 'corpse', extras: ['fangs', 'messyFeed'], effects: ['throatBite'], clothing: 'shirtTie', hairStyle: 'slick', hairColour: 'black' }
+          set: { facePaint: 'paleBase', fangs: 'fangs', blood: ['messyFeed'], effects: ['throatBite'], clothing: 'shirtTie', hairStyle: 'slick', hairColour: 'black' }
         },
         {
           id: 'velvet', label: 'Velvet vampire', tag: 'sexy',
-          set: { skin: 'corpse', clothing: 'velvetCorset', lips: 'berry', eyes: 'redPink', hairStyle: 'long', hairColour: 'black' }
+          set: { facePaint: 'paleBase', clothing: 'velvetCorset', lips: 'berry', eyes: 'redPink', hairStyle: 'long', hairColour: 'black' }
         }
       ]
     },
@@ -597,7 +596,7 @@ const DATA = {
       versions: [
         {
           id: 'hagMask', label: 'Hag mask', tag: 'scary',
-          set: { mask: 'hag', hairStyle: 'long', hairColour: 'silver', clothing: 'cloak', headwear: 'brownHood', accessory: 'lantern' },
+          set: { mask: 'hag', hairStyle: 'witch', hairColour: 'white', clothing: 'cloak', headwear: 'brownHood', accessory: 'lantern' },
           products: ['gloves', 'creepyCloth'],
           steps: [[110, 'Layer the creepy cloth round your shoulders like a shawl, over the cloak.']]
         }
@@ -608,14 +607,14 @@ const DATA = {
       nouns: { feminine: 'zombie', masculine: 'zombie', androgynous: 'revenant' },
       wardrobe: ['Literally anything - regular clothes, the more dishevelled the better.'],
       versions: [
-        { id: 'oneEyed', label: 'One-eyed', tag: 'scary', set: { skin: 'corpse', lenses: 'whiteoutOne', effects: ['templePeel', 'tornCheeks'], contour: 'bruised', clothing: 'tornJumper' } },
-        { id: 'mauled', label: 'Mauled', tag: 'scary', wardrobe: ['A red hoodie or hooded cape'], set: { skin: 'corpse', effects: ['clawRip'], contour: 'bruised', clothing: 'redCape', headwear: 'redHood' } },
-        { id: 'bitten', label: 'Bitten', tag: 'scary', set: { skin: 'corpse', effects: ['throatBite'], extras: ['messyFeed'], contour: 'bruised', clothing: 'vestTop' } },
-        { id: 'unzipped', label: 'Unzipped', tag: 'scary', set: { skin: 'corpse', effects: ['zipFace'], clothing: 'bloodTee' } },
+        { id: 'oneEyed', label: 'One-eyed', tag: 'scary', set: { facePaint: 'paleBase', lenses: 'whiteoutOne', effects: ['templePeel', 'tornCheeks'], contour: 'bruised', underEyes: 'bruised', clothing: 'tornJumper' } },
+        { id: 'mauled', label: 'Mauled', tag: 'scary', wardrobe: ['A red hoodie or hooded cape'], set: { facePaint: 'paleBase', effects: ['clawRip'], contour: 'bruised', underEyes: 'bruised', clothing: 'redCape', headwear: 'redHood' } },
+        { id: 'bitten', label: 'Bitten', tag: 'scary', set: { facePaint: 'paleBase', effects: ['throatBite'], blood: ['messyFeed'], contour: 'bruised', underEyes: 'bruised', clothing: 'vestTop' } },
+        { id: 'unzipped', label: 'Unzipped', tag: 'scary', set: { facePaint: 'paleBase', effects: ['zipFace'], clothing: 'bloodTee' } },
         {
           id: 'nurse', label: 'Zombie nurse', tag: 'sexy',
           nouns: { feminine: 'nurse', masculine: 'nurse', androgynous: 'nurse' },
-          set: { skin: 'corpse', lenses: 'whiteout', effects: ['tornCorners'], contour: 'bruised', clothing: 'nurseDress', headwear: 'nurseCap', hairStyle: 'bob' }
+          set: { facePaint: 'paleBase', lenses: 'whiteout', effects: ['tornCorners'], contour: 'bruised', underEyes: 'bruised', clothing: 'nurseDress', headwear: 'nurseCap', hairStyle: 'bob' }
         }
       ]
     },
@@ -630,7 +629,7 @@ const DATA = {
         },
         {
           id: 'bloodTears', label: 'Blood tears', tag: 'scary',
-          set: { facePaint: 'clownPink', underEyes: 'bruised', effects: ['bloodTears'], lips: 'blood', clothing: 'harlequin', accessory: 'tulleRuff', hairStyle: 'ponytail', hairColour: 'black' }, products: ['blackLashes', 'lashGlue']
+          set: { facePaint: 'clownPink', underEyes: 'bruised', blood: ['bloodEyes'], lips: 'blood', clothing: 'harlequin', accessory: 'tulleRuff', hairStyle: 'ponytail', hairColour: 'black' }, products: ['blackLashes', 'lashGlue']
         },
         {
           id: 'glam', label: 'Glam clown', tag: 'glam',
@@ -645,11 +644,11 @@ const DATA = {
       versions: [
         {
           id: 'dead', label: 'Dead bride', tag: 'scary',
-          set: { skin: 'bruised', contour: 'bruised', underEyes: 'hollows', lips: 'blue', clothing: 'bride', headwear: 'veil', accessory: 'locket', hairStyle: 'long', hairColour: 'auburn' }
+          set: { facePaint: 'bruisedBlue', contour: 'bruised', underEyes: 'hollows', lips: 'blue', clothing: 'bride', headwear: 'veil', accessory: 'locket', hairStyle: 'long', hairColour: 'auburn' }
         },
         {
           id: 'faded', label: 'Faded bride', tag: 'glam',
-          set: { skin: 'corpse', eyes: 'softSmoky', clothing: 'bride', headwear: 'veil', accessory: 'locket', hairStyle: 'bun', hairColour: 'auburn' }, products: ['lashes', 'lashGlue']
+          set: { facePaint: 'paleBase', eyes: 'softSmoky', clothing: 'bride', headwear: 'veil', accessory: 'locket', hairStyle: 'bun', hairColour: 'auburn' }, products: ['lashes', 'lashGlue']
         }
       ]
     },
@@ -658,7 +657,7 @@ const DATA = {
       nouns: { feminine: 'skeleton', masculine: 'skeleton', androgynous: 'skeleton' },
       versions: [
         { id: 'skullFace', label: 'Skull face', tag: 'scary', set: { facePaint: 'skeletonFull', clothing: 'blazer', hairStyle: 'slick', hairColour: 'black' } },
-        { id: 'mask', label: 'Skeleton mask', tag: 'scary', set: { mask: 'skeleton', clothing: 'hoodie', hairColour: 'black' } }
+        { id: 'mask', label: 'Skeleton mask', tag: 'scary', set: { mask: 'skeleton', clothing: 'hoodie', headwear: 'blackHood', hairColour: 'black' } }
       ]
     },
     {
@@ -672,7 +671,7 @@ const DATA = {
         },
         {
           id: 'porcelain', label: 'Porcelain doll', tag: 'glam',
-          set: { skin: 'corpse', contour: 'dollBlush', lips: 'blood', clothing: 'doll', headwear: 'bow', accessory: 'key', hairStyle: 'bunches', hairColour: 'blonde' }, products: ['blackLashes', 'lashGlue']
+          set: { facePaint: 'paleBase', contour: 'dollBlush', lips: 'blood', clothing: 'doll', headwear: 'bow', accessory: 'key', hairStyle: 'bunches', hairColour: 'blonde' }, products: ['blackLashes', 'lashGlue']
         }
       ]
     },
@@ -680,10 +679,10 @@ const DATA = {
       id: 'ghost', label: 'Victorian ghost',
       nouns: { feminine: 'widow', masculine: 'widower', androgynous: 'spectre' },
       versions: [
-        { id: 'sheet', label: 'Sheet ghost', tag: 'scary', nouns: { feminine: 'spook', masculine: 'spook', androgynous: 'spook' }, set: { mask: 'sheet' } },
+        { id: 'sheet', label: 'Ghost', tag: 'scary', nouns: { feminine: 'spook', masculine: 'spook', androgynous: 'spook' }, set: { mask: 'sheet' } },
         {
           id: 'greyLady', label: 'Grey lady', tag: 'glam',
-          set: { skin: 'ghostly', lenses: 'whiteRing', clothing: 'mourning', accessory: 'candlestick', hairStyle: 'bun', hairColour: 'silver' },
+          set: { facePaint: 'ghostly', lenses: 'whiteRing', clothing: 'mourning', accessory: 'candlestick', hairStyle: 'bun', hairColour: 'silver' },
           products: ['nightgown', 'lashes', 'lashGlue']
         }
       ]
@@ -703,7 +702,7 @@ const DATA = {
       versions: [
         {
           id: 'cluedo', label: 'Murder victim', tag: 'scary',
-          set: { skin: 'corpse', clothing: 'redDress', effects: ['foreheadGash', 'bloodTears'], extras: ['elegantDrips'], lenses: 'whiteout', hairStyle: 'bun', hairColour: 'black' }
+          set: { facePaint: 'paleBase', clothing: 'redDress', effects: ['foreheadGash'], blood: ['bloodEyes', 'elegantDrips'], lenses: 'whiteout', hairStyle: 'bun', hairColour: 'black' }
         },
         {
           id: 'elegant', label: 'Elegant corpse', tag: 'glam',
@@ -746,7 +745,7 @@ const DATA = {
       versions: [
         {
           id: 'scary', label: 'Scary devil', tag: 'scary',
-          set: { facePaint: 'devil', headwear: 'ramHorns', lenses: 'blackout', effects: ['veins'], clothing: 'highCollar', hairStyle: 'slick', hairColour: 'black' }
+          set: { facePaint: 'devil', headwear: 'ramHorns', lenses: 'blackout', clothing: 'highCollar', hairStyle: 'slick', hairColour: 'black' }
         },
         {
           id: 'sexy', label: 'Sexy devil', tag: 'sexy',
@@ -776,7 +775,6 @@ const DATA = {
     ['facePaint:skeletonFull', 'eyes:diamonds'],
     ['facePaint:devil', 'eyes:diamonds'],
     ['facePaint:glamWitch', 'eyes:diamonds'],
-    ['facePaint:clown', 'skin:zombie'],
     ['lenses:blackout', 'underEyes:sockets'],
     ['facePaint:pumpkin', 'effects:cracked'],
     ['facePaint:sugarSkull', 'effects:cracked'],
@@ -786,7 +784,7 @@ const DATA = {
 
   defaults: {
     shape: 'oval', features: 'androgynous', skinTone: 'peach', hairStyle: 'crop', hairColour: 'darkBrown',
-    skin: 'none', contour: 'none', underEyes: 'none', lenses: 'none', eyes: 'none', facePaint: 'none', effects: [], lips: 'none', extras: [],
+    contour: 'none', underEyes: 'none', lenses: 'none', eyes: 'none', facePaint: 'none', effects: [], lips: 'none', fangs: 'none', blood: [],
     mask: 'none', clothing: 'plain', headwear: 'none', accessory: 'none', preset: null, version: null
   },
 

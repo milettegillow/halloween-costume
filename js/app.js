@@ -4,8 +4,10 @@
 
   const M = DATA.makeup;
   // Face makeup categories, in the order they are listed. A mask hides all of these.
-  const MAKEUP_KEYS = ['skin', 'contour', 'underEyes', 'lenses', 'eyes', 'facePaint', 'effects', 'lips', 'extras'];
-  const MULTI = ['effects', 'extras'];
+  const MAKEUP_KEYS = ['facePaint', 'contour', 'underEyes', 'lenses', 'eyes', 'effects', 'lips', 'fangs', 'blood'];
+  const MULTI = ['effects', 'blood'];
+  // Face paint options the art treats as a skin base rather than paint.
+  const SKIN_BASES = { paleBase: 'corpse', ghostly: 'ghostly', bruisedBlue: 'bruised' };
 
   // Thumbnail crops, in portrait coordinates.
   const CROP = {
@@ -20,7 +22,7 @@
 
   const TABS = [
     {
-      id: 'face', label: 'Face', groups: [
+      id: 'basics', label: 'Basics', groups: [
         { key: 'shape', label: 'Face shape', options: DATA.faceShapes, crop: 'head' },
         { key: 'features', label: 'Features', options: DATA.features, crop: 'head' },
         { key: 'skinTone', label: 'Skin tone', options: DATA.skinTones, swatch: true }
@@ -32,15 +34,19 @@
         { key: 'hairColour', label: 'Colour', options: DATA.hairColours, swatch: true }
       ]
     },
-    { id: 'skin', label: 'Skin', groups: [{ key: 'skin', options: M.skin, crop: 'head' }] },
     { id: 'contour', label: 'Contour', groups: [{ key: 'contour', options: M.contour, crop: 'face' }] },
     { id: 'underEyes', label: 'Under-eyes', groups: [{ key: 'underEyes', options: M.underEyes, crop: 'eyes' }] },
     { id: 'lenses', label: 'Lenses', groups: [{ key: 'lenses', options: M.lenses, crop: 'eyes' }] },
     { id: 'eyes', label: 'Eye makeup', groups: [{ key: 'eyes', options: M.eyes, crop: 'face' }] },
     { id: 'facePaint', label: 'Face paint', groups: [{ key: 'facePaint', options: M.facePaint, crop: 'head' }] },
     { id: 'effects', label: 'Effects', groups: [{ key: 'effects', options: M.effects, crop: 'head' }] },
-    { id: 'lips', label: 'Lips', groups: [{ key: 'lips', options: M.lips, crop: 'mouth' }] },
-    { id: 'extras', label: 'Extras', groups: [{ key: 'extras', options: M.extras, crop: 'head' }] },
+    {
+      id: 'lips', label: 'Lips', groups: [
+        { key: 'lips', label: 'Lips', options: M.lips, crop: 'mouth' },
+        { key: 'fangs', label: 'Fangs', options: M.fangs, crop: 'mouth' }
+      ]
+    },
+    { id: 'blood', label: 'Blood', groups: [{ key: 'blood', options: M.blood, crop: 'head' }] },
     { id: 'masks', label: 'Masks', groups: [{ key: 'mask', options: DATA.masks, crop: 'hat' }] },
     {
       id: 'costume', label: 'Costume', groups: [
@@ -57,7 +63,7 @@
   const optionsFor = key => key === 'mask' ? DATA.masks : M[key];
 
   let state = clone(DATA.defaults);
-  let activeTab = 'face';
+  let activeTab = 'basics';
   let filter = 'all';
   let openPreset = null;
 
@@ -91,8 +97,9 @@
       hairStyle: s.hairStyle,
       hairColour: colour.hex,
       browColour: colour.brow,
-      skin: s.skin, contour: s.contour, underEyes: s.underEyes, lenses: s.lenses, eyes: s.eyes,
-      facePaint: s.facePaint, effects: s.effects.slice(), lips: s.lips, extras: s.extras.slice(), mask: s.mask,
+      skin: SKIN_BASES[s.facePaint] || 'none', facePaint: SKIN_BASES[s.facePaint] ? 'none' : s.facePaint,
+      contour: s.contour, underEyes: s.underEyes, lenses: s.lenses, eyes: s.eyes,
+      effects: s.effects.slice(), lips: s.lips, fangs: s.fangs, blood: s.blood.slice(), mask: s.mask,
       clothing: s.clothing, headwear: s.headwear, accessory: s.accessory
     };
   }
@@ -111,8 +118,8 @@
   }
 
   function lookName(s) {
-    const firstOrder = ['mask', 'effects', 'facePaint', 'extras', 'eyes', 'lenses', 'contour', 'underEyes', 'lips', 'skin'];
-    const secondOrder = ['skin', 'contour', 'underEyes', 'lips', 'lenses', 'eyes', 'extras', 'facePaint', 'effects'];
+    const firstOrder = ['mask', 'effects', 'fangs', 'blood', 'eyes', 'lenses', 'contour', 'underEyes', 'lips', 'facePaint'];
+    const secondOrder = ['facePaint', 'contour', 'underEyes', 'lips', 'lenses', 'eyes', 'blood', 'fangs', 'effects'];
     const d = DATA.defaults;
     const hairColourWord = s.hairColour !== d.hairColour ? byId(DATA.hairColours, s.hairColour).namePart : '';
     const hairStyleWord = s.hairStyle !== d.hairStyle ? byId(DATA.hairStyles, s.hairStyle).namePart : '';
@@ -486,7 +493,7 @@
     s = versionState(s, pid, vid);
     if (Math.random() < 0.4) s.hairColour = pick(DATA.hairColours).id;
     if (s.mask === 'none') {
-      const keys = ['contour', 'underEyes', 'lenses', 'eyes', 'lips', 'effects', 'extras'];
+      const keys = ['contour', 'underEyes', 'lenses', 'eyes', 'lips', 'fangs', 'effects', 'blood'];
       let tweaks = 1 + Math.floor(Math.random() * 2);
       for (let tries = 0; tweaks > 0 && tries < 40; tries++) {
         const k = pick(keys);
@@ -510,7 +517,7 @@
 
   function reset() {
     state = clone(DATA.defaults);
-    activeTab = 'face';
+    activeTab = 'basics';
     openPreset = null;
     renderTabs();
     update();

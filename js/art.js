@@ -100,7 +100,7 @@
   const SHAPES = {
     pointed: { crownY: 94, w: 1.02, jaw: [[85, 252], [77, 276], [62, 300], [42, 322], [20, 338], [5, 344], [0, 345]] },
     oval: { crownY: 94, w: 1, jaw: [[84, 256], [78, 282], [66, 306], [48, 324], [26, 334], [0, 337]] },
-    square: { crownY: 96, w: 1.01, jaw: [[86, 258], [85, 284], [81, 306], [68, 322], [44, 330], [0, 332]] }
+    square: { crownY: 96, w: 1.01, upper: [[0, -6], [38, -2], [62, 10], [78, 32], [86, 60], [88, 94], [88, 130]], jaw: [[86, 258], [85, 284], [81, 306], [68, 322], [44, 330], [0, 332]] }
   };
 
   const FEATURES = {
@@ -113,7 +113,8 @@
     const s = SHAPES[shape] || SHAPES.oval;
     const ft = FEATURES[features] || FEATURES.androgynous;
     const w = s.w;
-    const upper = [[0, s.crownY], [48 * w, s.crownY + 4], [76 * w, s.crownY + 22], [86 * w, s.crownY + 54], [88 * w, 190], [88 * w, 226]];
+    const upper = s.upper ? s.upper.map(([x, y]) => [x * w, s.crownY + y])
+      : [[0, s.crownY], [48 * w, s.crownY + 4], [76 * w, s.crownY + 22], [86 * w, s.crownY + 54], [88 * w, 190], [88 * w, 226]];
     const jaw = s.jaw.map(([x, y], i, arr) => {
       if (i === arr.length - 1 || y < 270) return [x, y];
       return [Math.max(0, x + ft.jaw * (i === arr.length - 2 ? 0.7 : 1)), y];
@@ -223,6 +224,16 @@
     return out;
   }
 
+  // A C-shaped curl: a lock bent most of the way round a circle.
+  function curl(h, R, cx, cy, rad, w, spin) {
+    const a0 = R() * Math.PI * 2, a1 = a0 + spin * Math.PI * 1.25;
+    const x1 = cx + Math.cos(a0) * rad, y1 = cy + Math.sin(a0) * rad, x2 = cx + Math.cos(a1) * rad, y2 = cy + Math.sin(a1) * rad;
+    const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L;
+    const am = (a0 + a1) / 2, mx = cx + Math.cos(am) * rad - (x1 + x2) / 2, my = cy + Math.sin(am) * rad - (y1 + y2) / 2;
+    const b = Math.sign(nx * mx + ny * my || 1) * Math.min(0.9, Math.hypot(mx, my) / L * 1.3);
+    return lock(h, R, x1, y1, x2, y2, w, b, b, { hl: 1, full: true });
+  }
+
   // Close-fitting cap of hair over the skull, down to the hairline.
   function hairCap(a, h, o) {
     return P(capPath(a, o), h.base);
@@ -311,14 +322,15 @@
       let back = P(spline(sil, true), h.deep);
       for (let i = 0; i < 12; i++) {
         const s = i % 2 ? 1 : -1;
-        const x = CX + s * r(70, 118);
-        back += lock(h, R, x, r(150, 220), x + s * r(2, 8), r(500, 560), r(14, 22), 0, 0, { hl: 1, blunt: true });
+        const x = CX + s * r(64, 100);
+        back += lock(h, R, x, r(200, 240), x + s * r(4, 12), r(500, 560), r(16, 22), 0, 0, { hl: 1, blunt: true });
       }
       let front = hairCap(a, h, { top: a.crownY - 12 });
       // side curtains
       [-1, 1].forEach(s => {
         for (let i = 0; i < 6; i++) {
-          front += lock(h, R, CX + s * r(76, 96), r(130, 160), CX + s * r(100, 130), r(480, 540), r(16, 23), s * r(-0.01, 0.02), s * r(-0.02, 0.01), { blunt: true });
+          const rx = r(78, 94);
+          front += lock(h, R, CX + s * rx, r(134, 156), CX + s * Math.min(118, rx + r(12, 22)), r(480, 540), r(16, 22), -s * r(0.01, 0.03), s * r(0, 0.02), { blunt: true });
         }
       });
       // volume from the parting
@@ -439,30 +451,140 @@
       const R = rng(79), r = (x, y) => x + R() * (y - x);
       const top = a.crownY - 14;
       const back = E(CX, 160, 96, 66, h.deep);
-      let front = '';
+      let front = hairCap(a, h, { top: a.crownY - 10 });
+      // centre parting, combed up to each tie
       [-1, 1].forEach(s => {
-        const tx = CX + s * 98, ty = 156;
-        let b = '';
-        for (let i = 0; i < 9; i++) {
-          b += lock(h, R, tx + s * r(-2, 6), ty + r(-6, 6), CX + s * r(112, 150), r(260, 340), r(22, 30), -s * r(0.1, 0.22), s * r(0.12, 0.26));
+        for (let i = 0; i < 6; i++) {
+          front += lock(h, R, CX + s * r(1, 6), r(100, 124), CX + s * r(80, 88), a.crownY + 24 + r(-4, 4), r(18, 24), -s * r(0.1, 0.16), 0, { hl: 2 });
         }
-        front += b;
-      });
-      front += hairCap(a, h, { top: a.crownY - 10 });
-      // centre parting, combed to each tie
-      [-1, 1].forEach(s => {
-        for (let i = 0; i < 7; i++) {
-          front += lock(h, R, CX + s * r(1, 6), r(100, 128), CX + s * r(92, 100), r(148, 164), r(18, 24), -s * r(0.12, 0.18), -s * r(0.02, 0.08), { hl: 2 });
-        }
-        front += E(CX + s * 98, 156, 7, 9, '#7a1426') + E(CX + s * 97, 153, 3, 3.5, '#a8384a');
       });
       front += S(`M${pt(CX, a.crownY - 8)}L${pt(CX, a.hairlineY - 6)}`, h.deep, 1.4);
-      // soft short fringe
-      for (let i = 0; i < 7; i++) {
-        const t = i / 6 * 2 - 1;
-        front += lock(h, R, CX + t * 60 + r(-3, 3), a.crownY + 4 + t * t * 20, CX + t * 72 + r(-3, 3), r(160, 168), r(26, 32), r(-0.04, 0.04), r(-0.03, 0.03), { full: true });
+      // high, round, bouncy bunches tied with ribbons
+      let bows = '';
+      [-1, 1].forEach(s => {
+        const tx = CX + s * 88, ty = a.crownY + 22, bx = CX + s * 114, by = a.crownY + 66;
+        front += C(bx, by, 30, h.shade) + C(bx - s * 6, by - 8, 18, h.base, op(0.6));
+        for (let i = 0; i < 8; i++) {
+          const th = -Math.PI / 2 + s * (0.1 + i * 0.4);
+          front += lock(h, R, tx + s * 4, ty + 2, bx + Math.cos(th) * r(20, 30), by + Math.sin(th) * r(20, 30), r(16, 22), -s * 0.26, s * 0.14, { full: true });
+        }
+        for (let i = 0; i < 8; i++) front += curl(h, R, bx + r(-18, 18), by + r(-6, 22), r(8, 11), r(7, 9), s);
+        bows += G(bowTie(tx, ty, '#e07a9a', 1.3), `transform="rotate(${s * -24} ${tx} ${ty})"`) + C(tx, ty, 2.2, '#f7c4d4');
+      });
+      // short blunt fringe, a little uneven
+      for (let i = 0; i < 9; i++) {
+        const t = i / 8 * 2 - 1;
+        front += lock(h, R, CX + t * 64 + r(-3, 3), a.crownY + 6 + t * t * 18, CX + t * 70 + r(-3, 3), a.browY - 12 + r(-2, 3) + t * t * 4, r(22, 30), r(-0.03, 0.03), r(-0.02, 0.02), { full: true, hl: 2 });
       }
+      return { back, front: front + bows, top };
+    },
+
+    curls50s(a, h) {
+      const R = rng(151), r = (x, y) => x + R() * (y - x);
+      const top = a.crownY - 22;
+      const sil = mirrorPts([[CX, top], [CX + 76, top + 10], [CX + 110, 150], [CX + 120, 240], [CX + 116, 320], [CX + 80, 330], [CX, 320]]);
+      let back = P(spline(sil, true), h.deep);
+      [-1, 1].forEach(s => { for (let i = 0; i < 8; i++) back += curl(h, R, CX + s * r(96, 112), r(240, 320), r(11, 14), r(9, 11), s); });
+      let front = hairCap(a, h, { top: a.crownY - 14 });
+      const part = CX - 32;
+      // a glossy wave swept over from the side parting
+      for (let i = 0; i < 9; i++) {
+        const s = i < 3 ? -1 : 1;
+        front += lock(h, R, part + r(-4, 4), r(100, 108), CX + s * r(64, 100), r(126, 160), r(30, 38), -s * r(0.18, 0.26), s * r(0.04, 0.1), { hl: 3 });
+      }
+      front += curl(h, R, CX + 44, a.hairlineY - 2, 16, 13, 1);
+      // rows of pin curls down to the shoulders
+      [-1, 1].forEach(s => {
+        [176, 214, 252, 290, 322].forEach((y, row) => {
+          front += curl(h, R, CX + s * (92 + row * 4 + r(-2, 4)), y + r(-4, 4), r(11, 14), r(10, 12), s);
+          if (row > 1) front += curl(h, R, CX + s * (110 + row * 2), y + r(4, 10), r(10, 12), r(9, 11), -s);
+        });
+      });
       return { back, front, top };
+    },
+
+    tousledCurls(a, h) {
+      const R = rng(163), r = (x, y) => x + R() * (y - x);
+      const top = a.crownY - 30;
+      const ring = [];
+      for (let i = 0; i <= 20; i++) {
+        const th = Math.PI + i / 20 * Math.PI;
+        ring.push([CX + Math.cos(th) * 128 * r(0.95, 1.05), 176 + Math.sin(th) * 104 * r(0.95, 1.05)]);
+      }
+      ring.push([CX + 146, 300], [CX + 144, 420], [CX + 126, 500], [CX + 60, 420], [CX - 60, 420], [CX - 126, 500], [CX - 144, 420], [CX - 146, 300]);
+      let back = P(spline(ring, true), h.deep);
+      [-1, 1].forEach(s => { for (let i = 0; i < 16; i++) back += curl(h, R, CX + s * r(96, 140), r(170, 490), r(12, 16), r(10, 13), s); });
+      let front = hairCap(a, h, { top: a.crownY - 22, side: 98 });
+      [-1, 1].forEach(s => {
+        for (let i = 0; i < 4; i++) front += lock(h, R, CX + s * r(0, 10), r(98, 108), CX + s * r(80, 100), r(140, 170), r(30, 36), -s * r(0.16, 0.22), s * r(0, 0.06));
+        for (let i = 0; i < 4; i++) front += lock(h, R, CX + s * r(80, 92), r(136, 160), CX + s * r(106, 128), r(420, 480), r(22, 28), -s * 0.14, s * 0.16, { hl: 1 });
+        for (let y = 150; y < 470; y += 26) front += curl(h, R, CX + s * r(96, 124), y + r(-6, 6), r(12, 16), r(10, 13), s);
+      });
+      for (let i = 0; i < 5; i++) front += curl(h, R, CX + r(-80, 80), top + r(12, 30), r(11, 14), r(9, 12), i % 2 ? 1 : -1);
+      return { back, front, top };
+    },
+
+    sidePart(a, h) {
+      const R = rng(171), r = (x, y) => x + R() * (y - x);
+      const top = a.crownY - 16;
+      const back = E(CX, 156, 98, 66, h.deep);
+      let front = hairCap(a, h, { top: a.crownY - 12 });
+      const part = CX - 36;
+      for (let i = 0; i < 10; i++) {
+        front += lock(h, R, part + r(-3, 3), r(102, 112), CX + r(30, 96), r(136, 164), r(26, 32), -r(0.12, 0.18), r(0, 0.05), { hl: 2 });
+      }
+      for (let i = 0; i < 4; i++) {
+        front += lock(h, R, part + r(-3, 3), r(104, 112), CX - r(66, 90), r(144, 170), r(22, 28), r(0.1, 0.16), 0, { hl: 2 });
+      }
+      [-1, 1].forEach(s => { for (let i = 0; i < 3; i++) front += lock(h, R, CX + s * r(76, 86), 150 + i * 12, CX + s * r(92, 98), 196 + i * 6, r(14, 18), -s * 0.06, 0, { hl: 1 }); });
+      front += S(`M${pt(part, a.crownY - 6)}L${pt(part - 4, a.hairlineY - 2)}`, h.deep, 1.4);
+      return { back, front, top };
+    },
+
+    quiff(a, h, id) {
+      const R = rng(179), r = (x, y) => x + R() * (y - x);
+      const hl = a.hairlineY;
+      const top = a.crownY - 38;
+      const shape = spline([[CX - 86, 204], [CX - 90, 150], [CX - 74, 114], [CX - 44, a.crownY - 18], [CX + 4, top + 2], [CX + 48, a.crownY - 28],
+        [CX + 80, a.crownY + 4], [CX + 92, 144], [CX + 88, 204], [CX + 82, 200], [CX + 80, 166], [CX + 60, hl + 2], [CX, hl + 4], [CX - 60, hl + 2], [CX - 80, 166], [CX - 84, 200]], true);
+      const back = E(CX, 160, 98, 66, h.deep);
+      let locks = '';
+      for (let i = 0; i < 12; i++) {
+        const t = i / 11 * 2 - 1;
+        locks += lock(h, R, CX + t * 84, hl + 10 + t * t * 44, CX + t * 46 + r(4, 20), top - r(0, 10), r(28, 34), -0.22, 0.1, { hl: 3, blunt: true });
+      }
+      [-1, 1].forEach(s => { for (let i = 0; i < 3; i++) locks += lock(h, R, CX + s * 90, 210 - i * 14, CX + s * r(80, 90), 120 - i * 8, r(14, 18), s * 0.05, 0, { hl: 2, blunt: true }); });
+      const front = `<clipPath id="${id}qf"><path d="${shape}"/></clipPath>` + P(shape, h.base) + G(locks, `clip-path="url(#${id}qf)"`) + S(shape, h.deep, 1, op(0.6));
+      return { back, front, top };
+    },
+
+    curlyCrop(a, h) {
+      const R = rng(187), r = (x, y) => x + R() * (y - x);
+      const top = a.crownY - 22;
+      const back = E(CX, 158, 100, 70, h.deep);
+      let front = hairCap(a, h, { top: a.crownY - 14 });
+      for (let i = 0; i < 34; i++) {
+        const th = Math.PI * (1.02 + R() * 0.96), rad = R() * 0.9;
+        front += curl(h, R, CX + Math.cos(th) * 88 * rad, 150 + Math.sin(th) * 64 * rad, r(7, 9), r(7, 9), i % 2 ? 1 : -1);
+      }
+      [-1, 1].forEach(s => { for (let i = 0; i < 4; i++) front += curl(h, R, CX + s * r(84, 94), r(150, 196), r(7, 9), r(7, 8), s); });
+      for (let i = 0; i < 6; i++) front += curl(h, R, CX + r(-56, 56), r(146, 162), r(7, 8), r(6, 8), i % 2 ? 1 : -1);
+      return { back, front, top };
+    },
+
+    undercut(a, h, id) {
+      const R = rng(193), r = (x, y) => x + R() * (y - x);
+      const hl = a.hairlineY;
+      const top = a.crownY - 22;
+      // shaved sides, then a longer top swept over to one side
+      let front = HAIR.shaved(a, h, id + 'u').front;
+      const shape = spline([[CX - 66, hl + 22], [CX - 72, hl - 10], [CX - 52, a.crownY + 2], [CX, top], [CX + 52, a.crownY], [CX + 74, hl - 10], [CX + 72, hl + 20],
+        [CX + 40, hl + 10], [CX, hl + 6], [CX - 40, hl + 10]], true);
+      let locks = '';
+      for (let i = 0; i < 9; i++) locks += lock(h, R, CX - 60 + i * 6, top + r(4, 14), CX + r(30, 80), hl + r(6, 20), r(26, 32), -0.12, 0.04, { hl: 3 });
+      front += `<clipPath id="${id}uc"><path d="${shape}"/></clipPath>` + P(shape, h.base) + G(locks, `clip-path="url(#${id}uc)"`) + S(shape, h.deep, 1, op(0.6));
+      for (let i = 0; i < 4; i++) front += lock(h, R, CX + r(10, 40), hl - r(0, 8), CX + r(40, 66), a.browY - r(8, 14), r(16, 22), 0.14, -0.04, { hl: 2 });
+      return { back: E(CX, 150, 84, 50, h.deep), front, top };
     },
 
     ponytail(a, h, id) {
@@ -775,21 +897,15 @@
   function contour(a, look, id) {
     let out = '';
     [-1, 1].forEach(s => {
-      const ex = CX + s * a.eyeDX;
       switch (look.contour) {
         case 'bruised':
-          out += cheekHollow(a, s, '#5a3f7a', 0.42) + cheekHollow(a, s, '#36285e', 0.2);
-          out += E(CX + s * (a.mouthW + 3), a.mouthY + 1, 7, 5, '#5a3a78', op(0.45));
-          out += underCrescent(a, s, '#4a3a7a', 0.5, 16);
+          out += cheekHollow(a, s, '#5a3f7a', 0.5) + cheekHollow(a, s, '#36285e', 0.25);
+          out += E(CX + s * (a.mouthW + 3), a.mouthY + 1, 8, 6, '#5a3a78', op(0.5));
           break;
         case 'sunken':
-          out += cheekHollow(a, s, '#4a3630', 0.5);
+          out += cheekHollow(a, s, '#4a3630', 0.55);
           out += E(CX + s * 84, a.browY + 6, 14, 28, '#4a3630', op(0.35));
-          out += E(ex + s * 2, a.eyeY - 4, a.eyeRX + 12, a.eyeRY + 12, '#4a3630', op(0.25));
-          break;
-        case 'redRims':
-          out += E(ex + s, a.eyeY + 1, a.eyeRX + 6, a.eyeRY + 6, '#b0303a', op(0.38));
-          out += underCrescent(a, s, '#9a1a24', 0.5, 8);
+          out += E(CX + s * (a.mouthW + 3), a.mouthY + 1, 7, 5, '#4a3630', op(0.35));
           break;
         case 'dollBlush':
           out += C(CX + s * 52, a.cheekY + 6, 13, '#e8728a', op(0.6)) + C(CX + s * 52, a.cheekY + 6, 9, '#e05a78', op(0.4)) +
@@ -797,7 +913,10 @@
           break;
       }
     });
-    return out ? G(out, `clip-path="url(#${id}hd)"`) : '';
+    if (!out) return '';
+    // blended eyeshadow has soft edges; doll blush is painted crisp
+    const soft = look.contour === 'dollBlush' ? '' : `filter="url(#${id}soft)"`;
+    return G(G(out, soft), `clip-path="url(#${id}hd)"`);
   }
 
   /* ---------- face paint ---------- */
@@ -986,20 +1105,23 @@
 
   /* ---------- under-eyes ---------- */
 
-  function underEyes(a, look) {
+  function underEyes(a, look, id) {
     let out = '';
     [-1, 1].forEach(s => {
       const ex = CX + s * a.eyeDX, ey = a.eyeY, rx = a.eyeRX, ry = a.eyeRY;
       switch (look.underEyes) {
+        case 'bruised':
+          out += underCrescent(a, s, '#4f5a9a', 0.4, 26) + underCrescent(a, s, '#5a2f72', 0.55, 16);
+          out += E(ex - s * rx * 0.85, ey + 3, 6, 8, '#3a1a56', op(0.4));
+          break;
+        case 'redRims':
+          out += E(ex + s, ey + 1, rx + 6, ry + 6, '#b0303a', op(0.38));
+          out += underCrescent(a, s, '#9a1a24', 0.5, 8);
+          break;
         case 'hollows':
           out += E(ex + s * 2, ey + 2, rx + 12, ry + 14, '#5f4a5e', op(0.32));
           out += underCrescent(a, s, '#3d2a3c', 0.5, 18);
           out += E(ex - s * rx * 0.9, ey + 3, 7, 9, '#3d2a3c', op(0.45));
-          break;
-        case 'bruised':
-          out += E(ex, ey + 4, rx + 16, ry + 16, '#4f5a9a', op(0.25));
-          out += E(ex, ey + 4, rx + 10, ry + 11, '#5a2f72', op(0.45));
-          out += P(`M${pt(ex - rx - 6, ey)}C${pt(ex - rx, ey + ry + 16)} ${pt(ex + rx, ey + ry + 14)} ${pt(ex + rx + 6, ey - 2)}Z`, '#3a1a56', op(0.45));
           break;
         case 'kohl':
           out += P(`M${pt(ex - rx - 2, ey + 4)}C${pt(ex - rx, ey + ry + 8)} ${pt(ex + rx, ey + ry + 10)} ${pt(ex + rx + 6, ey)}C${pt(ex + rx + 2, ey + ry + 18)} ${pt(ex + 6, ey + ry + 16)} ${pt(ex + 2, ey + ry + 28)}` +
@@ -1012,7 +1134,10 @@
           break;
       }
     });
-    return out;
+    if (!out) return '';
+    // shadow-based looks blend softly; kohl and painted sockets keep their edges
+    const soft = ['bruised', 'redRims', 'hollows'].includes(look.underEyes) ? `filter="url(#${id}soft)"` : '';
+    return G(out, soft);
   }
 
   /* ---------- eye makeup ---------- */
@@ -1162,7 +1287,7 @@
     const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1;
     let nx = -dy / L, ny = dx / L;
     if (ny < 0) { nx = -nx; ny = -ny; }
-    let out = P(spline(tearRing(R, x1, y1, x2, y2, w, 1.7, 0.2), true), '#a03a3a', op(0.28));
+    let out = P(spline(tearRing(R, x1, y1, x2, y2, w, 1.9, 0.2), true), '#5a3f7a', op(0.32)) + P(spline(tearRing(R, x1, y1, x2, y2, w, 1.4, 0.2), true), '#8a3a5a', op(0.22));
     out += P(spline(tearRing(R, x1, y1, x2, y2, w, 1.08, 0.25), true), sk.light, `stroke="${sk.deep}" stroke-width="0.9"`);
     out += P(spline(tearRing(R, x1, y1, x2, y2, w, 0.66, 0.55), true), BLOOD);
     out += P(spline(tearRing(R, x1, y1, x2, y2, w, 0.3, 0.6), true), BLOOD_DARK);
@@ -1181,17 +1306,6 @@
     const mw = a.mouthW, my = a.mouthY;
     let out = '', neckFx = '';
 
-    if (has('veins')) {
-      const vein = (x, y, ang, len, depth) => {
-        const ex = x + Math.cos(ang) * len, ey = y + Math.sin(ang) * len;
-        let d = S(`M${pt(x, y)}Q${pt((x + ex) / 2 + r(-4, 4), (y + ey) / 2 + r(-4, 4))} ${pt(ex, ey)}`, '#4b3a6b', f(1.6 - depth * 0.4), op(0.75));
-        if (depth < 2) d += vein(ex, ey, ang + r(0.3, 0.7), len * 0.65, depth + 1) + vein(ex, ey, ang - r(0.3, 0.7), len * 0.6, depth + 1);
-        return d;
-      };
-      out += vein(CX - 88, a.browY - 10, 0.5, 16, 0) + vein(CX + 88, a.browY - 6, Math.PI - 0.4, 16, 0) +
-        vein(CX - 34, a.eyeY + 30, 2.2, 12, 0) + vein(CX + 52, a.eyeY + 28, 1.0, 12, 0) + vein(CX - 76, a.jawY - 10, -0.8, 14, 0);
-      neckFx += vein(CX + a.neckW - 8, a.collarY + 4, -1.8, 18, 0);
-    }
     if (has('cracked')) {
       [
         [[CX - 58, a.hairlineY - 6], [CX - 50, a.hairlineY + 14], [CX - 56, a.browY - 8], [CX - 46, a.browY + 4]],
@@ -1218,41 +1332,39 @@
       }
     }
     if (has('zipFace')) {
-      // a zip set into latex down the right side of the face, open in the middle
-      const P0 = [CX + 34, a.crownY + 58], P1 = [CX + 96, a.eyeY - 14], P2 = [CX + 66, a.cheekY + 44], P3 = [CX + 24, a.chinY - 14];
-      const at = t => {
-        const u = 1 - t;
-        return [0, 1].map(k => u * u * u * P0[k] + 3 * u * u * t * P1[k] + 3 * u * t * t * P2[k] + t * t * t * P3[k]);
-      };
-      const N = 22, L = [], Rt = [];
+      // closed from between the brows, then open onto bloody flesh round the mouth and chin
+      const y0 = a.browY + 6, y1 = a.chinY - 5, N = 28, L = [], Rt = [], mid = [];
+      const opening = t => t < 0.36 ? 0 : Math.pow(Math.sin(Math.PI * Math.min(1, (t - 0.36) / 0.7)), 0.75);
       for (let i = 0; i <= N; i++) {
-        const t = i / N, p = at(t), q = at(Math.min(1, t + 0.01)), o = at(Math.max(0, t - 0.01));
-        const tx = q[0] - o[0], ty = q[1] - o[1], tl = Math.hypot(tx, ty) || 1, nx = -ty / tl, ny = tx / tl;
-        const w = Math.pow(Math.sin(Math.PI * Math.min(1, t * 1.15)), 0.8) * 9 + 1.5;
-        L.push([p[0] + nx * w, p[1] + ny * w, nx, ny]);
-        Rt.push([p[0] - nx * w, p[1] - ny * w, nx, ny]);
+        const t = i / N, y = y0 + (y1 - y0) * t, x = CX + Math.sin(t * 2.4) * 1.5;
+        const w = 1.4 + opening(t) * (mw + 7);
+        L.push([x - w, y]); Rt.push([x + w, y]); mid.push([x, y, opening(t)]);
       }
-      const ring = L.map(p => [p[0], p[1]]).concat(Rt.slice().reverse().map(p => [p[0], p[1]]));
-      const ridge = (side) => S(spline(side.map(p => [p[0], p[1]]), false), sk.light, 6) + S(spline(side.map(p => [p[0], p[1]]), false), sk.deep, 0.8, op(0.6));
-      out += P(spline(ring, true), '#a03a3a', `${op(0.3)} stroke="#a03a3a" stroke-width="8" stroke-opacity="0.25"`);
-      out += ridge(L) + ridge(Rt);
-      out += P(spline(ring, true), BLOOD) + P(spline(ring.map((p, i) => i % 3 ? p : [p[0] + 1, p[1]]), true), BLOOD_DARK, `${op(0.5)} transform="translate(1,1) scale(1)"`);
-      [L, Rt].forEach((side, k) => side.forEach((p, i) => {
-        const sgn = k ? -1 : 1, off = (i + k) % 2 ? 0 : 0.5;
-        out += `<rect x="${f(p[0] + p[2] * sgn * 1 - 1.8)}" y="${f(p[1] + p[3] * sgn * 1 - 1.4 + off)}" width="3.6" height="2.8" fill="#b9b2a4" stroke="#4a4640" stroke-width="0.5"/>`;
-      }));
-      const top = at(0);
-      out += `<rect x="${f(top[0] - 4)}" y="${f(top[1] - 6)}" width="8" height="7" fill="#c9c2b4" stroke="#4a4640" stroke-width="0.7"/>` +
-        P(`M${pt(top[0] - 2.5, top[1] + 1)}h5l1,13h-7Z`, '#b9b2a4', 'stroke="#4a4640" stroke-width="0.7"');
-      const bot = at(0.7);
-      out += drip(bot[0] - 2, bot[1] + 4, 14, 2.4);
+      const ring = L.concat(Rt.slice().reverse());
+      out += P(spline(ring.map(p => [CX + (p[0] - CX) * 1.25, p[1]]), true), '#5a3f7a', op(0.3));
+      [L, Rt].forEach(side => out += S(spline(side, false), sk.light, 6) + S(spline(side, false), sk.deep, 0.8, op(0.6)));
+      out += P(spline(ring, true), BLOOD) + P(spline(ring.map(p => [CX + (p[0] - CX) * 0.55, p[1] + 2]), true), BLOOD_DARK, op(0.6));
+      mid.forEach(([x, y, o], i) => {
+        if (o < 0.04) {
+          const dx = i % 2 ? 1.2 : -1.2;
+          out += `<rect x="${f(x + dx - 1.8)}" y="${f(y - 1.3)}" width="3.6" height="2.6" fill="#b9b2a4" stroke="#4a4640" stroke-width="0.5"/>`;
+        } else {
+          out += `<rect x="${f(L[i][0] - 2.6)}" y="${f(y - 1.3)}" width="3.2" height="2.6" fill="#b9b2a4" stroke="#4a4640" stroke-width="0.5"/>` +
+            `<rect x="${f(Rt[i][0] - 0.6)}" y="${f(y - 1.3)}" width="3.2" height="2.6" fill="#b9b2a4" stroke="#4a4640" stroke-width="0.5"/>`;
+        }
+      });
+      const pull = mid[Math.round(N * 0.36)];
+      out += `<rect x="${f(pull[0] - 4)}" y="${f(pull[1] - 4)}" width="8" height="7" fill="#c9c2b4" stroke="#4a4640" stroke-width="0.7"/>` +
+        P(`M${pt(pull[0] - 2.5, pull[1] + 3)}h5l1,12h-7Z`, '#b9b2a4', 'stroke="#4a4640" stroke-width="0.7"');
+      [-6, 2, 8].forEach((dx, i) => out += drip(CX + dx, y1 - 2, 8 + i * 5, 2.2));
+      out += C(CX - 4, a.mouthY, 1.4, BLOOD_WET, op(0.8));
     }
     if (has('clawRip')) {
-      const p0 = [CX - 64, a.eyeY + 44], p1 = [CX + 42, a.mouthY + 18];
-      const dx = p1[0] - p0[0], dy = p1[1] - p0[1], L = Math.hypot(dx, dy), nx = -dy / L, ny = dx / L;
-      [-15, 0, 15].forEach(k => {
-        out += tear(sk, R, p0[0] + nx * k + 6, p0[1] + ny * k, p1[0] + nx * k - 6, p1[1] + ny * k, 6.5, 2);
-      });
+      const top = a.eyeY + a.eyeRY + 9, cw = a.widthAt(a.cheekY) - 12;
+      for (let k = 0; k < 3; k++) {
+        const y = top + k * 10;
+        out += tear(sk, R, CX - cw, y, CX + cw, y + 15, 4.6, 1);
+      }
     }
     if (has('tornCheeks')) {
       [-1, 1].forEach(s => {
@@ -1262,22 +1374,14 @@
       });
     }
     if (has('templePeel')) {
-      const s = -1, ex = CX + s * a.eyeDX, ey = a.eyeY, rx = a.eyeRX, ry = a.eyeRY;
-      const edge = CX + s * (a.widthAt(ey) - 4);
-      const pts = [[ex - s * 4, a.browY - 2], [ex + s * rx * 0.8, a.browY - 12], [edge, a.browY - 6], [edge, ey + 10],
-        [ex + s * (rx + 10), ey + ry + 12], [ex + s * 2, ey + ry + 16], [ex - s * 10, ey + ry + 8]];
-      const c = pts.reduce((m, p) => [m[0] + p[0] / pts.length, m[1] + p[1] / pts.length], [0, 0]);
-      const scale = k => pts.map(p => [c[0] + (p[0] - c[0]) * k + r(-1.5, 1.5), c[1] + (p[1] - c[1]) * k + r(-1.5, 1.5)]);
-      out += P(spline(scale(1.18), true), '#a03a3a', op(0.3));
-      out += P(spline(scale(1.02), true), sk.light, `stroke="${sk.deep}" stroke-width="0.9"`);
-      out += P(spline(scale(0.86), true), BLOOD);
-      for (let i = 0; i < 6; i++) out += E(c[0] + r(-18, 18), c[1] + r(-14, 14), r(2, 4), r(1.5, 3), BLOOD_DARK, op(0.7));
-      out += C(c[0] - 6, c[1] - 4, 1.4, BLOOD_WET, op(0.8));
-      // the peeled-back flap of latex
-      const fx0 = edge - s * 2, fy0 = ey + 4;
-      out += P(`M${pt(fx0, fy0 - 14)}C${pt(fx0 + s * 10, fy0 - 6)} ${pt(fx0 + s * 8, fy0 + 14)} ${pt(fx0 - s * 4, fy0 + 20)}C${pt(fx0 - s * 6, fy0 + 8)} ${pt(fx0 - s * 4, fy0 - 4)} ${pt(fx0, fy0 - 14)}Z`,
-        sk.base, `stroke="${sk.deep}" stroke-width="0.9"`) + S(`M${pt(fx0 - s * 1, fy0 - 8)}Q${pt(fx0 + s * 4, fy0 + 2)} ${pt(fx0 - s * 3, fy0 + 14)}`, sk.shade, 1.4);
-      out += drip(ex + s * (rx + 4), ey + ry + 12, 16, 2.4);
+      const s = -1, ex = CX + s * a.eyeDX;
+      const x1 = ex + 4, y1 = a.browY - 28, x2 = ex - 6, y2 = a.cheekY + 20;
+      out += tear(sk, R, x1, y1, x2, y2, 12, 2);
+      // curled latex flaps at the top and bottom of the tear
+      [[x1 - 10, y1 + 18, 1], [x2 + 12, y2 - 16, -1]].forEach(([fx, fy, k]) => {
+        out += P(`M${pt(fx, fy - 7 * k)}C${pt(fx - 8, fy - 2 * k)} ${pt(fx - 7, fy + 6 * k)} ${pt(fx + 1, fy + 8 * k)}C${pt(fx - 2, fy + 2 * k)} ${pt(fx - 1, fy - 3 * k)} ${pt(fx, fy - 7 * k)}Z`,
+          sk.base, `stroke="${sk.deep}" stroke-width="0.8"`);
+      });
     }
     if (has('foreheadGash')) {
       const y = a.hairlineY + 18;
@@ -1297,13 +1401,6 @@
           const t = i / 5, x = x0 + (x1 - x0) * t, y = my + (y1 - my) * t * t;
           out += S(`M${pt(x - s * 3, y - 4)}L${pt(x + s * 3, y + 4)}`, '#120c10', 1.3);
         }
-      });
-    }
-    if (has('bloodTears')) {
-      [-1, 1].forEach(s => {
-        const ex = CX + s * a.eyeDX, y = a.eyeY + a.eyeRY * 0.8;
-        out += drip(ex + s * 3, y, a.cheekY - y + 22 + (s > 0 ? 8 : 0), 2.8, '#8e0d18');
-        out += drip(ex - s * 7, y - 1, 12, 1.8, '#8e0d18');
       });
     }
     if (has('throatBite')) {
@@ -1341,22 +1438,29 @@
   }
 
   function extras(a, look, sk) {
-    const list = look.extras || [];
+    const list = look.blood || [];
     const R = rng(131), r = (x, y) => x + R() * (y - x);
-    const mw = a.mouthW, my = a.mouthY;
+    const mw = a.mouthW, my = a.mouthY, lb = a.lipBot;
     let out = '';
-    if (list.includes('messyFeed')) {
-      const ring = [];
-      for (let i = 0; i < 14; i++) {
-        const th = i / 14 * Math.PI * 2;
-        ring.push([CX + Math.cos(th) * (mw + 12) * r(0.8, 1.15), my + 6 + Math.sin(th) * 15 * r(0.8, 1.2)]);
-      }
-      out += P(spline(ring, true), BLOOD, op(0.5));
-      out += E(CX - 6, a.chinY - 10, 14, 7, BLOOD, op(0.65)) + E(CX + mw + 6, my - 4, 7, 4, BLOOD, op(0.6));
-      for (let i = 0; i < 5; i++) out += E(CX + r(-mw, mw), my + r(2, 16), r(2, 5), r(1.5, 3), BLOOD_DARK, op(0.6));
-      [-12, -2, 9].forEach((dx, i) => out += drip(CX + dx, a.chinY - 6, 12 + i * 5, 2.6));
+    if (list.includes('bloodEyes')) {
+      [-1, 1].forEach(s => {
+        const ex = CX + s * a.eyeDX, y = a.eyeY + a.eyeRY * 0.8;
+        out += drip(ex + s * 3, y, a.cheekY - y + 22 + (s > 0 ? 8 : 0), 2.8, '#8e0d18');
+        out += drip(ex - s * 7, y - 1, 12, 1.8, '#8e0d18');
+      });
     }
-    if (list.includes('fangs')) {
+    if (list.includes('messyFeed')) {
+      // a wet coat on the bottom lip with drips running off all along it
+      out += P(`M${pt(CX - mw, my)}Q${pt(CX, my + 2)} ${pt(CX + mw, my)}C${pt(CX + mw * 0.6, my + lb * 1.35)} ${pt(CX - mw * 0.6, my + lb * 1.35)} ${pt(CX - mw, my)}Z`, BLOOD, op(0.75));
+      for (let i = 0; i < 11; i++) {
+        const t = i / 10, x = CX - mw * 0.92 + t * mw * 1.84 + r(-1.2, 1.2);
+        const u = (x - CX) / mw, edge = my + lb * 1.02 * (1 - u * u) + 0.5;
+        const long = i % 3 === 1;
+        const len = long ? a.chinY - edge + r(6, 18) : r(5, 18);
+        out += drip(x, edge - 1.5, len, r(1.6, 2.8));
+      }
+    }
+    if (look.fangs === 'fangs') {
       [-1, 1].forEach(s => {
         const x = CX + s * mw * 0.42;
         out += P(`M${pt(x - 3.6, my + 0.5)}L${pt(x + 3.6, my + 0.5)}L${pt(x + s * 0.8, my + 12)}Z`, '#f8f4ea', `stroke="#6a5a50" stroke-width="0.8" stroke-linejoin="round"`);
@@ -1379,49 +1483,70 @@
 
   const MASKS = {
     hag(a, id, base) {
-      const pal = { base: '#7f8a5c', shade: '#5c6640', deep: '#3e4528', light: '#a3ad80', line: '#2e3320' };
+      const pal = { base: '#c9a088', shade: '#a07a64', deep: '#6e4a3a', light: '#e2c4aa', line: '#4a3024' };
       const tf = `transform="translate(${CX} ${a.eyeY}) scale(1.06) translate(${-CX} ${-a.eyeY})"`;
       let s = `<clipPath id="${id}hg"><path d="${a.headPath}" ${tf}/></clipPath>`;
       s += P(a.headPath, pal.base, `${tf} stroke="${pal.line}" stroke-width="1.5"`);
-      let sh = P(`M${CX + 40},40C${CX + 74},150 ${CX + 70},${a.eyeY} ${CX + 72},${a.cheekY}C${CX + 72},${a.jawY} ${CX + 44},${a.chinY} ${CX + 10},${a.chinY + 10}H${CX + 140}V40Z`, pal.shade, op(0.8));
-      [0, 9, 18].forEach(k => sh += S(`M${CX - 50},${a.crownY + 50 + k}Q${CX},${a.crownY + 40 + k} ${CX + 50},${a.crownY + 52 + k}`, pal.deep, 1.4, op(0.7)));
+      let sh = P(`M${CX + 40},40C${CX + 74},150 ${CX + 70},${a.eyeY} ${CX + 72},${a.cheekY}C${CX + 72},${a.jawY} ${CX + 44},${a.chinY} ${CX + 10},${a.chinY + 10}H${CX + 140}V40Z`, pal.shade, op(0.7));
+      // deep forehead furrows
+      [0, 8, 16, 24].forEach(k => sh += S(`M${CX - 56},${a.crownY + 46 + k}Q${CX - 20},${a.crownY + 38 + k} ${CX},${a.crownY + 46 + k}Q${CX + 24},${a.crownY + 38 + k} ${CX + 56},${a.crownY + 48 + k}`, pal.deep, 1.5, op(0.75)));
       [-1, 1].forEach(sd => {
         const ex = CX + sd * a.eyeDX;
-        sh += E(ex, a.eyeY, a.eyeRX + 8, a.eyeRY + 6, pal.deep, op(0.55));
-        sh += S(`M${pt(ex - a.eyeRX, a.eyeY + a.eyeRY + 4)}Q${pt(ex, a.eyeY + a.eyeRY + 14)} ${pt(ex + a.eyeRX, a.eyeY + a.eyeRY + 2)}`, pal.deep, 1.4);
-        for (let i = 0; i < 3; i++) sh += S(`M${pt(ex + sd * (a.eyeRX + 4), a.eyeY - 4 + i * 6)}l${sd * 10},${(i - 1) * 4}`, pal.deep, 1.1);
-        sh += S(`M${pt(CX + sd * 16, a.noseY + 8)}C${pt(CX + sd * 30, a.mouthY - 10)} ${pt(CX + sd * 32, a.mouthY + 4)} ${pt(CX + sd * 26, a.mouthY + 16)}`, pal.deep, 1.8);
-        for (let i = 0; i < 7; i++) sh += S(`M${pt(ex - sd * 18 + sd * i * 6, a.browY - 2 + Math.abs(i - 3))}l${sd * 4},${-6 - (i % 3)}`, '#c9c4b0', 1.6);
-        sh += E(ex + 2, a.eyeY + 1, a.eyeRX * 0.72, a.eyeRY * 0.5, '#120d08') + C(ex - 2, a.eyeY - 1, 1.6, '#f0e6c8', op(0.85));
+        // sunken sockets and bags
+        sh += G(E(ex, a.eyeY, a.eyeRX + 7, a.eyeRY + 7, '#3a2218', op(0.5)), `filter="url(#${base}soft)"`);
+        [0, 6, 12].forEach(k => sh += S(`M${pt(ex - a.eyeRX + 2, a.eyeY + a.eyeRY + 2 + k)}Q${pt(ex, a.eyeY + a.eyeRY + 10 + k)} ${pt(ex + a.eyeRX - 2, a.eyeY + a.eyeRY + k)}`, pal.deep, 1.3, op(0.8)));
+        for (let i = 0; i < 4; i++) sh += S(`M${pt(ex + sd * (a.eyeRX + 6), a.eyeY - 6 + i * 6)}l${sd * 12},${(i - 1.5) * 4}`, pal.deep, 1.2);
+        // cheek and jowl folds
+        sh += S(`M${pt(CX + sd * 18, a.noseY + 6)}C${pt(CX + sd * 32, a.mouthY - 10)} ${pt(CX + sd * 34, a.mouthY + 6)} ${pt(CX + sd * 28, a.mouthY + 20)}`, pal.deep, 2);
+        sh += S(`M${pt(CX + sd * 56, a.cheekY - 4)}C${pt(CX + sd * 52, a.cheekY + 20)} ${pt(CX + sd * 48, a.jawY)} ${pt(CX + sd * 40, a.chinY - 10)}`, pal.deep, 1.4, op(0.7));
+        sh += S(`M${pt(ex - a.eyeRX, a.browY - 2)}Q${pt(ex, a.browY - 10)} ${pt(ex + a.eyeRX, a.browY)}`, pal.deep, 2.4, op(0.6));
+        sh += E(ex + 2, a.eyeY + 1, a.eyeRX * 0.6, a.eyeRY * 0.42, '#120a06') + C(ex - 1, a.eyeY, 1.5, '#f0e2c8', op(0.8));
       });
-      sh += P(`M${pt(CX - a.mouthW - 8, a.mouthY - 2)}Q${pt(CX, a.mouthY - 8)} ${pt(CX + a.mouthW + 8, a.mouthY - 2)}Q${pt(CX, a.mouthY + 16)} ${pt(CX - a.mouthW - 8, a.mouthY - 2)}Z`, '#1a0e08');
-      [[-10, -5, 5, 7], [-1, -6, 5, 6], [8, -4, 4, 8], [-6, 6, 4, 5], [5, 5, 4, 6]].forEach(([dx, dy, w, h]) => {
-        sh += `<rect x="${f(CX + dx)}" y="${f(a.mouthY + dy)}" width="${w}" height="${h}" fill="#d8c890" stroke="#5a4a20" stroke-width="0.5" transform="rotate(${dx % 3 * 4} ${f(CX + dx)} ${f(a.mouthY)})"/>`;
-      });
+      // thin downturned mouth with lip lines
+      sh += S(`M${pt(CX - a.mouthW - 4, a.mouthY + 3)}Q${pt(CX, a.mouthY - 2)} ${pt(CX + a.mouthW + 4, a.mouthY + 4)}`, '#3a1e14', 2.2);
+      for (let i = -3; i <= 3; i++) sh += S(`M${pt(CX + i * 5, a.mouthY - 3)}l${f(i * 0.4)},-5M${pt(CX + i * 5, a.mouthY + 4)}l${f(i * 0.4)},5`, pal.deep, 0.9, op(0.7));
+      for (let i = 0; i < 3; i++) sh += S(`M${pt(CX - 10, a.chinY - 16 + i * 5)}Q${pt(CX, a.chinY - 12 + i * 5)} ${pt(CX + 10, a.chinY - 16 + i * 5)}`, pal.deep, 1, op(0.6));
       s += G(sh, `clip-path="url(#${id}hg)"`);
-      s += hookedNose(a, pal) + wart(CX + 24, a.noseY - 2, pal) + wart(CX - 20, a.chinY - 14, pal) + wart(CX - 54, a.browY - 16, pal);
+      // long hooked nose with a wart
+      const nosePal = Object.assign({}, pal, { shade: '#8a5e48', line: '#3a2018' });
+      s += G(hookedNose(a, nosePal), `transform="translate(${CX} ${a.noseTop - 4}) scale(1.4 1.55) translate(${-CX} ${-a.noseTop})"`);
+      s += wart(CX + 22, a.noseY + 20, nosePal) + wart(CX - 30, a.chinY - 18, nosePal);
       return { svg: s, overHair: false };
     },
 
     skeleton(a, id, base) {
       const tf = `transform="translate(${CX} ${a.eyeY}) scale(1.03) translate(${-CX} ${-a.eyeY})"`;
+      const R = rng(149), r = (x, y) => x + R() * (y - x);
       let s = `<clipPath id="${id}sk"><path d="${a.headPath}" ${tf}/></clipPath>`;
-      s += P(a.headPath, '#efede6', `${tf} stroke="#8e8b84" stroke-width="1.5"`);
-      let sh = P(`M${CX + 44},40C${CX + 74},150 ${CX + 70},${a.eyeY} ${CX + 72},${a.cheekY}C${CX + 72},${a.jawY} ${CX + 44},${a.chinY} ${CX + 10},${a.chinY + 10}H${CX + 140}V40Z`, '#c8c5bd', op(0.75));
-      sh += G(S(a.headPath, '#a9a7a2', 16, op(0.5)), `clip-path="url(#${base}jw)"`);
+      s += P(a.headPath, '#d8cdb0', `${tf} stroke="#5a4e38" stroke-width="1.5"`);
+      let sh = P(`M${CX + 44},40C${CX + 74},150 ${CX + 70},${a.eyeY} ${CX + 72},${a.cheekY}C${CX + 72},${a.jawY} ${CX + 44},${a.chinY} ${CX + 10},${a.chinY + 10}H${CX + 140}V40Z`, '#b4a684', op(0.75));
+      sh += G(S(a.headPath, '#8f8264', 16, op(0.55)), `clip-path="url(#${base}jw)"`);
+      // age staining
+      for (let i = 0; i < 10; i++) {
+        const x = CX + r(-70, 70), y = r(a.crownY + 30, a.chinY - 10);
+        sh += E(x, y, r(6, 16), r(4, 10), i % 2 ? '#8a7a56' : '#9a8460', `${op(f(r(0.25, 0.45)))} transform="rotate(${f(r(0, 180))} ${f(x)} ${f(y)})"`);
+      }
       [-1, 1].forEach(sd => {
         const ex = CX + sd * a.eyeDX;
-        sh += P(socket(ex, a.eyeY, sd, 1.05), '#141214');
-        sh += C(ex + 2, a.eyeY, 2, '#f6f2e8', op(0.8));
-        sh += cheekHollow(a, sd, '#8f8c86', 0.6);
+        sh += P(socket(ex, a.eyeY, sd, 1.1), '#5a4a32', op(0.6)) + P(socket(ex, a.eyeY, sd), '#1a140e');
+        sh += cheekHollow(a, sd, '#6e6044', 0.65);
       });
-      sh += skullNose(a, '#141214');
-      const mw = a.mouthW + 8, my = a.mouthY;
-      for (let i = 0; i < 8; i++) {
-        const x = CX - mw + i * (mw * 2 / 8);
-        sh += `<rect x="${f(x)}" y="${f(my - 9)}" width="${f(mw * 2 / 8)}" height="9" fill="#f8f6f0" stroke="#3a3836" stroke-width="0.9"/>` +
-          `<rect x="${f(x)}" y="${f(my)}" width="${f(mw * 2 / 8)}" height="9" fill="#ecebe5" stroke="#3a3836" stroke-width="0.9"/>`;
+      sh += skullNose(a, '#1a140e');
+      // cracks
+      [[[CX - 40, a.crownY + 30], [CX - 30, a.crownY + 54], [CX - 36, a.crownY + 70], [CX - 24, a.browY - 10]],
+       [[CX + 50, a.crownY + 40], [CX + 40, a.crownY + 62], [CX + 48, a.crownY + 76]],
+       [[CX - 60, a.cheekY + 10], [CX - 50, a.cheekY + 24], [CX - 56, a.jawY]]].forEach(line => {
+        sh += S('M' + line.map(p => pt(p[0], p[1])).join('L'), '#3a2e1c', 1.3);
+      });
+      // full rows of teeth with the jaw a little open
+      const mw = a.mouthW + 9, my = a.mouthY, n = 9, tw = mw * 2 / n;
+      sh += P(`M${pt(CX - mw - 2, my - 1)}Q${pt(CX, my + 1)} ${pt(CX + mw + 2, my - 1)}L${pt(CX + mw, my + 5)}Q${pt(CX, my + 7)} ${pt(CX - mw, my + 5)}Z`, '#1a140e');
+      for (let i = 0; i < n; i++) {
+        const x = CX - mw + i * tw;
+        sh += `<rect x="${f(x)}" y="${f(my - 11)}" width="${f(tw)}" height="10" rx="1.5" fill="#efe6cc" stroke="#3a3020" stroke-width="0.8"/>` +
+          `<rect x="${f(x + 0.6)}" y="${f(my + 5)}" width="${f(tw - 1.2)}" height="9" rx="1.5" fill="#e4d9bc" stroke="#3a3020" stroke-width="0.8"/>`;
       }
+      sh += S(`M${pt(CX - mw - 8, my + 16)}Q${pt(CX, my + 26)} ${pt(CX + mw + 8, my + 16)}`, '#6e6044', 1.6, op(0.8));
       s += G(sh, `clip-path="url(#${id}sk)"`);
       return { svg: s, overHair: false };
     },
@@ -2280,6 +2405,10 @@
       return hood(a, id, { fill: '#8e1a1e', fold: '#5e0e12', light: '#b8343a', line: '#3a0608' });
     },
 
+    blackHood(a, hair, id) {
+      return hood(a, id, { fill: '#18161c', fold: '#08070a', light: '#3a3640', line: '#000000' });
+    },
+
     brownHood(a, hair, id) {
       return hood(a, id, { fill: '#5a3f2a', fold: '#3a2818', light: '#7a5a40', line: '#1e140c' });
     },
@@ -2456,10 +2585,10 @@
     const hw = HEADWEAR[look.headwear] ? HEADWEAR[look.headwear](a, hair, id + 'h') : { back: '', front: '' };
     const acc = ACCESSORIES[look.accessory] ? ACCESSORIES[look.accessory](a) : '';
     const mask = MASKS[look.mask] ? MASKS[look.mask](a, id + 'k', id) : null;
-    const l = Object.assign({}, look, { hideBrows: HIDE_BROWS.includes(look.facePaint), effects: look.effects || [], extras: look.extras || [] });
+    const l = Object.assign({}, look, { hideBrows: HIDE_BROWS.includes(look.facePaint), effects: look.effects || [], blood: look.blood || [] });
 
-    let hairClip = '';
-    if (hw.clipHair) hairClip = `<clipPath id="${id}hc"><rect x="-100" y="${hw.clipHair}" width="600" height="800"/></clipPath>`;
+    let hairClip = `<filter id="${id}soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.6"/></filter>`;
+    if (hw.clipHair) hairClip += `<clipPath id="${id}hc"><rect x="-100" y="${hw.clipHair}" width="600" height="800"/></clipPath>`;
     const hc = hw.clipHair ? `clip-path="url(#${id}hc)"` : '';
 
     // a mask replaces every face makeup layer
@@ -2467,7 +2596,7 @@
       ['skin-effects', skinEffects(a, l, sk, id)],
       ['face-paint', facePaint(a, l, sk, id)],
       ['contour', contour(a, l, id)],
-      ['under-eyes', underEyes(a, l)],
+      ['under-eyes', underEyes(a, l, id)],
       ['eyes', eyes(a, l, sk, id)],
       ['eye-makeup', eyeMakeup(a, l, id)],
       ['lips', lips(a, l, sk)],
