@@ -891,6 +891,14 @@
         if (white) out += S(d, '#6a605a', 2.6, op(0.6)) + S(d, '#f7f4ee', 1.6);
         else out += S(d, '#1a100c', 1.4);
       }
+      // black false lashes: a dense, long row along the outer two thirds of the lid
+      if ((look.details || []).includes('falseLashes')) {
+        for (let i = 0; i < 10; i++) {
+          const t = 0.3 + i * 0.075, x = g.x1 + (g.x2 - g.x1) * t;
+          const yTop = g.ey - g.ry * (1 - Math.pow((t - 0.5) * 2, 2)) * 0.98 - 1, len = 8 + t * 7;
+          out += S(`M${pt(x, yTop)}q${f(s * len * 0.35)},${f(-len * 0.5)} ${f(s * len * 0.85)},${f(-len * 0.8)}`, '#0a0809', 1.4);
+        }
+      }
       if (white) {
         for (let i = 0; i < 4; i++) {
           const x = g.x1 + (g.x2 - g.x1) * (0.3 + i * 0.2);
