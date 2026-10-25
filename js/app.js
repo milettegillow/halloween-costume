@@ -1,9 +1,11 @@
-/* Halloween costume - state, rendering, controls, look names and PNG download. */
+/* Halloween costume - state, rendering, controls, presets, look names and PNG download. */
 (function () {
   'use strict';
 
   const M = DATA.makeup;
-  const MAKEUP_KEYS = ['skin', 'underEyes', 'lenses', 'eyes', 'facePaint', 'effects', 'lips', 'extras'];
+  // Face makeup categories, in the order they are listed. A mask hides all of these.
+  const MAKEUP_KEYS = ['skin', 'contour', 'underEyes', 'lenses', 'eyes', 'facePaint', 'effects', 'lips', 'extras'];
+  const MULTI = ['effects', 'extras'];
 
   // Thumbnail crops, in portrait coordinates.
   const CROP = {
@@ -11,6 +13,7 @@
     hair: '10 30 380 380',
     eyes: '122 150 156 156',
     mouth: '126 196 148 148',
+    face: '80 120 240 240',
     body: '30 250 340 340',
     hat: '10 10 380 380'
   };
@@ -30,13 +33,15 @@
       ]
     },
     { id: 'skin', label: 'Skin', groups: [{ key: 'skin', options: M.skin, crop: 'head' }] },
+    { id: 'contour', label: 'Contour', groups: [{ key: 'contour', options: M.contour, crop: 'face' }] },
     { id: 'underEyes', label: 'Under-eyes', groups: [{ key: 'underEyes', options: M.underEyes, crop: 'eyes' }] },
     { id: 'lenses', label: 'Lenses', groups: [{ key: 'lenses', options: M.lenses, crop: 'eyes' }] },
-    { id: 'eyes', label: 'Eye makeup', groups: [{ key: 'eyes', options: M.eyes, crop: 'eyes' }] },
+    { id: 'eyes', label: 'Eye makeup', groups: [{ key: 'eyes', options: M.eyes, crop: 'face' }] },
     { id: 'facePaint', label: 'Face paint', groups: [{ key: 'facePaint', options: M.facePaint, crop: 'head' }] },
     { id: 'effects', label: 'Effects', groups: [{ key: 'effects', options: M.effects, crop: 'head' }] },
     { id: 'lips', label: 'Lips', groups: [{ key: 'lips', options: M.lips, crop: 'mouth' }] },
-    { id: 'extras', label: 'Extras', groups: [{ key: 'extras', options: M.extras, crop: 'head', multi: true }] },
+    { id: 'extras', label: 'Extras', groups: [{ key: 'extras', options: M.extras, crop: 'head' }] },
+    { id: 'masks', label: 'Masks', groups: [{ key: 'mask', options: DATA.masks, crop: 'hat' }] },
     {
       id: 'costume', label: 'Costume', groups: [
         { key: 'clothing', label: 'Clothing', options: DATA.clothing, crop: 'body' },
@@ -48,9 +53,32 @@
 
   const byId = (list, id) => list.find(o => o.id === id) || list[0];
   const clone = o => JSON.parse(JSON.stringify(o));
+  const isMulti = key => MULTI.includes(key);
+  const optionsFor = key => key === 'mask' ? DATA.masks : M[key];
 
   let state = clone(DATA.defaults);
   let activeTab = 'face';
+  let filter = 'all';
+  let openPreset = null;
+
+  /* ---------- presets ---------- */
+
+  const presetById = id => DATA.presets.find(p => p.id === id);
+  const versionOf = s => {
+    const p = presetById(s.preset);
+    return p ? p.versions.find(v => v.id === s.version) : null;
+  };
+  const visibleVersions = p => p.versions.filter(v => filter === 'all' || v.tag === filter);
+
+  // The neutral default with the version applied, keeping the person's face.
+  function versionState(s, presetId, versionId) {
+    const v = presetById(presetId).versions.find(x => x.id === versionId);
+    const next = Object.assign(clone(DATA.defaults), { shape: s.shape, features: s.features, skinTone: s.skinTone }, clone(v.set));
+    if (v.byFeatures) Object.assign(next, clone(v.byFeatures[next.features] || {}));
+    next.preset = presetId;
+    next.version = versionId;
+    return next;
+  }
 
   /* ---------- look resolution ---------- */
 
@@ -63,8 +91,8 @@
       hairStyle: s.hairStyle,
       hairColour: colour.hex,
       browColour: colour.brow,
-      skin: s.skin, underEyes: s.underEyes, lenses: s.lenses, eyes: s.eyes,
-      facePaint: s.facePaint, effects: s.effects, lips: s.lips, extras: s.extras.slice(),
+      skin: s.skin, contour: s.contour, underEyes: s.underEyes, lenses: s.lenses, eyes: s.eyes,
+      facePaint: s.facePaint, effects: s.effects.slice(), lips: s.lips, extras: s.extras.slice(), mask: s.mask,
       clothing: s.clothing, headwear: s.headwear, accessory: s.accessory
     };
   }
@@ -72,8 +100,10 @@
   /* ---------- look name ---------- */
 
   function adjective(s, key) {
-    if (key === 'extras') {
-      const first = M.extras.find(o => o.id !== 'none' && s.extras.includes(o.id));
+    if (key === 'mask') return s.mask === 'none' ? '' : byId(DATA.masks, s.mask).namePart;
+    if (s.mask !== 'none') return '';
+    if (isMulti(key)) {
+      const first = M[key].find(o => o.id !== 'none' && s[key].includes(o.id));
       return first ? first.namePart : '';
     }
     const o = byId(M[key], s[key]);
@@ -81,8 +111,8 @@
   }
 
   function lookName(s) {
-    const firstOrder = ['effects', 'facePaint', 'extras', 'eyes', 'lenses', 'underEyes', 'lips', 'skin'];
-    const secondOrder = ['skin', 'underEyes', 'lips', 'lenses', 'eyes', 'extras', 'facePaint', 'effects'];
+    const firstOrder = ['mask', 'effects', 'facePaint', 'extras', 'eyes', 'lenses', 'contour', 'underEyes', 'lips', 'skin'];
+    const secondOrder = ['skin', 'contour', 'underEyes', 'lips', 'lenses', 'eyes', 'extras', 'facePaint', 'effects'];
     const d = DATA.defaults;
     const hairColourWord = s.hairColour !== d.hairColour ? byId(DATA.hairColours, s.hairColour).namePart : '';
     const hairStyleWord = s.hairStyle !== d.hairStyle ? byId(DATA.hairStyles, s.hairStyle).namePart : '';
@@ -105,7 +135,8 @@
     }
 
     let noun;
-    if (s.outfit) noun = byId(DATA.outfits, s.outfit).nouns[s.features];
+    const v = versionOf(s);
+    if (v) noun = (v.nouns || presetById(s.preset).nouns)[s.features];
     else if (s.clothing !== 'plain') noun = byId(DATA.clothing, s.clothing).noun;
     else noun = byId(DATA.features, s.features).noun;
 
@@ -114,35 +145,44 @@
 
   /* ---------- method and shopping list ---------- */
 
+  const product = p => typeof p === 'string' ? DATA.kit[p] : p;
+
   function recipe(s) {
     const steps = [];
     const products = [];
     const add = item => {
       if (!item) return;
       (item.steps || []).forEach(st => steps.push(typeof st === 'string' ? [item.applyOrder, st] : st));
-      (item.products || []).forEach(p => products.push(p));
+      (item.products || []).forEach(p => products.push(product(p)));
     };
 
+    const masked = s.mask !== 'none';
     const chosen = [];
-    MAKEUP_KEYS.forEach(k => {
-      if (k === 'extras') s.extras.forEach(id => chosen.push(byId(M.extras, id)));
-      else if (s[k] !== 'none') chosen.push(byId(M[k], s[k]));
-    });
-    const onSkin = MAKEUP_KEYS.some(k => k !== 'lenses' && (k === 'extras' ? s.extras.length : s[k] !== 'none'));
-    if (onSkin) add(DATA.prep);
-    chosen.forEach(add);
-    if (s.lenses !== 'none') add(M.lensCare);
-    if (onSkin) add(DATA.setting);
+    if (!masked) {
+      MAKEUP_KEYS.forEach(k => {
+        if (isMulti(k)) s[k].forEach(id => chosen.push(byId(M[k], id)));
+        else if (s[k] !== 'none') chosen.push(byId(M[k], s[k]));
+      });
+    }
+    const onSkin = chosen.some(item => !M.lenses.includes(item));
+    const lensed = !masked && s.lenses !== 'none';
 
     const d = DATA.defaults;
-    const outfit = s.outfit ? byId(DATA.outfits, s.outfit) : null;
-    const hairSet = (outfit && outfit.set.hairStyle) || s.hairStyle !== d.hairStyle || s.hairColour !== d.hairColour;
+    const v = versionOf(s);
+    const hairSet = (v && v.set.hairStyle) || s.hairStyle !== d.hairStyle || s.hairColour !== d.hairColour;
+    const style = byId(DATA.hairStyles, s.hairStyle);
+    const bald = hairSet && style.id === 'shaved';
+
+    if (onSkin) add(DATA.prep);
+    if (chosen.some(item => item.patch) || bald) add(DATA.patchTest);
+    chosen.forEach(add);
+    if (lensed) add(DATA.lensSafety);
+    if (onSkin) add(DATA.setting);
+    if (masked) add(byId(DATA.masks, s.mask));
+
     if (hairSet) {
-      const style = byId(DATA.hairStyles, s.hairStyle);
-      if (style.id === 'shaved') {
-        add(DATA.baldCap);
-        products.push({ name: 'Latex bald cap', q: 'latex bald cap' });
-      } else {
+      if (bald) add(DATA.baldCap);
+      else {
         const colour = byId(DATA.hairColours, s.hairColour);
         add(DATA.wig);
         products.push({ name: `${colour.label} ${style.wig}`, q: `${colour.label.toLowerCase()} ${style.wig}` });
@@ -152,7 +192,7 @@
     add(byId(DATA.clothing, s.clothing));
     add(byId(DATA.headwear, s.headwear));
     add(byId(DATA.accessories, s.accessory));
-    if (outfit) add(Object.assign({ applyOrder: 110 }, outfit));
+    if (v) add(Object.assign({ applyOrder: 110 }, v));
 
     const seen = new Set();
     const method = steps
@@ -166,10 +206,10 @@
     return { method, shopping };
   }
 
-  function amazonUrl(q) {
-    let url = 'https://www.amazon.co.uk/s?k=' + encodeURIComponent(q);
-    if (AMAZON_TAG) url += '&tag=' + encodeURIComponent(AMAZON_TAG);
-    return url;
+  function amazonUrl(p) {
+    const tag = AMAZON_TAG ? encodeURIComponent(AMAZON_TAG) : '';
+    if (p.asin) return `https://www.amazon.co.uk/dp/${encodeURIComponent(p.asin)}` + (tag ? `?tag=${tag}` : '');
+    return 'https://www.amazon.co.uk/s?k=' + encodeURIComponent(p.q) + (tag ? `&tag=${tag}` : '');
   }
 
   /* ---------- rendering ---------- */
@@ -186,8 +226,7 @@
   };
 
   function renderMirror() {
-    const name = lookName(state);
-    $('#mirror').innerHTML = Art.mirrorSVG(resolve(state), 'm', `role="img" aria-label="${name}"`);
+    $('#mirror').innerHTML = Art.mirrorSVG(resolve(state), 'm', `role="img" aria-label="${lookName(state)}"`);
   }
 
   function renderTabs() {
@@ -215,18 +254,21 @@
     });
   }
 
-  function isSelected(group, id) {
-    if (group.multi) return id === 'none' ? state.extras.length === 0 : state.extras.includes(id);
-    return state[group.key] === id;
+  function isSelected(key, id) {
+    if (isMulti(key)) return id === 'none' ? state[key].length === 0 : state[key].includes(id);
+    return state[key] === id;
   }
 
-  function choose(group, id) {
-    if (group.multi) {
-      if (id === 'none') state.extras = [];
-      else if (state.extras.includes(id)) state.extras = state.extras.filter(x => x !== id);
-      else state.extras = state.extras.concat(id);
+  function choose(key, id) {
+    if (isMulti(key)) {
+      if (id === 'none') state[key] = [];
+      else if (state[key].includes(id)) state[key] = state[key].filter(x => x !== id);
+      else state[key] = state[key].concat(id);
     } else {
-      state[group.key] = id;
+      state[key] = id;
+      // some versions change with the features setting
+      const v = versionOf(state);
+      if (key === 'features' && v && v.byFeatures) Object.assign(state, clone(v.byFeatures[id] || {}));
     }
     update();
   }
@@ -242,22 +284,22 @@
       if (g.label) section.appendChild(el('h3', { class: 'pan-heading' }, g.label));
       const grid = el('div', { class: g.swatch ? 'pans pans-swatch' : 'pans' });
       g.options.forEach((o, oi) => {
-        const sel = isSelected(g, o.id);
-        const b = el('button', { class: 'pan', type: 'button', 'aria-pressed': String(sel) });
+        const b = el('button', { class: 'pan', type: 'button', 'aria-pressed': String(isSelected(g.key, o.id)) });
         const art = el('span', { class: 'pan-art' });
         if (g.swatch) {
           art.classList.add('pan-swatch');
           art.style.setProperty('--swatch', o.hex);
         } else {
           const look = Object.assign({}, base);
-          if (g.multi) look.extras = o.id === 'none' ? [] : [o.id];
-          else if (g.key === 'skinTone') look.skinTone = o.hex;
+          if (isMulti(g.key)) look[g.key] = o.id === 'none' ? [] : [o.id];
           else look[g.key] = o.id;
+          // show makeup on a bare face, so a mask never hides the tile
+          if (g.key !== 'mask' && optionsFor(g.key)) look.mask = 'none';
           art.innerHTML = Art.portraitSVG(look, `t${gi}_${oi}_`, CROP[g.crop], 'aria-hidden="true" focusable="false"');
         }
         b.appendChild(art);
         b.appendChild(el('span', { class: 'pan-label' }, o.label));
-        b.addEventListener('click', () => choose(g, o.id));
+        b.addEventListener('click', () => choose(g.key, o.id));
         grid.appendChild(b);
       });
       section.appendChild(grid);
@@ -265,19 +307,94 @@
     });
   }
 
-  function renderOutfits() {
-    const wrap = $('#outfits');
+  function renderFilters() {
+    const wrap = $('#preset-filters');
     wrap.innerHTML = '';
-    [{ id: null, label: 'Create your own' }].concat(DATA.outfits).forEach(o => {
-      const b = el('button', { class: 'outfit', type: 'button', 'aria-pressed': String(state.outfit === o.id) }, o.label);
-      b.addEventListener('click', () => applyOutfit(o.id));
+    DATA.filters.forEach(f => {
+      const b = el('button', { class: 'filter', type: 'button', 'aria-pressed': String(filter === f.id) }, f.label);
+      b.addEventListener('click', () => {
+        filter = f.id;
+        const p = presetById(openPreset);
+        if (p && !visibleVersions(p).length) openPreset = null;
+        renderPresets();
+      });
       wrap.appendChild(b);
     });
   }
 
+  // Preset thumbnails only change with the face, so they are cached against it.
+  let thumbKey = '';
+  const thumbs = {};
+  function presetThumb(p) {
+    const v = visibleVersions(p)[0];
+    const key = `${p.id}:${v.id}`;
+    if (!thumbs[key]) thumbs[key] = Art.portraitSVG(resolve(versionState(state, p.id, v.id)), `p_${p.id}_${v.id}_`, CROP.head, 'aria-hidden="true" focusable="false"');
+    return thumbs[key];
+  }
+
+  function renderPresets() {
+    renderFilters();
+    const face = `${state.shape}:${state.features}:${state.skinTone}`;
+    if (face !== thumbKey) {
+      thumbKey = face;
+      Object.keys(thumbs).forEach(k => delete thumbs[k]);
+    }
+    const grid = $('#preset-grid');
+    grid.innerHTML = '';
+
+    const own = el('button', { class: 'preset', type: 'button', 'aria-pressed': String(state.version === null) });
+    const ownArt = el('span', { class: 'pan-art' });
+    ownArt.innerHTML = Art.portraitSVG(resolve(clone(DATA.defaults)), 'p_own_', CROP.head, 'aria-hidden="true" focusable="false"');
+    own.appendChild(ownArt);
+    own.appendChild(el('span', { class: 'pan-label' }, 'Create your own'));
+    own.addEventListener('click', () => {
+      openPreset = null;
+      if (state.version !== null) state = clone(DATA.defaults);
+      update();
+    });
+    grid.appendChild(own);
+
+    DATA.presets.forEach(p => {
+      if (!visibleVersions(p).length) return;
+      const loaded = state.preset === p.id && state.version !== null;
+      const b = el('button', {
+        class: 'preset' + (loaded ? ' is-loaded' : ''), type: 'button',
+        'aria-expanded': String(openPreset === p.id), 'aria-controls': 'preset-versions'
+      });
+      const art = el('span', { class: 'pan-art' });
+      art.innerHTML = presetThumb(p);
+      b.appendChild(art);
+      b.appendChild(el('span', { class: 'pan-label' }, p.label));
+      b.addEventListener('click', () => {
+        openPreset = openPreset === p.id ? null : p.id;
+        renderPresets();
+        if (openPreset) $('#preset-versions').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      });
+      grid.appendChild(b);
+    });
+
+    const versions = $('#preset-versions');
+    versions.innerHTML = '';
+    const p = presetById(openPreset);
+    versions.hidden = !p;
+    if (!p) return;
+    versions.appendChild(el('h3', { class: 'versions-heading' }, p.label));
+    const row = el('div', { class: 'version-buttons' });
+    visibleVersions(p).forEach(v => {
+      const on = state.preset === p.id && state.version === v.id;
+      const b = el('button', { class: 'version', type: 'button', 'aria-pressed': String(on) }, v.label);
+      b.addEventListener('click', () => {
+        if (on) state = clone(DATA.defaults);
+        else state = versionState(state, p.id, v.id);
+        update();
+      });
+      row.appendChild(b);
+    });
+    versions.appendChild(row);
+  }
+
   function renderNotebook() {
-    const name = lookName(state);
-    $('#look-name').textContent = name;
+    $('#look-name').textContent = lookName(state);
     const { method, shopping } = recipe(state);
 
     const ol = $('#method');
@@ -290,7 +407,7 @@
     if (!shopping.length) ul.appendChild(el('li', { class: 'empty' }, 'Nothing to buy yet.'));
     shopping.forEach(p => {
       const li = el('li');
-      li.appendChild(el('a', { href: amazonUrl(p.q), target: '_blank', rel: 'sponsored noopener' }, p.name));
+      li.appendChild(el('a', { href: amazonUrl(p), target: '_blank', rel: 'sponsored noopener' }, p.name));
       ul.appendChild(li);
     });
     $('#affiliate').hidden = !AMAZON_TAG || !shopping.length;
@@ -299,66 +416,53 @@
   function update() {
     renderMirror();
     renderPans();
-    renderOutfits();
+    renderPresets();
     renderNotebook();
   }
 
-  /* ---------- outfits, randomise and reset ---------- */
-
-  function outfitState(s, id) {
-    const o = byId(DATA.outfits, id);
-    const next = Object.assign({}, s, {
-      skin: 'none', underEyes: 'none', lenses: 'none', eyes: 'none', facePaint: 'none', effects: 'none', lips: 'none', extras: [],
-      clothing: 'plain', headwear: 'none', accessory: 'none'
-    }, clone(o.set));
-    next.outfit = id;
-    return next;
-  }
-
-  // Picking the selected outfit again, or "Create your own", returns to the neutral default.
-  function applyOutfit(id) {
-    if (id === null || id === state.outfit) {
-      if (state.outfit === null) return;
-      state = clone(DATA.defaults);
-    } else {
-      state = outfitState(state, id);
-    }
-    update();
-  }
+  /* ---------- randomise and reset ---------- */
 
   const pick = list => list[Math.floor(Math.random() * list.length)];
 
   function clashes(s) {
     const has = tag => {
       const [k, v] = tag.split(':');
-      return k === 'extras' ? s.extras.includes(v) : s[k] === v;
+      return isMulti(k) ? s[k].includes(v) : s[k] === v;
     };
     return DATA.incompatible.some(([a, b]) => has(a) && has(b));
   }
 
   function randomise() {
-    const others = DATA.outfits.filter(o => o.id !== state.outfit);
-    let s = outfitState(state, pick(others).id);
+    const pool = [];
+    DATA.presets.forEach(p => visibleVersions(p).forEach(v => {
+      if (!(p.id === state.preset && v.id === state.version)) pool.push([p.id, v.id]);
+    }));
+    const [pid, vid] = pick(pool);
+    let s = clone(state);
     s.shape = pick(DATA.faceShapes).id;
     s.features = pick(DATA.features).id;
     s.skinTone = pick(DATA.skinTones).id;
+    s = versionState(s, pid, vid);
     if (Math.random() < 0.4) s.hairColour = pick(DATA.hairColours).id;
-    const keys = ['underEyes', 'lenses', 'eyes', 'lips', 'effects', 'extras'];
-    let tweaks = 1 + Math.floor(Math.random() * 2);
-    for (let tries = 0; tweaks > 0 && tries < 40; tries++) {
-      const k = pick(keys);
-      const t = clone(s);
-      if (k === 'extras') {
-        const id = pick(M.extras.filter(o => o.id !== 'none' && !s.extras.includes(o.id))).id;
-        t.extras = s.extras.concat(id);
-      } else {
-        if (s[k] !== 'none') continue;
-        t[k] = pick(M[k].filter(o => o.id !== 'none')).id;
+    if (s.mask === 'none') {
+      const keys = ['contour', 'underEyes', 'lenses', 'eyes', 'lips', 'effects', 'extras'];
+      let tweaks = 1 + Math.floor(Math.random() * 2);
+      for (let tries = 0; tweaks > 0 && tries < 40; tries++) {
+        const k = pick(keys);
+        const t = clone(s);
+        if (isMulti(k)) {
+          const options = M[k].filter(o => o.id !== 'none' && !s[k].includes(o.id));
+          t[k] = s[k].concat(pick(options).id);
+        } else {
+          if (s[k] !== 'none') continue;
+          t[k] = pick(M[k].filter(o => o.id !== 'none')).id;
+        }
+        if (clashes(t)) continue;
+        s = t;
+        tweaks--;
       }
-      if (clashes(t)) continue;
-      s = t;
-      tweaks--;
     }
+    openPreset = pid;
     state = s;
     update();
   }
@@ -366,6 +470,7 @@
   function reset() {
     state = clone(DATA.defaults);
     activeTab = 'face';
+    openPreset = null;
     renderTabs();
     update();
   }
@@ -424,5 +529,10 @@
   });
 
   // Exposed for checking looks in the browser console.
-  window.Vanity = { get state() { return state; }, set: s => { state = Object.assign(clone(DATA.defaults), s); update(); }, lookName, recipe };
+  window.Vanity = {
+    get state() { return state; },
+    set: s => { state = Object.assign(clone(DATA.defaults), s); update(); },
+    lookFor: (presetId, versionId, shape, features) => resolve(versionState(Object.assign(clone(DATA.defaults), { shape, features }), presetId, versionId)),
+    lookName, recipe
+  };
 })();

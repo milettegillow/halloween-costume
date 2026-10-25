@@ -1,67 +1,100 @@
 <!doctype html>
 <html lang="en-GB">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Halloween costume</title>
-  <meta name="description" content="Design a Halloween costume and makeup look on a portrait, then get the step-by-step method and shopping list to recreate it.">
-  <meta name="theme-color" content="#0c1310">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧛🏻</text></svg>">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <script defer src="/_vercel/insights/script.js"></script>
-</head>
-<body>
-  <header class="site-head">
-    <h1>Halloween costume</h1>
-  </header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Halloween Costume</title>
+    <meta
+      name="description"
+      content="Design a Halloween costume and makeup look on a portrait, then get the step-by-step method and shopping list to recreate it."
+    />
+    <meta name="theme-color" content="#0c1310" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧛🏻</text></svg>"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="/_vercel/insights/script.js"></script>
+  </head>
+  <body>
+    <header class="site-head">
+      <h1>Halloween costume</h1>
+    </header>
 
-  <main class="vanity">
-    <div class="top">
-      <div class="mirror-wrap">
-        <div id="mirror" class="mirror"></div>
+    <main class="vanity">
+      <div class="top">
+        <div class="mirror-wrap">
+          <div id="mirror" class="mirror"></div>
+        </div>
+
+        <section class="settings ornate" aria-label="Settings">
+          <div class="settings-head">
+            <div
+              id="palette-tabs"
+              class="tabs"
+              role="tablist"
+              aria-label="Makeup and costume"
+            ></div>
+          </div>
+          <div id="palette-pans" class="palette-pans" role="tabpanel"></div>
+        </section>
       </div>
 
-      <section class="settings ornate" aria-label="Settings">
-        <div class="settings-head">
-          <h2 class="settings-heading">Outfit</h2>
-          <div id="outfits" class="outfits"></div>
-          <div id="palette-tabs" class="tabs" role="tablist" aria-label="Makeup and costume"></div>
+      <section class="presets ornate" aria-labelledby="presets-heading">
+        <div class="presets-head">
+          <h2 id="presets-heading">Presets</h2>
+          <div
+            id="preset-filters"
+            class="filters"
+            role="group"
+            aria-label="Filter presets"
+          ></div>
         </div>
-        <div id="palette-pans" class="palette-pans" role="tabpanel"></div>
+        <div id="preset-grid" class="preset-grid"></div>
+        <div id="preset-versions" class="versions" hidden></div>
       </section>
-    </div>
 
-    <section class="notebook" aria-labelledby="look-name">
-      <div class="page">
-        <p class="kicker">Your look</p>
-        <h2 id="look-name" aria-live="polite"></h2>
+      <section class="notebook" aria-labelledby="look-name">
+        <div class="page">
+          <p class="kicker">Your look</p>
+          <h2 id="look-name" aria-live="polite"></h2>
 
-        <div class="recipe">
-          <div>
-            <h3>Method</h3>
-            <ol id="method" class="method"></ol>
+          <div class="recipe">
+            <div>
+              <h3>Method</h3>
+              <ol id="method" class="method"></ol>
+            </div>
+            <div>
+              <h3>Shopping list</h3>
+              <ul id="shopping" class="shopping"></ul>
+              <p id="affiliate" class="affiliate" hidden>
+                I haven't charged for any of my builds this year, but for this
+                one I'm trying Amazon affiliate links - let's face it, I could
+                use the cash 👻 As an Amazon Associate I earn from qualifying
+                purchases.
+              </p>
+            </div>
           </div>
-          <div>
-            <h3>Shopping list</h3>
-            <ul id="shopping" class="shopping"></ul>
-            <p id="affiliate" class="affiliate" hidden>As an Amazon Associate I earn from qualifying purchases.</p>
+
+          <div class="actions">
+            <button id="randomise" type="button" class="btn btn-primary">
+              Randomise
+            </button>
+            <button id="reset" type="button" class="btn">Reset</button>
+            <button id="download" type="button" class="btn">Download</button>
           </div>
         </div>
+      </section>
+    </main>
 
-        <div class="actions">
-          <button id="randomise" type="button" class="btn btn-primary">Randomise</button>
-          <button id="reset" type="button" class="btn">Reset</button>
-          <button id="download" type="button" class="btn">Download</button>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <script src="js/art.js"></script>
-  <script src="js/data.js"></script>
-  <script src="js/app.js"></script>
-</body>
+    <script src="js/art.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+  </body>
 </html>
