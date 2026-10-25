@@ -713,7 +713,7 @@
     const sw = a.shoulderW + (o.grow || 0), L = CX - sw, Rr = CX + sw, y0 = a.collarY - 6 + (o.drop || 0);
     const w = o.nlW, y = o.nlY;
     let d = `M${pt(CX - w, y)}C${pt(CX - w - 16, y + 7)} ${pt(L + 46, y0 + 14)} ${pt(L + 22, y0 + 26)}` +
-      `C${pt(L + 4, y0 + 34)} ${pt(L - 6, y0 + 64)} ${pt(L - 8, 560)}L${pt(Rr + 8, 560)}` +
+      `C${pt(L + 4, y0 + 34)} ${pt(L - 6, y0 + 64)} ${pt(L - 8, 640)}L${pt(Rr + 8, 640)}` +
       `C${pt(Rr + 6, y0 + 64)} ${pt(Rr - 4, y0 + 34)} ${pt(Rr - 22, y0 + 26)}C${pt(Rr - 46, y0 + 14)} ${pt(CX + w + 16, y + 7)} ${pt(CX + w, y)}`;
     if (o.vee) d += `L${pt(CX, o.nlD)}Z`;
     else d += `C${pt(CX + w * 0.62, o.nlD)} ${pt(CX - w * 0.62, o.nlD)} ${pt(CX - w, y)}Z`;
@@ -1641,13 +1641,13 @@
 
     sheet(a, id, base) {
       const top = a.crownY - 30;
-      const d = `M${CX - 176},560C${CX - 166},440 ${CX - 130},330 ${CX - 112},236C${CX - 104},140 ${CX - 72},${top} ${CX},${top}` +
-        `C${CX + 72},${top} ${CX + 104},140 ${CX + 112},236C${CX + 130},330 ${CX + 166},440 ${CX + 176},560Z`;
+      const d = `M${CX - 176},640C${CX - 166},440 ${CX - 130},330 ${CX - 112},236C${CX - 104},140 ${CX - 72},${top} ${CX},${top}` +
+        `C${CX + 72},${top} ${CX + 104},140 ${CX + 112},236C${CX + 130},330 ${CX + 166},440 ${CX + 176},640Z`;
       let s = `<clipPath id="${id}sh"><path d="${d}"/></clipPath>` + P(d, '#eeebe4', 'stroke="#a8a49a" stroke-width="1.2"');
-      let sh = P(`M${CX + 50},${top}C${CX + 96},150 ${CX + 90},300 ${CX + 120},560H460V${top}Z`, '#cfcbc2', op(0.7));
+      let sh = P(`M${CX + 50},${top}C${CX + 96},150 ${CX + 90},300 ${CX + 120},640H460V${top}Z`, '#cfcbc2', op(0.7));
       [[-90, 260, -130], [-50, 300, -70], [30, 330, 50], [80, 280, 120], [-10, 360, -20]].forEach(([x, y, x2]) => {
-        sh += S(`M${CX + x},${y}C${CX + x * 1.1},${y + 80} ${CX + x2},${y + 150} ${CX + x2 * 1.05},560`, '#bcb8ae', 3, op(0.75));
-        sh += S(`M${CX + x - 4},${y + 10}C${CX + x * 1.1 - 4},${y + 80} ${CX + x2 - 4},${y + 150} ${CX + x2 * 1.05 - 4},560`, '#ffffff', 1.4, op(0.6));
+        sh += S(`M${CX + x},${y}C${CX + x * 1.1},${y + 80} ${CX + x2},${y + 150} ${CX + x2 * 1.05},640`, '#bcb8ae', 3, op(0.75));
+        sh += S(`M${CX + x - 4},${y + 10}C${CX + x * 1.1 - 4},${y + 80} ${CX + x2 - 4},${y + 150} ${CX + x2 * 1.05 - 4},640`, '#ffffff', 1.4, op(0.6));
       });
       sh += E(CX - 30, top + 40, 40, 20, '#ffffff', op(0.5));
       [-1, 1].forEach(sd => {
@@ -1674,10 +1674,10 @@
   // Shading shared by simple tops: shadow on the right, soft folds and a lit edge.
   function drape(a, dark, fold, light) {
     const y = a.collarY;
-    return P(`M${CX + 36},${y}C${CX + 66},${y + 30} ${CX + 78},${y + 80} ${CX + 70},560H460V${y - 40}Z`, dark) +
+    return P(`M${CX + 36},${y}C${CX + 66},${y + 30} ${CX + 78},${y + 80} ${CX + 70},640H460V${y - 40}Z`, dark) +
       S(`M${CX - 86},${y + 36}Q${CX - 50},${y + 70} ${CX - 30},${y + 120}`, fold, 2, op(0.7)) +
       S(`M${CX + 92},${y + 40}Q${CX + 60},${y + 80} ${CX + 50},${y + 130}`, fold, 2.2, op(0.8)) +
-      (light ? P(`M${CX - 110},${y + 30}C${CX - 80},${y + 60} ${CX - 70},${y + 110} ${CX - 76},560H${CX - 96}C${CX - 92},${y + 110} ${CX - 100},${y + 60} ${CX - 120},${y + 34}Z`, light, op(0.7)) : '');
+      (light ? P(`M${CX - 110},${y + 30}C${CX - 80},${y + 60} ${CX - 70},${y + 110} ${CX - 76},640H${CX - 96}C${CX - 92},${y + 110} ${CX - 100},${y + 60} ${CX - 120},${y + 34}Z`, light, op(0.7)) : '');
   }
 
   function garment(a, id, o) {
@@ -1773,20 +1773,20 @@
     const nl = { nlW: nw + 4, nlY: y - 14, nlD: y - 8 };
     const body = bodice(a, nl);
     let sd = '';
-    if (o.stripes) for (let x = -170; x <= 170; x += 7) sd += S(`M${CX + x},${y - 20}V560`, o.stripes, 1.6, op(0.9));
-    sd += P(`M${CX + 20},${y}C${CX + 30},${y + 60} ${CX + 26},${y + 120} ${CX + 24},560H460V${y - 40}Z`, '#000000', op(0.1));
-    sd += S(`M${CX + 1},${y + 20}V560`, mix(o.shirt, '#000000', 0.25), 1);
+    if (o.stripes) for (let x = -170; x <= 170; x += 7) sd += S(`M${CX + x},${y - 20}V640`, o.stripes, 1.6, op(0.9));
+    sd += P(`M${CX + 20},${y}C${CX + 30},${y + 60} ${CX + 26},${y + 120} ${CX + 24},640H460V${y - 40}Z`, '#000000', op(0.1));
+    sd += S(`M${CX + 1},${y + 20}V640`, mix(o.shirt, '#000000', 0.25), 1);
     if (o.blood) sd += splatter(rng(7), CX - 40, y + 10, 80, 60, 9);
     let main = P(body, o.shirt) + shade(body, id + 's', sd);
     if (o.jacket) {
       [-1, 1].forEach(s => {
         const X = v => CX + s * v;
-        const panel = `M${pt(X(nw + 6), y - 14)}C${pt(X(nw + 24), y - 6)} ${pt(X(sw - 30), y + 8)} ${pt(X(sw + 2), y + 22)}C${pt(X(sw + 14), y + 32)} ${pt(X(sw + 20), y + 70)} ${pt(X(sw + 22), 560)}` +
-          `L${pt(X(4), 560)}L${pt(X(6), y + 120)}L${pt(X(nw - 2), y - 6)}Z`;
+        const panel = `M${pt(X(nw + 6), y - 14)}C${pt(X(nw + 24), y - 6)} ${pt(X(sw - 30), y + 8)} ${pt(X(sw + 2), y + 22)}C${pt(X(sw + 14), y + 32)} ${pt(X(sw + 20), y + 70)} ${pt(X(sw + 22), 640)}` +
+          `L${pt(X(4), 640)}L${pt(X(6), y + 120)}L${pt(X(nw - 2), y - 6)}Z`;
         const lapel = `M${pt(X(nw - 2), y - 8)}L${pt(X(nw + 8), y - 14)}L${pt(X(nw + 24), y + 30)}L${pt(X(nw + 14), y + 34)}L${pt(X(nw + 20), y + 44)}L${pt(X(8), y + 118)}L${pt(X(6), y + 120)}Z`;
         main += P(panel, o.jacket, `stroke="${o.jacketLine}" stroke-width="1.2"`);
-        if (s > 0) main += shade(panel, id + 'j', P(`M${CX + 56},${y}C${CX + 86},${y + 40} ${CX + 92},${y + 90} ${CX + 88},560H460V${y - 40}Z`, '#000000', op(0.35)));
-        else main += S(`M${pt(X(sw - 6), y + 40)}C${pt(X(sw - 2), y + 80)} ${pt(X(sw), y + 120)} ${pt(X(sw + 2), 560)}`, mix(o.jacket, '#ffffff', 0.15), 2, op(0.8));
+        if (s > 0) main += shade(panel, id + 'j', P(`M${CX + 56},${y}C${CX + 86},${y + 40} ${CX + 92},${y + 90} ${CX + 88},640H460V${y - 40}Z`, '#000000', op(0.35)));
+        else main += S(`M${pt(X(sw - 6), y + 40)}C${pt(X(sw - 2), y + 80)} ${pt(X(sw), y + 120)} ${pt(X(sw + 2), 640)}`, mix(o.jacket, '#ffffff', 0.15), 2, op(0.8));
         main += P(lapel, o.lapel, `stroke="${o.jacketLine}" stroke-width="1"`);
         main += S(`M${pt(X(nw + 8), y - 12)}L${pt(X(nw + 22), y + 28)}`, mix(o.lapel, '#ffffff', 0.25), 1, op(0.7));
       });
@@ -1811,16 +1811,16 @@
     let main = P(body, o.under) + shade(body, id + 'u', drape(a, '#000000', '#000000'));
     const panels = [-1, 1].map(s => {
       const X = v => CX + s * v;
-      return `M${pt(X(nw + 4), y - 18)}C${pt(X(nw + 26), y - 10)} ${pt(X(sw - 30), y + 6)} ${pt(X(sw + 4), y + 20)}C${pt(X(sw + 18), y + 30)} ${pt(X(sw + 26), y + 70)} ${pt(X(sw + 28), 560)}` +
+      return `M${pt(X(nw + 4), y - 18)}C${pt(X(nw + 26), y - 10)} ${pt(X(sw - 30), y + 6)} ${pt(X(sw + 4), y + 20)}C${pt(X(sw + 18), y + 30)} ${pt(X(sw + 26), y + 70)} ${pt(X(sw + 28), 640)}` +
         `H${f(X(48))}C${f(X(52))},${y + 80} ${f(X(40))},${y + 24} ${pt(X(nw + 4), y - 18)}Z`;
     }).join('');
     let fold = '';
     [-1, 1].forEach(s => {
-      fold += S(`M${CX + s * (sw - 10)},${y + 40}C${CX + s * (sw - 2)},${y + 80} ${CX + s * (sw - 6)},${y + 120} ${CX + s * (sw)},560`, o.fold, 3, op(0.8));
-      fold += S(`M${CX + s * 76},${y + 30}C${CX + s * 72},${y + 90} ${CX + s * 80},${y + 130} ${CX + s * 76},560`, o.fold, 2.2, op(0.7));
-      fold += S(`M${CX + s * 60},${y + 20}C${CX + s * 58},${y + 80} ${CX + s * 62},${y + 130} ${CX + s * 60},560`, o.light, 1.6, op(0.5));
+      fold += S(`M${CX + s * (sw - 10)},${y + 40}C${CX + s * (sw - 2)},${y + 80} ${CX + s * (sw - 6)},${y + 120} ${CX + s * (sw)},640`, o.fold, 3, op(0.8));
+      fold += S(`M${CX + s * 76},${y + 30}C${CX + s * 72},${y + 90} ${CX + s * 80},${y + 130} ${CX + s * 76},640`, o.fold, 2.2, op(0.7));
+      fold += S(`M${CX + s * 60},${y + 20}C${CX + s * 58},${y + 80} ${CX + s * 62},${y + 130} ${CX + s * 60},640`, o.light, 1.6, op(0.5));
     });
-    fold += P(`M${CX + 60},${y}C${CX + 90},${y + 40} ${CX + 96},${y + 90} ${CX + 92},560H460V${y - 40}Z`, '#000000', op(0.35));
+    fold += P(`M${CX + 60},${y}C${CX + 90},${y + 40} ${CX + 96},${y + 90} ${CX + 92},640H460V${y - 40}Z`, '#000000', op(0.35));
     main += P(panels, o.fill, `stroke="${o.line}" stroke-width="1.2"`) + shade(panels, id + 'k', fold);
     const collar = S(`M${CX - nw - 6},${y - 14}Q${CX},${y + 4} ${CX + nw + 6},${y - 14}`, o.cord, 2.4) +
       C(CX, y - 4, 4, o.cord) + S(`M${CX - 1},${y}q-4,14 -2,26M${CX + 1},${y}q4,12 3,22`, o.cord, 2);
@@ -1840,12 +1840,12 @@
       const nw = a.neckW, y = a.collarY;
       const o = { nlW: nw + 8, nlY: y - 10, nlD: y + 14 };
       const d = bodice(a, o);
-      let s = P(`M${CX + 36},${y}C${CX + 66},${y + 30} ${CX + 78},${y + 80} ${CX + 70},560H460V${y - 40}Z`, '#1d1b20');
-      s += P(`M${CX - 110},${y + 30}C${CX - 80},${y + 60} ${CX - 70},${y + 110} ${CX - 76},560H${CX - 96}C${CX - 92},${y + 110} ${CX - 100},${y + 60} ${CX - 120},${y + 34}Z`, '#3c3940', op(0.8));
+      let s = P(`M${CX + 36},${y}C${CX + 66},${y + 30} ${CX + 78},${y + 80} ${CX + 70},640H460V${y - 40}Z`, '#1d1b20');
+      s += P(`M${CX - 110},${y + 30}C${CX - 80},${y + 60} ${CX - 70},${y + 110} ${CX - 76},640H${CX - 96}C${CX - 92},${y + 110} ${CX - 100},${y + 60} ${CX - 120},${y + 34}Z`, '#3c3940', op(0.8));
       s += S(`M${CX - 86},${y + 36}Q${CX - 50},${y + 70} ${CX - 30},${y + 120}`, '#1a181c', 2, op(0.7));
       s += S(`M${CX + 92},${y + 40}Q${CX + 60},${y + 80} ${CX + 50},${y + 130}`, '#141216', 2.2, op(0.8));
-      s += S(`M${CX - a.shoulderW + 24},${y + 22}C${CX - a.shoulderW + 34},${y + 60} ${CX - a.shoulderW + 30},${y + 110} ${CX - a.shoulderW + 34},560`, '#1a181c', 1.4);
-      s += S(`M${CX + a.shoulderW - 24},${y + 22}C${CX + a.shoulderW - 34},${y + 60} ${CX + a.shoulderW - 30},${y + 110} ${CX + a.shoulderW - 34},560`, '#141216', 1.4);
+      s += S(`M${CX - a.shoulderW + 24},${y + 22}C${CX - a.shoulderW + 34},${y + 60} ${CX - a.shoulderW + 30},${y + 110} ${CX - a.shoulderW + 34},640`, '#1a181c', 1.4);
+      s += S(`M${CX + a.shoulderW - 24},${y + 22}C${CX + a.shoulderW - 34},${y + 60} ${CX + a.shoulderW - 30},${y + 110} ${CX + a.shoulderW - 34},640`, '#141216', 1.4);
       // ribbed neckband
       const band = `M${pt(CX - o.nlW - 2, o.nlY - 1)}C${pt(CX - o.nlW * 0.6, o.nlD + 1)} ${pt(CX + o.nlW * 0.6, o.nlD + 1)} ${pt(CX + o.nlW + 2, o.nlY - 1)}` +
         `L${pt(CX + o.nlW + 9, o.nlY + 3)}C${pt(CX + o.nlW * 0.7, o.nlD + 10)} ${pt(CX - o.nlW * 0.7, o.nlD + 10)} ${pt(CX - o.nlW - 9, o.nlY + 3)}Z`;
@@ -1871,23 +1871,23 @@
       const o = { nlW: nw + 6, nlY: y - 14, nlD: y - 6 };
       const body = bodice(a, o);
       // shirt and waistcoat under the cape
-      let inner = P(`M${CX - 40},${y - 10}L${CX + 40},${y - 10}L${CX + 20},560L${CX - 20},560Z`, '#ece6da');
-      inner += S(`M${CX},${y + 40}V560`, '#c9c0b0', 1.2);
-      const wc = `M${CX - 70},${y + 10}L${CX - 22},${y + 20}L${CX - 4},560H${CX - 90}Z M${CX + 70},${y + 10}L${CX + 22},${y + 20}L${CX + 4},560H${CX + 90}Z`;
-      inner += P(wc, '#5e0f1c') + P(`M${CX + 22},${y + 20}L${CX + 4},560H${CX + 90}L${CX + 70},${y + 10}Z`, '#3e0912', op(0.6));
+      let inner = P(`M${CX - 40},${y - 10}L${CX + 40},${y - 10}L${CX + 20},640L${CX - 20},640Z`, '#ece6da');
+      inner += S(`M${CX},${y + 40}V640`, '#c9c0b0', 1.2);
+      const wc = `M${CX - 70},${y + 10}L${CX - 22},${y + 20}L${CX - 4},640H${CX - 90}Z M${CX + 70},${y + 10}L${CX + 22},${y + 20}L${CX + 4},640H${CX + 90}Z`;
+      inner += P(wc, '#5e0f1c') + P(`M${CX + 22},${y + 20}L${CX + 4},640H${CX + 90}L${CX + 70},${y + 10}Z`, '#3e0912', op(0.6));
       for (let i = 0; i < 6; i++) inner += S(`M${CX - 66 + i * 8},${y + 26}l4,6l-4,6l4,6`, '#7c1a2a', 1, op(0.8));
-      inner += S(`M${CX - 22},${y + 20}L${CX - 4},560`, '#2a050b', 1.4) + S(`M${CX + 22},${y + 20}L${CX + 4},560`, '#2a050b', 1.4);
+      inner += S(`M${CX - 22},${y + 20}L${CX - 4},640`, '#2a050b', 1.4) + S(`M${CX + 22},${y + 20}L${CX + 4},640`, '#2a050b', 1.4);
       [y + 60, y + 86, y + 112].forEach(by => inner += C(CX - 12, by, 3, '#c9a24a', 'stroke="#8a6d2a" stroke-width="0.8"') + C(CX - 13, by - 1, 1, '#f0d890'));
       // cape panels
-      const capeL = `M${pt(CX - nw - 6, y - 16)}C${pt(CX - nw - 24, y - 8)} ${pt(CX - sw + 30, y + 8)} ${pt(CX - sw - 2, y + 22)}C${pt(CX - sw - 16, y + 32)} ${pt(CX - sw - 22, y + 70)} ${pt(CX - sw - 24, 560)}L${CX - 58},560C${CX - 62},${y + 80} ${CX - 52},${y + 20} ${pt(CX - nw - 6, y - 16)}Z`;
+      const capeL = `M${pt(CX - nw - 6, y - 16)}C${pt(CX - nw - 24, y - 8)} ${pt(CX - sw + 30, y + 8)} ${pt(CX - sw - 2, y + 22)}C${pt(CX - sw - 16, y + 32)} ${pt(CX - sw - 22, y + 70)} ${pt(CX - sw - 24, 640)}L${CX - 58},640C${CX - 62},${y + 80} ${CX - 52},${y + 20} ${pt(CX - nw - 6, y - 16)}Z`;
       let capeS = '';
-      capeS += S(`M${CX - sw + 10},${y + 40}C${CX - sw + 20},${y + 80} ${CX - sw + 16},${y + 120} ${CX - sw + 22},560`, '#2c2832', 2.2, op(0.9));
-      capeS += S(`M${CX - 80},${y + 40}C${CX - 76},${y + 90} ${CX - 82},${y + 130} ${CX - 78},560`, '#2c2832', 1.6, op(0.8));
-      capeS += P(`M${CX + 60},${y}C${CX + 90},${y + 40} ${CX + 96},${y + 90} ${CX + 92},560H460V${y - 40}Z`, '#000000', op(0.45));
-      capeS += S(`M${CX - 58},560C${CX - 62},${y + 80} ${CX - 52},${y + 20} ${CX - nw - 6},${y - 16}`, '#7a0f1f', 3);
-      capeS += S(`M${CX + 58},560C${CX + 62},${y + 80} ${CX + 52},${y + 20} ${CX + nw + 6},${y - 16}`, '#7a0f1f', 3);
-      const cape = `M${pt(CX - nw - 6, y - 16)}C${pt(CX - nw - 24, y - 8)} ${pt(CX - sw + 30, y + 8)} ${pt(CX - sw - 2, y + 22)}C${pt(CX - sw - 16, y + 32)} ${pt(CX - sw - 22, y + 70)} ${pt(CX - sw - 24, 560)}H${CX - 58}C${CX - 62},${y + 80} ${CX - 52},${y + 20} ${pt(CX - nw - 6, y - 16)}Z` +
-        `M${pt(CX + nw + 6, y - 16)}C${pt(CX + nw + 24, y - 8)} ${pt(CX + sw - 30, y + 8)} ${pt(CX + sw + 2, y + 22)}C${pt(CX + sw + 16, y + 32)} ${pt(CX + sw + 22, y + 70)} ${pt(CX + sw + 24, 560)}H${CX + 58}C${CX + 62},${y + 80} ${CX + 52},${y + 20} ${pt(CX + nw + 6, y - 16)}Z`;
+      capeS += S(`M${CX - sw + 10},${y + 40}C${CX - sw + 20},${y + 80} ${CX - sw + 16},${y + 120} ${CX - sw + 22},640`, '#2c2832', 2.2, op(0.9));
+      capeS += S(`M${CX - 80},${y + 40}C${CX - 76},${y + 90} ${CX - 82},${y + 130} ${CX - 78},640`, '#2c2832', 1.6, op(0.8));
+      capeS += P(`M${CX + 60},${y}C${CX + 90},${y + 40} ${CX + 96},${y + 90} ${CX + 92},640H460V${y - 40}Z`, '#000000', op(0.45));
+      capeS += S(`M${CX - 58},640C${CX - 62},${y + 80} ${CX - 52},${y + 20} ${CX - nw - 6},${y - 16}`, '#7a0f1f', 3);
+      capeS += S(`M${CX + 58},640C${CX + 62},${y + 80} ${CX + 52},${y + 20} ${CX + nw + 6},${y - 16}`, '#7a0f1f', 3);
+      const cape = `M${pt(CX - nw - 6, y - 16)}C${pt(CX - nw - 24, y - 8)} ${pt(CX - sw + 30, y + 8)} ${pt(CX - sw - 2, y + 22)}C${pt(CX - sw - 16, y + 32)} ${pt(CX - sw - 22, y + 70)} ${pt(CX - sw - 24, 640)}H${CX - 58}C${CX - 62},${y + 80} ${CX - 52},${y + 20} ${pt(CX - nw - 6, y - 16)}Z` +
+        `M${pt(CX + nw + 6, y - 16)}C${pt(CX + nw + 24, y - 8)} ${pt(CX + sw - 30, y + 8)} ${pt(CX + sw + 2, y + 22)}C${pt(CX + sw + 16, y + 32)} ${pt(CX + sw + 22, y + 70)} ${pt(CX + sw + 24, 640)}H${CX + 58}C${CX + 62},${y + 80} ${CX + 52},${y + 20} ${pt(CX + nw + 6, y - 16)}Z`;
       const main = shade(body, id + 'vb', inner) + P(cape, '#141216', 'stroke="#050405" stroke-width="1.2"') + shade(cape, id + 'vc', capeS);
       // shirt collar points and cravat
       let collar = P(`M${pt(CX - nw - 4, y - 22)}L${pt(CX - 6, y + 4)}L${pt(CX - nw + 2, y + 10)}L${pt(CX - nw - 10, y - 6)}Z`, '#f2ede3', 'stroke="#9a9284" stroke-width="1"');
@@ -1906,7 +1906,7 @@
       const nw = a.neckW, y = a.collarY, sw = a.shoulderW;
       const o = { nlW: nw + 10, nlY: y - 8, nlD: y + 18 };
       const dress = bodice(a, o);
-      let main = P(dress, '#2b2622') + shade(dress, id + 'hd1', P(`M${CX + 40},${y}C${CX + 70},${y + 40} ${CX + 80},${y + 90} ${CX + 70},560H460V${y - 40}Z`, '#191512'));
+      let main = P(dress, '#2b2622') + shade(dress, id + 'hd1', P(`M${CX + 40},${y}C${CX + 70},${y + 40} ${CX + 80},${y + 90} ${CX + 70},640H460V${y - 40}Z`, '#191512'));
       const R = rng(5), r = (x, yy) => x + R() * (yy - x);
       // ragged shawl draped over the shoulders, crossing at the front
       let edge = '';
@@ -1926,7 +1926,7 @@
         for (let x = CX - sw - 20; x < CX + sw + 20; x += 8) d += `M${x},${yy}l4,5l4,-5`;
         tex += S(d, row % 2 ? '#3a3a2a' : '#5c5b46', 1, op(0.8));
       }
-      tex += P(`M${CX + 30},${y + 10}C${CX + 70},${y + 30} ${CX + 100},${y + 70} ${CX + 120},560H460V${y - 40}Z`, '#000000', op(0.35));
+      tex += P(`M${CX + 30},${y + 10}C${CX + 70},${y + 30} ${CX + 100},${y + 70} ${CX + 120},640H460V${y - 40}Z`, '#000000', op(0.35));
       [[CX - 70, y + 50], [CX + 86, y + 34], [CX - 30, y + 80]].forEach(([hx, hy]) => tex += E(hx, hy, 6, 4, '#120f0c', `transform="rotate(20 ${hx} ${hy})"`));
       main += P(shawl, '#4a4a38', 'stroke="#22221a" stroke-width="1.2"') + shade(shawl, id + 'hs', tex);
       // tassels on the points
@@ -1941,7 +1941,7 @@
       const o = { nlW: nw + 4, nlY: y - 12, nlD: y + 54, vee: true };
       const d = bodice(a, o);
       const R = rng(17), r = (x, yy) => x + R() * (yy - x);
-      let s = P(`M${CX + 30},${y}C${CX + 60},${y + 40} ${CX + 76},${y + 90} ${CX + 66},560H460V${y - 40}Z`, '#a69c80');
+      let s = P(`M${CX + 30},${y}C${CX + 60},${y + 40} ${CX + 76},${y + 90} ${CX + 66},640H460V${y - 40}Z`, '#a69c80');
       s += S(`M${CX - 96},${y + 40}Q${CX - 60},${y + 60} ${CX - 40},${y + 120}`, '#968c70', 2.2);
       s += S(`M${CX + 100},${y + 40}Q${CX + 70},${y + 80} ${CX + 60},${y + 130}`, '#8a8064', 2.2);
       for (let i = 0; i < 7; i++) {
@@ -1951,7 +1951,7 @@
       s += P(`M${CX + 34},${y + 30}q8,10 4,24q6,8 2,18q-6,-10 -10,-6q2,-18 4,-36Z`, '#6b1414', op(0.85));
       s += P(`M${CX - 60},${y + 70}l10,-6l6,8l8,-4l2,12l-10,6l-6,-4l-8,4Z`, '#2a2018');
       s += P(`M${CX + 76},${y + 52}l8,-8l4,10l6,0l-4,10l-10,-2Z`, '#2a2018');
-      s += S(`M${CX + 2},${y + 56}V560`, '#8a8064', 1.6) + C(CX + 8, y + 90, 3, '#e8e0cc', 'stroke="#6a6250" stroke-width="0.8"');
+      s += S(`M${CX + 2},${y + 56}V640`, '#8a8064', 1.6) + C(CX + 8, y + 90, 3, '#e8e0cc', 'stroke="#6a6250" stroke-width="0.8"');
       s += S(`M${CX + 8},${y + 118}q4,6 -2,10`, '#6a6250', 0.8);
       const main = P(d, '#cbc2a8') + shade(d, id + 'zs', s) + P(d, 'none', 'stroke="#5a5240" stroke-width="1.3"');
       const collar = P(`M${pt(CX - nw - 2, y - 18)}L${pt(CX - 6, y + 50)}L${pt(CX - 30, y + 30)}L${pt(CX - 26, y + 36)}L${pt(CX - nw - 26, y + 6)}Z`, '#d8d0b8', 'stroke="#5a5240" stroke-width="1.2"') +
@@ -1965,12 +1965,12 @@
       const o = { nlW: nw + 34, nlY: y + 4, nlD: y + 40, drop: 8 };
       const d = bodice(a, o);
       const R = rng(29), r = (x, yy) => x + R() * (yy - x);
-      let s = P(`M${CX + 40},${y + 20}C${CX + 70},${y + 50} ${CX + 80},${y + 90} ${CX + 70},560H460V${y - 40}Z`, '#bcb19a');
+      let s = P(`M${CX + 40},${y + 20}C${CX + 70},${y + 50} ${CX + 80},${y + 90} ${CX + 70},640H460V${y - 40}Z`, '#bcb19a');
       for (let i = 0; i < 26; i++) {
         const x = CX + r(-130, 130), yy = r(y + 30, y + 150);
         s += C(x, yy, 3.2, 'none', 'stroke="#b4aa94" stroke-width="1"') + C(x, yy, 1, '#b4aa94');
       }
-      for (let i = 0; i < 5; i++) s += S(`M${CX - 30 + i * 15},${y + 50}V560`, '#cfc5b0', 1.2);
+      for (let i = 0; i < 5; i++) s += S(`M${CX - 30 + i * 15},${y + 50}V640`, '#cfc5b0', 1.2);
       s += E(CX - 70, y + 90, 22, 14, '#8a8270', op(0.3)) + E(CX + 60, y + 110, 18, 12, '#8a8270', op(0.3));
       s += P(`M${CX + 64},${y + 60}l6,10l-3,8l7,8l-10,-2l-4,-10Z`, '#3a332a') + P(`M${CX - 92},${y + 40}l8,4l-2,8l6,6l-9,0l-4,-8Z`, '#3a332a');
       let main = P(d, '#e4dccb') + shade(d, id + 'bs', s) + P(d, 'none', 'stroke="#7a705c" stroke-width="1.2"');
@@ -1992,7 +1992,7 @@
       const o = { nlW: nw + 6, nlY: y - 10, nlD: y + 10 };
       const d = bodice(a, o);
       const bone = '#e8e4da';
-      let s = P(`M${CX + 40},${y}C${CX + 70},${y + 40} ${CX + 80},${y + 90} ${CX + 70},560H460V${y - 40}Z`, '#0e0d10');
+      let s = P(`M${CX + 40},${y}C${CX + 70},${y + 40} ${CX + 80},${y + 90} ${CX + 70},640H460V${y - 40}Z`, '#0e0d10');
       s += S(`M${CX - 90},${y + 40}Q${CX - 60},${y + 70} ${CX - 40},${y + 120}`, '#2a282e', 2);
       // printed collarbones, sternum and ribs
       [-1, 1].forEach(sd => {
@@ -2017,8 +2017,8 @@
       const nw = a.neckW, y = a.collarY, sw = a.shoulderW;
       const o = { nlW: nw + 6, nlY: y - 12, nlD: y };
       const d = bodice(a, o);
-      let s = P(`M${CX + 40},${y}C${CX + 70},${y + 40} ${CX + 80},${y + 90} ${CX + 70},560H460V${y - 40}Z`, '#9f6672');
-      for (let i = -3; i <= 3; i++) s += S(`M${CX + i * 9},${y + 40}V560`, '#a87480', 1.2, op(0.8));
+      let s = P(`M${CX + 40},${y}C${CX + 70},${y + 40} ${CX + 80},${y + 90} ${CX + 70},640H460V${y - 40}Z`, '#9f6672');
+      for (let i = -3; i <= 3; i++) s += S(`M${CX + i * 9},${y + 40}V640`, '#a87480', 1.2, op(0.8));
       [y + 64, y + 88, y + 112].forEach(by => s += C(CX, by, 2.6, '#f3eee4', 'stroke="#8a7a70" stroke-width="0.6"'));
       let main = P(d, '#c88f9a') + shade(d, id + 'ds', s) + P(d, 'none', 'stroke="#5a2e38" stroke-width="1.2"');
       // puffed sleeves
@@ -2056,8 +2056,8 @@
       const nw = a.neckW, y = a.collarY, sw = a.shoulderW;
       const o = { nlW: nw + 6, nlY: y - 12, nlD: y };
       const d = bodice(a, o);
-      let s = P(`M${CX + 36},${y}C${CX + 66},${y + 40} ${CX + 76},${y + 90} ${CX + 66},560H460V${y - 40}Z`, c.dark);
-      for (let i = -4; i <= 4; i++) if (i) s += S(`M${CX + i * 8},${y + 20}V560`, i < 0 ? c.light : c.mid, 1.2);
+      let s = P(`M${CX + 36},${y}C${CX + 66},${y + 40} ${CX + 76},${y + 90} ${CX + 66},640H460V${y - 40}Z`, c.dark);
+      for (let i = -4; i <= 4; i++) if (i) s += S(`M${CX + i * 8},${y + 20}V640`, i < 0 ? c.light : c.mid, 1.2);
       for (let i = 0; i < 6; i++) s += C(CX, y + 26 + i * 18, 3, c.button, `stroke="${c.line}" stroke-width="0.5"`) + C(CX - 1, y + 25 + i * 18, 1, '#8a8e9a');
       let main = P(d, c.body) + shade(d, id + 'ms', s) + P(d, 'none', `stroke="${c.line}" stroke-width="1.2"`);
       [-1, 1].forEach(sd => {
@@ -2085,10 +2085,10 @@
       const d = bodice(a, o);
       let s = '';
       [-120, -80, -40, 0, 40, 80, 120].forEach(dx => {
-        s += P(`M${CX + dx * 0.5 - 4},${y}C${CX + dx * 1.1 - 10},${y + 60} ${CX + dx * 1.1 - 10},${y + 120} ${CX + dx * 1.2 - 8},560H${CX + dx * 1.2 + 8}C${CX + dx * 1.1 + 6},${y + 120} ${CX + dx * 1.1 + 4},${y + 60} ${CX + dx * 0.5 + 4},${y}Z`, '#b14e12', op(0.7));
-        s += S(`M${CX + dx * 0.5 + 14},${y + 10}C${CX + dx * 1.1 + 18},${y + 60} ${CX + dx * 1.1 + 18},${y + 120} ${CX + dx * 1.2 + 22},560`, '#f09040', 2, op(0.6));
+        s += P(`M${CX + dx * 0.5 - 4},${y}C${CX + dx * 1.1 - 10},${y + 60} ${CX + dx * 1.1 - 10},${y + 120} ${CX + dx * 1.2 - 8},640H${CX + dx * 1.2 + 8}C${CX + dx * 1.1 + 6},${y + 120} ${CX + dx * 1.1 + 4},${y + 60} ${CX + dx * 0.5 + 4},${y}Z`, '#b14e12', op(0.7));
+        s += S(`M${CX + dx * 0.5 + 14},${y + 10}C${CX + dx * 1.1 + 18},${y + 60} ${CX + dx * 1.1 + 18},${y + 120} ${CX + dx * 1.2 + 22},640`, '#f09040', 2, op(0.6));
       });
-      s += P(`M${CX + 40},${y}C${CX + 70},${y + 40} ${CX + 80},${y + 90} ${CX + 70},560H460V${y - 40}Z`, '#7a3008', op(0.35));
+      s += P(`M${CX + 40},${y}C${CX + 70},${y + 40} ${CX + 80},${y + 90} ${CX + 70},640H460V${y - 40}Z`, '#7a3008', op(0.35));
       const main = P(d, '#d9661c') + shade(d, id + 'ps', s) + P(d, 'none', 'stroke="#5a2408" stroke-width="1.2"');
       // leafy collar
       let collar = '';
@@ -2126,9 +2126,9 @@
       const nw = a.neckW, y = a.collarY, sw = a.shoulderW;
       const nl = { nlW: nw + 36, nlY: y + 14, nlD: y + 34, drop: 10 };
       let det = '';
-      for (let i = -3; i <= 3; i++) if (i) det += S(`M${CX + i * 24},${y + 30}C${CX + i * 22},${y + 80} ${CX + i * 20},${y + 120} ${CX + i * 20},560`, '#4e0812', 1.6, op(0.8));
+      for (let i = -3; i <= 3; i++) if (i) det += S(`M${CX + i * 24},${y + 30}C${CX + i * 22},${y + 80} ${CX + i * 20},${y + 120} ${CX + i * 20},640`, '#4e0812', 1.6, op(0.8));
       for (let i = 0; i < 6; i++) det += S(`M${CX - 6},${y + 42 + i * 12}L${CX + 6},${y + 50 + i * 12}M${CX + 6},${y + 42 + i * 12}L${CX - 6},${y + 50 + i * 12}`, '#141014', 1.2);
-      det += S(`M${CX - 70},${y + 40}C${CX - 60},${y + 70} ${CX - 62},${y + 110} ${CX - 64},560`, '#c24050', 2.4, op(0.5));
+      det += S(`M${CX - 70},${y + 40}C${CX - 60},${y + 70} ${CX - 62},${y + 110} ${CX - 64},640`, '#c24050', 2.4, op(0.5));
       const g = garment(a, id, { nl, fill: '#7a0f1f', dark: '#4e0812', fold: '#3a0610', light: '#a8283a', line: '#2a0408', detail: det });
       // black lace capelet tied at the neck
       let cape = '';
@@ -2187,7 +2187,7 @@
     vestTop(a, id) {
       const nw = a.neckW, y = a.collarY, sw = a.shoulderW;
       const d = `M${CX - 58},${y + 30}C${CX - 30},${y + 46} ${CX + 30},${y + 46} ${CX + 58},${y + 30}C${CX + 70},${y + 56} ${CX + sw - 30},${y + 80} ${CX + sw - 10},${y + 92}` +
-        `C${CX + sw - 6},${y + 130} ${CX + sw - 4},${y + 150} ${CX + sw - 2},560H${CX - sw + 2}C${CX - sw + 4},${y + 150} ${CX - sw + 6},${y + 130} ${CX - sw + 10},${y + 92}` +
+        `C${CX + sw - 6},${y + 130} ${CX + sw - 4},${y + 150} ${CX + sw - 2},640H${CX - sw + 2}C${CX - sw + 4},${y + 150} ${CX - sw + 6},${y + 130} ${CX - sw + 10},${y + 92}` +
         `C${CX - sw + 30},${y + 80} ${CX - 70},${y + 56} ${CX - 58},${y + 30}Z`;
       let main = P(d, '#141216') + shade(d, id + 'v', drape(a, '#060507', '#000000', '#2a2830')) + P(d, 'none', 'stroke="#000000" stroke-width="1.2"');
       [-1, 1].forEach(s => main += S(`M${CX + s * (nw + 14)},${y - 14}L${CX + s * 60},${y + 32}`, '#141216', 6) + S(`M${CX + s * (nw + 13)},${y - 13}L${CX + s * 58},${y + 30}`, '#2a2830', 1, op(0.7)));
@@ -2198,7 +2198,7 @@
       const nw = a.neckW, y = a.collarY;
       const nl = { nlW: nw + 6, nlY: y - 12, nlD: y + 46, vee: true };
       const R = rng(23);
-      let det = S(`M${CX},${y + 46}V560`, '#b9b6ae', 1.4);
+      let det = S(`M${CX},${y + 46}V640`, '#b9b6ae', 1.4);
       [y + 62, y + 88, y + 114].forEach(by => det += C(CX + 6, by, 2.6, '#f6f4f0', 'stroke="#9a968e" stroke-width="0.6"'));
       det += `<rect x="${CX + 42}" y="${y + 52}" width="20" height="6" fill="#c4161c"/><rect x="${CX + 49}" y="${y + 45}" width="6" height="20" fill="#c4161c"/>`;
       det += P(`M${CX - 70},${y + 70}l10,-8l6,10l8,-6l4,14l-12,6l-6,-6l-8,4Z`, '#3a2a28') + P(`M${CX + 76},${y + 96}l8,-8l4,10l6,0l-4,10l-10,-2Z`, '#3a2a28');
@@ -2222,8 +2222,8 @@
           det += black ? heart(x, yy, 7, '#c4161c') : club(x, yy, 8, '#141014');
         }
       }
-      det += S(`M${CX - 100},${y + 30}C${CX - 80},${y + 70} ${CX - 76},${y + 120} ${CX - 80},560`, '#ffffff', 5, op(0.14));
-      det += S(`M${CX - 30},${y + 20}C${CX - 20},${y + 60} ${CX - 24},${y + 100} ${CX - 26},560`, '#ffffff', 3, op(0.12));
+      det += S(`M${CX - 100},${y + 30}C${CX - 80},${y + 70} ${CX - 76},${y + 120} ${CX - 80},640`, '#ffffff', 5, op(0.14));
+      det += S(`M${CX - 30},${y + 20}C${CX - 20},${y + 60} ${CX - 24},${y + 100} ${CX - 26},640`, '#ffffff', 3, op(0.12));
       return garment(a, id, { nl, fill: '#a3121c', dark: '#000000', fold: '#000000', line: '#0a0406', detail: det });
     },
 
@@ -2231,7 +2231,7 @@
       const nw = a.neckW, y = a.collarY + DRESS_UP, sw = a.shoulderW;
       const plum = '#4a1648', dark = '#2e0c2e', light = '#7a3a78';
       const top = `M${pt(CX - sw - 12, y + 34)}Q${pt(CX - 70, y + 16)} ${pt(CX - 44, y + 20)}L${pt(CX, y + 54)}L${pt(CX + 44, y + 20)}Q${pt(CX + 70, y + 16)} ${pt(CX + sw + 12, y + 34)}`;
-      const d = top + `L${pt(CX + sw + 14, 560)}H${f(CX - sw - 14)}Z`;
+      const d = top + `L${pt(CX + sw + 14, 640)}H${f(CX - sw - 14)}Z`;
       let inner = P(d, plum);
       // wrapped panels crossing at the waist, with soft ruching
       inner += P(`M${pt(CX + 44, y + 20)}L${pt(CX - 10, y + 64)}L${pt(CX - 40, y + 72)}L${pt(CX + sw + 14, y + 72)}V${y + 20}Z`, dark, op(0.35));
@@ -2244,7 +2244,7 @@
       [[y + 70, plum], [y + 80, '#5e2260'], [y + 90, plum]].forEach(([ty, c], k) => {
         let edge = `M${CX - sw - 14},${ty}`;
         for (let x = CX - sw - 14; x < CX + sw + 14; x += 12) edge += `q6,${k % 2 ? 8 : 7} 12,0`;
-        inner += P(edge + `V560H${CX - sw - 14}Z`, c, op(0.88)) + S(edge, light, 1, op(0.6));
+        inner += P(edge + `V640H${CX - sw - 14}Z`, c, op(0.88)) + S(edge, light, 1, op(0.6));
       });
       const main = shade(d, id + 'tg', inner) + S(top, '#1a0418', 1.2);
       // spaghetti straps over the shoulders
@@ -2262,8 +2262,8 @@
       // solid black top below a scalloped edge
       let scal = `M-20,${yoke}`;
       for (let x = -20; x < 420; x += 14) scal += 'q7,9 14,0';
-      let inner = P(scal + 'V560H-20Z', '#141216');
-      inner += P(`M${CX - 140},${yoke}H${CX - 96}V560H${CX - 140}Z M${CX + 96},${yoke}H${CX + 140}V560H${CX + 96}Z`, '#000000', op(0.25));
+      let inner = P(scal + 'V640H-20Z', '#141216');
+      inner += P(`M${CX - 140},${yoke}H${CX - 96}V640H${CX - 140}Z M${CX + 96},${yoke}H${CX + 140}V640H${CX + 96}Z`, '#000000', op(0.25));
       // sheer lace over the skin above it
       inner += P(`M-20,-20H420V${yoke + 4}H-20Z`, '#141216', op(0.3));
       for (let row = 0; row < 4; row++) {
@@ -2284,8 +2284,8 @@
     velvetTop(a, id) {
       const nw = a.neckW, y = a.collarY;
       const nl = { nlW: nw + 26, nlY: y + 2, nlD: y + 30, drop: 4 };
-      let det = S(`M${CX - 90},${y + 40}C${CX - 70},${y + 80} ${CX - 66},${y + 120} ${CX - 70},560`, '#4a3a52', 6, op(0.45));
-      det += S(`M${CX - 20},${y + 50}C${CX - 10},${y + 90} ${CX - 14},${y + 120} ${CX - 16},560`, '#4a3a52', 3, op(0.35));
+      let det = S(`M${CX - 90},${y + 40}C${CX - 70},${y + 80} ${CX - 66},${y + 120} ${CX - 70},640`, '#4a3a52', 6, op(0.45));
+      det += S(`M${CX - 20},${y + 50}C${CX - 10},${y + 90} ${CX - 14},${y + 120} ${CX - 16},640`, '#4a3a52', 3, op(0.35));
       const g = garment(a, id, { nl, fill: '#151216', dark: '#060507', fold: '#000000', light: '#2e2436', line: '#000000', detail: det });
       g.collar = choker(a, DRESS_UP);
       return g;
@@ -2294,8 +2294,8 @@
     redDress(a, id) {
       const nw = a.neckW, y = a.collarY;
       const nl = { nlW: nw + 24, nlY: y + 2, nlD: y + 48, vee: true };
-      let det = S(`M${CX - 80},${y + 40}C${CX - 64},${y + 80} ${CX - 60},${y + 120} ${CX - 64},560`, '#e05050', 5, op(0.45));
-      det += S(`M${CX + 30},${y + 60}C${CX + 40},${y + 100} ${CX + 36},${y + 130} ${CX + 34},560`, '#5a0810', 3, op(0.6));
+      let det = S(`M${CX - 80},${y + 40}C${CX - 64},${y + 80} ${CX - 60},${y + 120} ${CX - 64},640`, '#e05050', 5, op(0.45));
+      det += S(`M${CX + 30},${y + 60}C${CX + 40},${y + 100} ${CX + 36},${y + 130} ${CX + 34},640`, '#5a0810', 3, op(0.6));
       return garment(a, id, { nl, fill: '#a3121c', dark: '#6a0a12', fold: '#5a0810', light: '#d0303a', line: '#3a0408', detail: det });
     },
 
