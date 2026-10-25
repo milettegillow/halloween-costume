@@ -31,7 +31,8 @@
     {
       id: 'hair', label: 'Hair', groups: [
         { key: 'hairStyle', label: 'Style', options: DATA.hairStyles, crop: 'hair' },
-        { key: 'hairColour', label: 'Colour', options: DATA.hairColours, swatch: true }
+        { key: 'hairColour', label: 'Colour', options: DATA.hairColours, swatch: true },
+        { key: 'wig', label: 'Wigs', options: DATA.wigs, crop: 'hair' }
       ]
     },
     { id: 'contour', label: 'Contour', groups: [{ key: 'contour', options: M.contour, crop: 'face' }] },
@@ -78,7 +79,7 @@
     const s = clone(DATA.defaults);
     if (!saved || typeof saved !== 'object') return s;
     const lists = {
-      shape: DATA.faceShapes, features: DATA.features, skinTone: DATA.skinTones, hairStyle: DATA.hairStyles, hairColour: DATA.hairColours,
+      shape: DATA.faceShapes, features: DATA.features, skinTone: DATA.skinTones, hairStyle: DATA.hairStyles, hairColour: DATA.hairColours, wig: DATA.wigs,
       contour: M.contour, underEyes: M.underEyes, lenses: M.lenses, facePaint: M.facePaint, lips: M.lips, fangs: M.fangs,
       mask: DATA.masks, clothing: DATA.clothing, headwear: DATA.headwear, accessory: DATA.accessories
     };
@@ -116,7 +117,7 @@
   // Every option id a preset version uses must exist; anything that doesn't is logged at startup.
   function validatePresets() {
     const lists = {
-      shape: DATA.faceShapes, features: DATA.features, skinTone: DATA.skinTones, hairStyle: DATA.hairStyles, hairColour: DATA.hairColours,
+      shape: DATA.faceShapes, features: DATA.features, skinTone: DATA.skinTones, hairStyle: DATA.hairStyles, hairColour: DATA.hairColours, wig: DATA.wigs,
       facePaint: M.facePaint, contour: M.contour, underEyes: M.underEyes, lenses: M.lenses, eyes: M.eyes, effects: M.effects,
       lips: M.lips, fangs: M.fangs, blood: M.blood, mask: DATA.masks, clothing: DATA.clothing, headwear: DATA.headwear, accessory: DATA.accessories
     };
@@ -166,12 +167,13 @@
 
   function resolve(s) {
     const colour = byId(DATA.hairColours, s.hairColour);
+    const wig = s.wig !== 'none' ? byId(DATA.wigs, s.wig) : null;
     return {
       shape: s.shape,
       features: s.features,
       skinTone: byId(DATA.skinTones, s.skinTone).hex,
-      hairStyle: s.hairStyle,
-      hairColour: colour.hex,
+      hairStyle: wig ? 'wigCurl' : s.hairStyle,
+      hairColour: wig ? wig.hex : colour.hex,
       browColour: colour.brow,
       skin: SKIN_BASES[s.facePaint] || 'none', facePaint: SKIN_BASES[s.facePaint] ? 'none' : s.facePaint,
       contour: s.contour, underEyes: s.underEyes, lenses: s.lenses, eyes: s.eyes.slice(),
@@ -198,8 +200,9 @@
     const firstOrder = ['mask', 'effects', 'fangs', 'blood', 'eyes', 'lenses', 'contour', 'underEyes', 'lips', 'facePaint'];
     const secondOrder = ['facePaint', 'contour', 'underEyes', 'lips', 'lenses', 'eyes', 'blood', 'fangs', 'effects'];
     const d = DATA.defaults;
-    const hairColourWord = s.hairColour !== d.hairColour ? byId(DATA.hairColours, s.hairColour).namePart : '';
-    const hairStyleWord = s.hairStyle !== d.hairStyle ? byId(DATA.hairStyles, s.hairStyle).namePart : '';
+    const wig = s.wig !== 'none' ? byId(DATA.wigs, s.wig) : null;
+    const hairColourWord = wig ? wig.namePart : s.hairColour !== d.hairColour ? byId(DATA.hairColours, s.hairColour).namePart : '';
+    const hairStyleWord = !wig && s.hairStyle !== d.hairStyle ? byId(DATA.hairStyles, s.hairStyle).namePart : '';
 
     let first = '', firstKey = '';
     for (const k of firstOrder) {
@@ -231,51 +234,46 @@
 
   const product = p => typeof p === 'string' ? (DATA.kit[p] || DATA.costume[p]) : p;
 
+  // Steps run tab by tab in this order; costume pieces keep their own applyOrder after these.
+  const STEP_ORDER = { effects: 10, facePaint: 20, contour: 30, underEyes: 40, eyes: 50, lips: 60, fangs: 65, blood: 70, lenses: 80, mask: 85, wig: 90 };
+
   function recipe(s) {
     const steps = [];
     const products = [];
-    const add = item => {
+    const add = (item, order) => {
       if (!item) return;
-      (item.steps || []).forEach(st => steps.push(typeof st === 'string' ? [item.applyOrder, st] : st));
+      (item.steps || []).forEach(st => steps.push(typeof st === 'string' ? [order !== undefined ? order : item.applyOrder, st] : st));
       (item.products || []).forEach(p => products.push(product(p.byFeatures ? p.byFeatures[s.features] : p)));
     };
 
     const masked = s.mask !== 'none';
-    const chosen = [];
+    let onSkin = false;
     if (!masked) {
       MAKEUP_KEYS.forEach(k => {
-        if (isMulti(k)) s[k].forEach(id => chosen.push(byId(M[k], id)));
-        else if (s[k] !== 'none') chosen.push(byId(M[k], s[k]));
+        const ids = isMulti(k) ? s[k] : s[k] === 'none' ? [] : [s[k]];
+        ids.forEach(id => {
+          // eye makeup keeps its panel order within the eye step
+          add(byId(M[k], id), STEP_ORDER[k] + (k === 'eyes' ? M.eyes.findIndex(o => o.id === id) / 100 : 0));
+          if (k !== 'lenses') onSkin = true;
+        });
       });
+      if (s.eyes.some(id => byId(M.eyes, id).type === 'eyeshadow')) products.push(DATA.kit.primer);
     }
-    const onSkin = chosen.some(item => !M.lenses.includes(item));
-
-    const d = DATA.defaults;
-    const v = versionOf(s);
-    const hairSet = (v && v.set.hairStyle) || s.hairStyle !== d.hairStyle || s.hairColour !== d.hairColour;
-    const style = byId(DATA.hairStyles, s.hairStyle);
-    const bald = hairSet && style.id === 'shaved';
-
-    if (onSkin) add(DATA.prep);
-    if (chosen.some(item => item.patch) || bald) add(DATA.patchTest);
-    chosen.forEach(add);
-    // latex wounds share one method, after their placement lines
-    if (chosen.some(item => item.wound)) add(DATA.woundMethod);
     if (onSkin) add(DATA.setting);
-    if (masked) add(byId(DATA.masks, s.mask));
+    if (masked) add(byId(DATA.masks, s.mask), STEP_ORDER.mask);
 
-    if (hairSet) {
-      if (bald) add(DATA.baldCap);
-      else {
-        const colour = byId(DATA.hairColours, s.hairColour);
-        add(DATA.wig);
-        products.push(Object.assign({}, DATA.kit.wig, { name: `${colour.label} ${style.wig}` }));
-      }
+    // wig steps only for a wig; a shaved head needs a bald cap
+    if (s.wig !== 'none') {
+      add(DATA.wig, STEP_ORDER.wig);
+      products.push(Object.assign({}, DATA.kit.wig, { name: byId(DATA.wigs, s.wig).label }));
+    } else if (s.hairStyle === 'shaved') {
+      add(DATA.baldCap, STEP_ORDER.wig);
     }
 
     add(byId(DATA.clothing, s.clothing));
     add(byId(DATA.headwear, s.headwear));
     add(byId(DATA.accessories, s.accessory));
+    const v = versionOf(s);
     const preset = v ? presetById(s.preset) : null;
     if (preset) add({ applyOrder: 110, steps: [], products: preset.products || [] });
     if (v) add(Object.assign({ applyOrder: 110 }, v));
@@ -290,7 +288,7 @@
 
     const names = new Set();
     const shopping = products.filter(p => !names.has(p.name) && names.add(p.name));
-    return { method, shopping, wardrobe };
+    return { method, shopping, wardrobe, endNote: onSkin || masked ? DATA.endNote : '' };
   }
 
   // Amazon links carry the tag; external links (the lenses) do not.
@@ -303,7 +301,7 @@
     return { href, rel: 'sponsored noopener' };
   }
 
-  function productRow(p) {
+  function productRow(p, inShop) {
     const li = el('li');
     if (p.asin || p.q || p.url) {
       const link = linkFor(p);
@@ -318,6 +316,7 @@
       li.appendChild(el('span', {}, p.name));
     }
     if (p.note) li.appendChild(el('p', { class: 'product-note' }, p.note));
+    if (inShop && p.shopNote) li.appendChild(el('p', { class: 'product-note' }, p.shopNote));
     return li;
   }
 
@@ -369,10 +368,12 @@
   }
 
   // An exclusive option (zip face) clears the rest of its tab, and anything else clears it.
+  // Eyeshadows replace each other, as do eyeliners; details layer freely.
   function exclusive(key, list, added) {
-    const solo = id => (byId(M[key], id) || {}).exclusive;
-    if (solo(added)) return [added];
-    return list.filter(id => !solo(id));
+    const opt = id => byId(M[key], id) || {};
+    if (opt(added).exclusive) return [added];
+    const type = opt(added).type;
+    return list.filter(id => !opt(id).exclusive && (id === added || !type || type === 'detail' || opt(id).type !== type));
   }
 
   function choose(key, id) {
@@ -382,6 +383,7 @@
       else state[key] = exclusive(key, state[key].concat(id), id);
     } else {
       state[key] = id;
+      if (key === 'hairStyle' || key === 'hairColour') state.wig = 'none';
       // some versions change with the features setting
       const v = versionOf(state);
       if (key === 'features' && v && v.byFeatures) Object.assign(state, clone(v.byFeatures[id] || {}));
@@ -515,7 +517,9 @@
 
   function renderNotebook() {
     $('#look-name').textContent = lookName(state);
-    const { method, shopping, wardrobe } = recipe(state);
+    const { method, shopping, wardrobe, endNote } = recipe(state);
+    $('#method-note').textContent = endNote;
+    $('#method-note').hidden = !endNote;
 
     const wr = $('#wardrobe');
     wr.innerHTML = '';
@@ -531,7 +535,7 @@
     ul.innerHTML = '';
     if (!shopping.length) ul.appendChild(el('li', { class: 'empty' }, 'Nothing to buy yet.'));
     shopping.forEach((p, i) => {
-      ul.appendChild(productRow(p));
+      ul.appendChild(productRow(p, true));
       // the lens notes sit once, under the lens
       if (p.lens && !(shopping[i + 1] && shopping[i + 1].lens)) {
         const notes = el('li', { class: 'lens-notes' });

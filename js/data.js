@@ -29,6 +29,18 @@ const DATA = {
     { id: 'deep', label: 'Deep brown', hex: '#5e3a26' }
   ],
 
+  // One wig style, long with a side-swept fringe and loose curly ends. Choosing a wig replaces the hairstyle.
+  wigs: [
+    { id: 'none', label: 'No wig' },
+    { id: 'blue', label: 'Blue wig', hex: '#3a5ab8', brow: '#2e1e14', namePart: 'sapphire' },
+    { id: 'purple', label: 'Purple wig', hex: '#6a3a8a', brow: '#2e1e14', namePart: 'violet' },
+    { id: 'silver', label: 'Silver wig', hex: '#c8ccd4', brow: '#6a6e76', namePart: 'silvered' },
+    { id: 'white', label: 'White wig', hex: '#f0ece4', brow: '#8a8680', namePart: 'snowy' },
+    { id: 'black', label: 'Black wig', hex: '#1a1719', brow: '#151214', namePart: 'inky-haired' },
+    { id: 'pink', label: 'Pink wig', hex: '#e07aa8', brow: '#5a2a16', namePart: 'candied' },
+    { id: 'red', label: 'Red wig', hex: '#b81e24', brow: '#5a1a16', namePart: 'scarlet-haired' }
+  ],
+
   hairStyles: [
     { id: 'bob', label: 'Wavy bob', namePart: 'marcelled', wig: 'wavy bob wig' },
     { id: 'long', label: 'Long with fringe', namePart: 'sleek', wig: 'long straight wig with fringe' },
@@ -49,25 +61,24 @@ const DATA = {
     { id: 'shaved', label: 'Shaved', namePart: 'shorn', wig: 'bald cap' }
   ],
 
+  // Natural colours for hairstyles; fantasy colours are wigs.
   hairColours: [
     { id: 'black', label: 'Black', hex: '#1f1c1e', brow: '#151214', namePart: 'raven' },
     { id: 'darkBrown', label: 'Dark brown', hex: '#4a3020', brow: '#2e1e14', namePart: 'dusky' },
     { id: 'auburn', label: 'Auburn', hex: '#8a3a1a', brow: '#5a2a16', namePart: 'russet' },
     { id: 'blonde', label: 'Blonde', hex: '#d8b25a', brow: '#8a6a34', namePart: 'golden' },
-    { id: 'silver', label: 'Silver', hex: '#b8bcc4', brow: '#6a6e76', namePart: 'silvered' },
-    { id: 'white', label: 'White', hex: '#e8e4dc', brow: '#8a8680', namePart: 'ashen' },
-    { id: 'green', label: 'Green', hex: '#3f7a3a', brow: '#2e1e14', namePart: 'mossy' },
-    { id: 'purple', label: 'Purple', hex: '#5a2a6a', brow: '#2e1e14', namePart: 'violet' },
-    { id: 'orange', label: 'Orange', hex: '#d9661c', brow: '#5a2a16', namePart: 'ember' }
+    { id: 'silver', label: 'Grey', hex: '#a8acb4', brow: '#5e6268', namePart: 'grizzled' },
+    { id: 'white', label: 'White', hex: '#e8e4dc', brow: '#8a8680', namePart: 'ashen' }
   ],
 
   // The basic kit. Items list the keys they need, so the shopping list stays short.
   kit: {
-    latex: { name: 'Liquid latex', asin: 'B0B6FWCG5D', note: 'I\'ve bought this exact one.' },
+    latex: { name: 'Liquid latex', asin: 'B0B6FWCG5D', note: 'I\'ve bought this exact one.', shopNote: 'Remember to patch test in case you have a latex allergy.' },
     toiletPaper: { name: 'Toilet paper' },
     freshBlood: { name: 'Fake blood', asin: 'B0BSXW7GT9', note: 'I\'ve ordered this one before. Honestly, any fake blood works.' },
     paleFoundation: { name: 'Foundation', asin: 'B008BEQFAQ', note: 'This is what I use for costume makeup. Match your skin tone if you can, but it\'s not essential - you\'ll add blue and purple around it anyway.' },
     whitePaint: { name: 'Snazaroo white face paint', asin: 'B0027IVU5C', note: 'I only use Snazaroo. I\'ve used this exact one, just not bought through Amazon.' },
+    primer: { name: 'Eyeshadow primer', asin: 'B01DEYPNPU', note: 'I\'ve used this exact primer for eye makeup.' },
     palette: { name: 'Eyeshadow palette', asin: 'B081D95GMC', note: 'I\'ve got this exact one - it\'s what I use for my signature dead look.' },
     redLipstick: { name: 'Red lipstick', asin: 'B005W1BDI0' },
     pinkLipstick: { name: 'Bright pink lipstick', q: 'bright pink lipstick' },
@@ -96,14 +107,8 @@ const DATA = {
     wig: { asin: 'B09QKPCL8T', note: 'I\'ve ordered this exact one before. I think these wigs are great - I have this one in several shades.' }
   },
 
-  // Each of these appears once at most.
-  prep: { steps: [[10, 'Start with clean, moisturised skin so everything goes on smoothly.']], products: [] },
-  patchTest: { steps: [[10, 'Patch-test liquid latex on your inner arm the day before, and skip it if you\'re allergic.']], products: [] },
-  // Shared by every latex wound; each wound adds its own placement line first.
-  woundMethod: {
-    steps: [[62, 'Rip toilet paper into a rough shape so there are no hard edges, then peel the plies apart. Paint on a layer of liquid latex, lay a ply on top, and keep alternating, finishing with latex. Once it\'s dry, cover it with foundation. Use tweezers to pinch a small hole, rip it open and fill the inside with red lipstick. Shade the outside and inner edges with blue and purple from the palette, then finish with fake blood.']],
-    products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes', 'sponges']
-  },
+  // Shown below the method whenever there's makeup on the skin.
+  endNote: 'At the end of the night, peel any latex away slowly and remove the rest of the makeup with wipes. I\'d also recommend a shower and a gentle cleanser, as the wipes almost certainly won\'t get it all (but they\'re a strong starting point!)',
   // Shown once under the lens in the shopping list.
   lensNotes: [
     'I\'ve ordered from here before. I don\'t get any commission on these, but they come in prescription, which is a godsend for a blind bat like me.',
@@ -114,6 +119,7 @@ const DATA = {
     // kit keys, optionally with a different name or note for the kit; a bare name is shown as plain text
     products: [
       { key: 'palette', name: 'Big makeup palette' },
+      'primer',
       'latex',
       { key: 'toiletPaper', note: 'I\'m concerned if you don\'t have this already' },
       'freshBlood',
@@ -124,13 +130,7 @@ const DATA = {
       { name: 'Any makeup you normally use' }
     ]
   },
-  setting: {
-    steps: [
-      [86, 'Dust setting powder over everything so it lasts the night.'],
-      [130, 'At the end of the night, take it all off with a cleansing balm and peel any latex away slowly.']
-    ],
-    products: ['powder', 'wipes']
-  },
+  setting: { steps: [], products: ['wipes'] },
   wig: { steps: [[100, 'Pin your hair flat under a wig cap, then pull the wig on from front to back and fix it with grips.']], products: ['wigCap'] },
   baldCap: { steps: [[100, 'Slick your hair down under a bald cap, stick the edges down with liquid latex and blend foundation over the join.']], products: ['baldCap', 'latex', 'paleFoundation'], patch: true },
 
@@ -203,56 +203,61 @@ const DATA = {
       { id: 'cat', label: 'Cat-eye yellow', namePart: 'feline', applyOrder: 90, steps: [], products: [{ name: 'Cat-eye yellow lenses', url: 'https://www.colouredcontacts.com/en_GB/section/prescription-halloween', lens: true }] }
     ],
 
-    // Eye makeup can be combined; the art layers it in a fixed order.
+    // Eye makeup: one eyeshadow and one eyeliner at a time; details layer freely. The art layers it in a fixed order.
     eyes: [
       { id: 'none', label: 'None', namePart: '', applyOrder: 70, steps: [], products: [] },
       {
-        id: 'smoky', label: 'Smoky black', namePart: 'smouldering', applyOrder: 70,
+        id: 'smoky', type: 'eyeshadow', label: 'Smoky black', namePart: 'smouldering', applyOrder: 70,
         steps: ['Pack black eyeshadow over your lids and smudge it out and under your lower lashes.'],
         products: ['palette', 'brushes']
       },
       {
-        id: 'heavyGlam', label: 'Heavy glam', namePart: 'sultry', applyOrder: 71,
+        id: 'heavyGlam', type: 'eyeshadow', label: 'Heavy glam', namePart: 'sultry', applyOrder: 71,
         steps: ['Blend a deep brown-black shadow into your creases, draw a sharp black wing, then glue on false lashes.'],
         products: ['palette', 'blackLiner', 'lashes', 'lashGlue']
       },
       {
-        id: 'redSmoky', label: 'Red smoky eyes', namePart: 'feverish', applyOrder: 70,
+        id: 'redSmoky', type: 'eyeshadow', label: 'Red smoky eyes', namePart: 'feverish', applyOrder: 70,
         steps: ['Smudge deep red eyeshadow all over your lids and under your lower lashes, with a little black in the outer corners.'],
         products: ['palette', 'brushes']
       },
       {
-        id: 'glamWitch', label: 'Glam witch', namePart: 'bewitching', applyOrder: 71,
+        id: 'glamWitch', type: 'eyeshadow', label: 'Glam witch', namePart: 'bewitching', applyOrder: 71,
         steps: ['Pack deep purple eyeshadow over your lids and draw a sharp black wing.'],
         products: ['palette', 'blackLiner', 'lashes', 'lashGlue']
       },
       {
-        id: 'sockets', label: 'Blackened sockets', namePart: 'hollow-eyed', applyOrder: 69,
+        id: 'sockets', type: 'eyeshadow', label: 'Blackened sockets', namePart: 'hollow-eyed', applyOrder: 69,
         steps: ['Blend black eyeshadow right round each eye socket, from the brow bone to the top of the cheek, softening the edges.'],
         products: ['palette', 'brushes']
       },
       {
-        id: 'devilBrows', label: 'Devil brows', namePart: 'wicked', applyOrder: 72,
+        id: 'glitter', type: 'eyeshadow', label: 'Glitter', namePart: 'glittering', applyOrder: 70,
+        steps: ['Use a primer on your lids (or foundation if you don\'t have one), then pat on a glittery eyeshadow.'],
+        products: ['palette']
+      },
+      {
+        id: 'devilBrows', type: 'detail', label: 'Devil brows', namePart: 'wicked', applyOrder: 72,
         steps: ['Draw sharp, high-arched brows with black eyeliner, flicking them up at the ends.'],
         products: ['blackLiner']
       },
       {
-        id: 'redLiner', label: 'Blood-red liner', namePart: 'weeping', applyOrder: 72,
+        id: 'redLiner', type: 'eyeliner', label: 'Blood-red liner', namePart: 'weeping', applyOrder: 72,
         steps: ['Draw a thick winged line in red, then let one drop run down from the outer corner.'],
         products: ['redLiner']
       },
       {
-        id: 'spiderweb', label: 'Spiderweb', namePart: 'webbed', applyOrder: 72,
+        id: 'spiderweb', type: 'detail', label: 'Spiderweb', namePart: 'webbed', applyOrder: 72,
         steps: ['Draw a web out from the corner of one eye onto your temple with black eyeliner - the straight lines first, then the curved ones between them.'],
         products: ['blackLiner']
       },
       {
-        id: 'whiteLashes', label: 'White lashes and brows', namePart: 'frosted', applyOrder: 72,
+        id: 'whiteLashes', type: 'detail', label: 'White lashes and brows', namePart: 'frosted', applyOrder: 72,
         steps: ['Sweep pink-red eyeshadow over your lids, then run white eyeliner over your lashes and brows.'],
         products: ['palette', 'whitePencil', 'whiteMascara']
       },
       {
-        id: 'diamonds', label: 'Clown diamonds', namePart: 'harlequin', applyOrder: 71,
+        id: 'diamonds', type: 'detail', label: 'Clown diamonds', namePart: 'harlequin', applyOrder: 71,
         steps: ['Draw a tall diamond through each eye with eyeliner and fill it in with blue eyeshadow.'],
         products: ['blackLiner', 'palette']
       }
@@ -326,15 +331,15 @@ const DATA = {
     // Effects can be combined.
     effects: [
       { id: 'none', label: 'None', namePart: '', applyOrder: 60, steps: [], products: [] },
-      { id: 'clawRip', label: 'Claw rip', namePart: 'mauled', applyOrder: 61, wound: true, patch: true, steps: ['For the claw rip, mark out three diagonal strips across the bridge of your nose and both cheeks, between your eyes and mouth.'], products: [] },
-      { id: 'cheekGash', label: 'Cheek gash', namePart: 'gashed', applyOrder: 61, wound: true, patch: true, steps: ['For the cheek gash, place one big wound on one cheek and rip it roughly so the edges are ragged, then go heavier on the blood.'], products: [] },
-      { id: 'slicedCheeks', label: 'Sliced cheeks', namePart: 'sliced', applyOrder: 61, wound: true, patch: true, steps: ['For sliced cheeks, place a thin vertical wound on each cheekbone, directly below the eyes.'], products: [] },
-      { id: 'tornCorners', label: 'Sliced mouth corners', namePart: 'slashed', applyOrder: 61, wound: true, patch: true, steps: ['For sliced mouth corners, place a thin wound at each corner of your mouth, curving up towards your cheeks like an extended smile.'], products: [] },
-      { id: 'templePeel', label: 'Temple peel', namePart: 'peeling', applyOrder: 61, wound: true, patch: true, steps: ['For the temple peel, place one long wound running down through one eye, from your lower forehead to your upper cheek, keeping well clear of the eye itself.'], products: [] },
-      { id: 'foreheadGash', label: 'Forehead gash', namePart: 'slain', applyOrder: 61, wound: true, patch: true, steps: ['For the forehead gash, place a long wound across your forehead.'], products: [] },
+      { id: 'clawRip', label: 'Claw rip', namePart: 'mauled', applyOrder: 10, patch: true, steps: ['Rip toilet paper into three long, thin strips with no hard edges and peel the plies apart. Lay them diagonally across your nose and cheeks, alternating with liquid latex and finishing with latex. Once dry, cover with foundation, then use tweezers to rip each strip open along its length. Fill with red lipstick, shade the edges blue and purple, and finish with fake blood.'], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
+      { id: 'cheekGash', label: 'Cheek gash', namePart: 'gashed', applyOrder: 10, patch: true, steps: ['Rip a big rough patch of toilet paper with no hard edges and peel the plies apart. Build it up on one cheek, alternating with liquid latex and finishing with latex. Once dry, cover with foundation, then tear it wide open with tweezers so the edges are really ragged. Fill with red lipstick, shade the edges blue and purple, and go heavy on the fake blood.'], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
+      { id: 'slicedCheeks', label: 'Sliced cheeks', namePart: 'sliced', applyOrder: 10, patch: true, steps: ['Rip two thin strips of toilet paper with no hard edges and peel the plies apart. Lay one down each cheekbone, straight down from your eyes, alternating with liquid latex and finishing with latex. Once dry, cover with foundation, then slice each one open lengthways with tweezers. Fill with red lipstick, shade the edges blue and purple, and let a drop of fake blood run down.'], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
+      { id: 'tornCorners', label: 'Sliced mouth corners', namePart: 'slashed', applyOrder: 10, patch: true, steps: ['Rip two thin, curved strips of toilet paper with no hard edges and peel the plies apart. Lay one from each corner of your mouth curving up towards your cheeks, alternating with liquid latex and finishing with latex. Once dry, cover with foundation, then open each one along the curve with tweezers. Fill with red lipstick, shade the edges blue and purple, and add fake blood.'], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
+      { id: 'templePeel', label: 'Temple peel', namePart: 'peeling', applyOrder: 10, patch: true, steps: ['Rip a long strip of toilet paper with no hard edges and peel the plies apart. Lay it from your lower forehead down through one eye to your upper cheek, keeping well clear of the eye itself, alternating with liquid latex and finishing with latex. Once dry, cover with foundation, then tear it open above and below the eye with tweezers and peel the edges back. Fill with red lipstick, shade the edges blue and purple, and finish with fake blood.'], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
+      { id: 'foreheadGash', label: 'Forehead gash', namePart: 'slain', applyOrder: 10, patch: true, steps: ['Rip a long strip of toilet paper with no hard edges and peel the plies apart. Lay it across your forehead, alternating with liquid latex and finishing with latex. Once dry, cover with foundation, then rip it open along its length with tweezers. Fill with red lipstick, shade the edges blue and purple, and let fake blood run down from it.'], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
       // Zip face has its own method and can't be combined with other wounds.
-      { id: 'zipFace', label: 'Zip face', namePart: 'unzipped', applyOrder: 61, patch: true, exclusive: true, steps: ['Stick the zip down with liquid latex underneath it and another layer over the edges. Once dry, open it up and fill the whole inside with red lipstick. Finish with loads of fake blood.'], products: ['zip', 'latex', 'redLipstick', 'freshBlood'] },
-      { id: 'throatBite', label: 'Throat bite', namePart: 'bitten', applyOrder: 61, wound: true, patch: true, steps: ['For the throat bite, place a small wound on the side of your neck and pinch two holes instead of one rip.'], products: [] },
+      { id: 'zipFace', label: 'Zip face', namePart: 'unzipped', applyOrder: 61, patch: true, exclusive: true, steps: ['Put liquid latex on your face, press the zip into it, then add more latex over the top. If the edges look rough, layer the thinnest possible plies of toilet paper over them so you can\'t see the hard edge of the zip, finishing with latex. Once it\'s dry, cover with foundation. Colour in the skin inside the zip with red lipstick or red face paint, then cover with fake blood.'], products: ['zip', 'latex', 'toiletPaper', 'paleFoundation', 'redLipstick', 'freshBlood'] },
+      { id: 'throatBite', label: 'Throat bite', namePart: 'bitten', applyOrder: 10, patch: true, steps: ['On the side of your neck, build a small patch of latex and toilet paper. Once dry, cover with foundation, then use tweezers to rip two small holes next to each other so they look like fang marks. Fill them with red lipstick and drip fake blood from each one.'], products: ['latex', 'toiletPaper', 'paleFoundation', 'tweezers', 'redLipstick', 'palette', 'freshBlood', 'brushes'] },
       {
         id: 'stitchedSmile', label: 'Stitched smile', namePart: 'stitched', applyOrder: 60,
         steps: ['Draw a line from each corner of your mouth up towards your ears, then add little black stitches across it.'],
@@ -560,7 +565,7 @@ const DATA = {
           set: { facePaint: 'paleBase', underEyes: 'redRims', fangs: 'fangs', blood: ['elegantDrips'], clothing: 'tuxedo', hairStyle: 'slick', hairColour: 'black' }, products: ['ruffle', 'lashes', 'lashGlue'],
           byFeatures: {
             masculine: { lips: 'none', eyes: [] },
-            feminine: { lips: 'blood', eyes: ['smoky', 'heavyGlam'] },
+            feminine: { lips: 'blood', eyes: ['heavyGlam'] },
             androgynous: { lips: 'berry', eyes: ['smoky'] }
           }
         },
@@ -617,7 +622,7 @@ const DATA = {
         },
         {
           id: 'glam', label: 'Glam clown', tag: 'glam',
-          set: { facePaint: 'clown', lips: 'blood', clothing: 'harlequin', accessory: 'whiteRuff', hairStyle: 'witch', hairColour: 'orange' }, products: ['blackLashes', 'lashGlue']
+          set: { facePaint: 'clown', lips: 'blood', clothing: 'harlequin', accessory: 'whiteRuff', wig: 'red' }, products: ['blackLashes', 'lashGlue']
         }
       ]
     },
@@ -716,7 +721,7 @@ const DATA = {
       versions: [
         {
           id: 'hatter', label: 'Hatter', tag: 'glam',
-          set: { hairStyle: 'longWavy', hairColour: 'silver', headwear: 'topHat', lenses: 'galaxy', eyes: ['whiteLashes'], lips: 'blood', clothing: 'hatterJacket' },
+          set: { wig: 'silver', headwear: 'topHat', lenses: 'galaxy', eyes: ['whiteLashes'], lips: 'blood', clothing: 'hatterJacket' },
           products: ['lashes', 'lashGlue', 'clock', 'flamingo', 'hedgehog'],
           steps: [[120, 'Props are optional, but a clock, a flamingo or a hedgehog to carry finishes the look.']]
         }
@@ -739,7 +744,7 @@ const DATA = {
           id: 'comic', label: 'Comic devil', tag: 'glam',
           set: { facePaint: 'redPaint', eyes: ['devilBrows'], headwear: 'horns', clothing: 'highCollar', hairStyle: 'slick', hairColour: 'black' },
           details: ['goatee'],
-          steps: [[73, 'Add a curled moustache and a little pointed goatee with black eyeliner.']],
+          steps: [[55, 'Add a curled moustache and a little pointed goatee with black eyeliner.']],
           products: ['blackLiner']
         }
       ]
@@ -765,7 +770,7 @@ const DATA = {
 
   defaults: {
     shape: 'oval', features: 'androgynous', skinTone: 'peach', hairStyle: 'crop', hairColour: 'darkBrown',
-    contour: 'none', underEyes: 'none', lenses: 'none', eyes: [], facePaint: 'none', effects: [], lips: 'none', fangs: 'none', blood: [],
+    wig: 'none', contour: 'none', underEyes: 'none', lenses: 'none', eyes: [], facePaint: 'none', effects: [], lips: 'none', fangs: 'none', blood: [],
     mask: 'none', clothing: 'plain', headwear: 'none', accessory: 'none', preset: null, version: null
   },
 

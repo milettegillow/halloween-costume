@@ -636,6 +636,37 @@
       return { back, front, top };
     },
 
+    wigCurl(a, h) {
+      const R = rng(229), r = (x, y) => x + R() * (y - x);
+      const top = a.crownY - 20;
+      const sil = mirrorPts([[CX, top], [CX + 80, top + 12], [CX + 110, 150], [CX + 120, 260], [CX + 128, 470], [CX, 470]]);
+      let back = P(spline(sil, true), h.deep);
+      [-1, 1].forEach(s => {
+        for (let i = 0; i < 6; i++) back += lock(h, R, CX + s * r(66, 100), r(190, 230), CX + s * r(100, 126), r(400, 450), r(22, 28), s * 0.04, -s * 0.06, { hl: 1 });
+        for (let i = 0; i < 6; i++) back += curl(h, R, CX + s * r(96, 126), r(430, 470), r(12, 15), r(10, 12), s);
+      });
+      let front = hairCap(a, h, { top: a.crownY - 14 });
+      const part = CX - 36;
+      // volume from a side parting
+      for (let i = 0; i < 8; i++) {
+        const s = i < 2 ? -1 : 1;
+        front += lock(h, R, part + r(-4, 4), r(100, 108), CX + s * r(70, 104), r(140, 172), r(30, 38), -s * r(0.16, 0.24), s * r(0, 0.06));
+      }
+      // long, side-swept fringe across the forehead
+      for (let i = 0; i < 6; i++) {
+        front += lock(h, R, part + r(-6, 6), r(102, 112), CX + r(50, 92), r(166, 186), r(26, 34), -r(0.14, 0.22), r(0.04, 0.1), { hl: 2 });
+      }
+      // straight lengths, breaking into loose curls at the ends
+      [-1, 1].forEach(s => {
+        for (let i = 0; i < 6; i++) {
+          const rx = r(78, 94);
+          front += lock(h, R, CX + s * rx, r(136, 160), CX + s * Math.min(122, rx + r(14, 26)), r(380, 420), r(18, 24), -s * 0.02, s * 0.03, { blunt: true });
+        }
+        for (let y = 392; y < 470; y += 22) front += curl(h, R, CX + s * r(98, 122), y + r(-4, 4), r(11, 14), r(9, 12), s);
+      });
+      return { back, front, top };
+    },
+
     longWavy(a, h) {
       const R = rng(97), r = (x, y) => x + R() * (y - x);
       const top = a.crownY - 22;
@@ -1131,7 +1162,7 @@
     const lid = (g, up, out_, colour, o) => P(`M${pt(g.x1 - g.side * 2, g.ey + 4)}C${pt(g.x1, g.ey - g.ry - up)} ${pt(g.x2 + g.side * 6, g.ey - g.ry - up - 2)} ${pt(g.x2 + g.side * out_, g.ey - 6)}` +
       `C${pt(g.x2 + g.side * (out_ - 4), g.ey + g.ry + 6)} ${pt(g.x1, g.ey + g.ry + 8)} ${pt(g.x1 - g.side * 2, g.ey + 4)}Z`, colour, op(o));
     // drawn in a fixed order, so multiple choices layer sensibly
-    const ORDER = ['sockets', 'smoky', 'redSmoky', 'heavyGlam', 'glamWitch', 'diamonds', 'redLiner', 'spiderweb', 'whiteLashes', 'devilBrows'];
+    const ORDER = ['sockets', 'smoky', 'redSmoky', 'glitter', 'heavyGlam', 'glamWitch', 'diamonds', 'redLiner', 'spiderweb', 'whiteLashes', 'devilBrows'];
     const chosen = ORDER.filter(k => (look.eyes || []).includes(k));
     [-1, 1].forEach(s => {
       const g = eyeGeom(a, s);
@@ -1142,6 +1173,15 @@
             out += lid(g, 18, 14, '#141012', 0.38) + lid(g, 10, 8, '#141012', 0.82);
             out += S(upperLid(g, 6), '#0a0809', 3.4);
             break;
+          case 'glitter': {
+            const Rg = rng(s > 0 ? 7 : 3);
+            out += lid(g, 12, 8, '#7a5aa8', 0.6);
+            for (let i = 0; i < 28; i++) {
+              const t = Rg(), x = g.x1 + (g.x2 - g.x1) * t, y = ey - ry * (0.9 + Rg() * 0.45) * (1 - Math.pow(t - 0.5, 2) * 1.6) + Rg() * 6;
+              out += `<rect x="${f(x)}" y="${f(y)}" width="1.6" height="1.6" fill="${['#efe2ff', '#ffd1e8', '#e2cc80', '#ffffff'][i % 4]}" transform="rotate(45 ${f(x)} ${f(y)})"/>`;
+            }
+            break;
+          }
           case 'redSmoky':
             out += lid(g, 20, 16, '#8a1020', 0.4) + lid(g, 10, 8, '#5a0612', 0.6);
             out += S(upperLid(g, 5), '#2a0408', 2.6);
