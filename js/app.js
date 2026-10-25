@@ -258,6 +258,14 @@
         });
       });
       if (s.eyes.some(id => byId(M.eyes, id).type === 'eyeshadow')) products.push(DATA.kit.primer);
+      // latex wounds share one five-step method, naming each wound where it matters
+      const wounds = s.effects.map(id => byId(M.effects, id)).filter(o => o.latexWound);
+      if (wounds.length) {
+        const [build, base, rip, colour, blood] = DATA.latexWoundSteps;
+        const lines = key => wounds.map(w => w.latexWound[key]).join('\n');
+        [build + '\n' + lines('place'), base, rip + '\n' + lines('open'), colour, blood]
+          .forEach((text, i) => steps.push([STEP_ORDER.effects - 1 + i * 0.1, text]));
+      }
     }
     if (onSkin) add(DATA.setting);
     if (masked) add(byId(DATA.masks, s.mask), STEP_ORDER.mask);

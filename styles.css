@@ -477,6 +477,8 @@ button {
 
 .method li {
   padding-left: 0.3rem;
+  /* wound steps list each wound on its own line */
+  white-space: pre-line;
   margin-bottom: 0.55rem;
 }
 
