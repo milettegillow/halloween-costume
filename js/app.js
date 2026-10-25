@@ -554,16 +554,21 @@
     const ul = $('#shopping');
     ul.innerHTML = '';
     if (!shopping.length) ul.appendChild(el('li', { class: 'empty' }, 'Nothing to buy yet.'));
-    shopping.forEach((p, i) => {
-      ul.appendChild(productRow(p, true));
-      // the lens notes sit once, under the lens
-      if (p.lens && !(shopping[i + 1] && shopping[i + 1].lens)) {
-        const notes = el('li', { class: 'lens-notes' });
-        DATA.lensNotes.forEach(t => notes.appendChild(el('p', {}, t)));
-        ul.appendChild(notes);
-      }
-    });
+    shopping.filter(p => !p.lens).forEach(p => ul.appendChild(productRow(p, true)));
+
+    // lenses get their own section at the bottom, with the lens notes once
+    const lenses = shopping.filter(p => p.lens);
+    const lul = $('#lenses');
+    lul.innerHTML = '';
+    lenses.forEach(p => lul.appendChild(productRow(p, true)));
+    if (lenses.length) {
+      const notes = el('li', { class: 'lens-notes' });
+      DATA.lensNotes.forEach(t => notes.appendChild(el('p', {}, t)));
+      lul.appendChild(notes);
+    }
+    $('#lenses-section').hidden = !lenses.length;
     $('#affiliate').hidden = !AMAZON_TAG;
+    $('#site-foot').hidden = !AMAZON_TAG;
   }
 
   function renderEssentials() {

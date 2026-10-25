@@ -84,7 +84,7 @@ const DATA = {
     pinkLipstick: { name: 'Bright pink lipstick', q: 'bright pink lipstick' },
     blackLiner: { name: 'Black eyeliner', asin: 'B086FXJ2MV' },
     redLiner: { name: 'Red liquid eyeliner', q: 'red liquid eyeliner' },
-    whitePencil: { name: 'White eyeliner', asin: 'B094928BTR', note: 'I used this for my Mad Hatter.' },
+    whitePencil: { name: 'White eyeliner', asin: 'B094928BTR', note: 'I used this exact one for my Mad Hatter in 2019.' },
     whiteMascara: { name: 'White mascara', asin: 'B0D66C76TH', note: 'Honestly I get the effect by running white eyeliner over my lashes.' },
     colourPaints: { name: 'Bright face paint palette', q: 'face paint palette bright colours' },
     orangePaint: { name: 'Snazaroo orange face paint', asin: 'B000H6OYSQ' },
@@ -97,12 +97,11 @@ const DATA = {
     brushes: { name: 'Makeup brushes', asin: 'B07FTB6NKV', note: 'I\'ve bought these exact ones. Just a good-to-have.' },
     tweezers: { name: 'Tweezers', asin: 'B01N5A69RV' },
     wipes: { name: 'Makeup remover wipes', asin: 'B01IAFEGCO', note: 'These are the exact ones I use.' },
-    lashes: { name: 'False eyelashes', asin: 'B0CHFH9CS1', note: 'I\'ve ordered these before.' },
+    lashes: { name: 'White false eyelashes', asin: 'B0CHFH9CS1', note: 'I\'ve ordered these before.' },
     blackLashes: { name: 'Black false eyelashes', asin: 'B0BNPLJLM1' },
     lashGlue: { name: 'Eyelash glue', asin: 'B085L61X9R' },
     fangs: { name: 'Vampire fangs', asin: 'B0H2JR1NDX', note: 'These are the same type I use - you heat the beads and mould them to your own teeth. They look the best, but be careful eating with them in so you don\'t swallow one by accident.' },
     zip: { name: 'Zip', asin: 'B0FL19L6D5' },
-    wigCap: { name: 'Wig cap', q: 'wig cap' },
     baldCap: { name: 'Latex bald cap', q: 'latex bald cap' },
     wig: { asin: 'B09QKPCL8T', note: 'I\'ve ordered this exact one before. I think these wigs are great - I have this one in several shades.' }
   },
@@ -140,7 +139,7 @@ const DATA = {
     ]
   },
   setting: { steps: [], products: ['wipes'] },
-  wig: { steps: [[100, 'Pin your hair flat under a wig cap, then pull the wig on from front to back and fix it with grips.']], products: ['wigCap'] },
+  wig: { steps: [[100, 'Pin your hair flat, then pull the wig on from front to back and fix it with grips.']], products: [] },
   baldCap: { steps: [[100, 'Slick your hair down under a bald cap, stick the edges down with liquid latex and blend foundation over the join.']], products: ['baldCap', 'latex', 'paleFoundation'], patch: true },
 
   makeup: {
@@ -494,7 +493,7 @@ const DATA = {
     { id: 'none', label: 'None', applyOrder: 115, steps: [], products: [] },
     { id: 'witchHat', label: 'Crooked witch hat', applyOrder: 115, steps: [], products: [] },
     { id: 'veilHat', label: 'Witch hat with veil', applyOrder: 115, steps: [], products: ['witchHatVeil'] },
-    { id: 'topHat', label: 'Black top hat', applyOrder: 115, steps: [], products: ['blackTopHat', 'oliveTopHat'] },
+    { id: 'topHat', label: 'Top hat', applyOrder: 115, steps: [], products: ['greenTopHat'] },
     { id: 'ramHorns', label: 'Ram horns', applyOrder: 115, steps: [], products: ['ramHorns'] },
     { id: 'horns', label: 'Red horns', applyOrder: 115, steps: [], products: ['redHorns'] },
     { id: 'redHood', label: 'Red hood', applyOrder: 115, steps: [], products: [] },
@@ -553,8 +552,7 @@ const DATA = {
     candleHolder: { name: 'Candle holder', asin: 'B0FQJTDFGV' },
     candles: { name: 'Candles', asin: 'B09NBZCYMQ', note: 'These should fit the holder.' },
     pumpkinHeadband: { name: 'Pumpkin headband', asin: 'B09BVQTWV5' },
-    blackTopHat: { name: 'Black top hat', asin: 'B00FFY3HF6', note: 'This one\'s pricey, but it\'s a proper hat rather than a costume replica, and real hats are actually quite cool.', alts: [{ label: 'Cheaper option - not sure how good it is', asin: 'B0BZW6JQV3' }] },
-    oliveTopHat: { name: 'Olive green top hat', asin: 'B00JAB0UBO', note: 'The olive green is divine.' },
+    greenTopHat: { name: 'Green top hat', asin: 'B00JAB0UBO', note: 'The olive green is divine, and it\'s a proper hat rather than a costume replica, but it depends whether you think you\'ll wear this on a regular night out or not.', alts: [{ label: 'a cheaper option', asin: 'B0BZW6JQV3' }] },
     clock: { name: 'Inflatable clock', asin: 'B06XGTXTS3', note: 'I got this for my Alice in Wonderland party.' },
     flamingo: { name: 'Inflatable flamingo', asin: 'B001ASG90G' },
     hedgehog: { name: 'Soft toy hedgehog', asin: 'B00U1GS7TY' },
@@ -609,9 +607,10 @@ const DATA = {
       versions: [
         { id: 'oneEyed', label: 'One-eyed', tag: 'scary', wardrobe: ['You can wear literally anything with this, but if you want to go all-out you can snip holes in an old jumper, pull a few stitches loose and rub in brown eyeshadow for dirt.'], set: { facePaint: 'paleBase', lenses: 'whiteoutOne', effects: ['templePeel', 'cheekGash'], contour: 'bruised', underEyes: 'bruised', clothing: 'tornJumper' } },
         { id: 'mauled', label: 'Mauled', tag: 'scary', steps: [[200, 'Pair with a red hood for that classic I\'ve-just-been-killed-by-a-wolf fairytale look.']], wardrobe: ['You can wear literally anything with this, but if you want to go all-out you can snip holes in an old jumper, pull a few stitches loose and rub in brown eyeshadow for dirt.'], set: { facePaint: 'paleBase', effects: ['clawRip'], contour: 'bruised', underEyes: 'bruised', clothing: 'redCape', headwear: 'redHood' } },
-        { id: 'unzipped', label: 'Unzipped', tag: 'scary', wardrobe: ['You can wear literally anything with this, but if you want to go all-out you can snip holes in an old jumper, pull a few stitches loose and rub in brown eyeshadow for dirt.'], set: { facePaint: 'paleBase', effects: ['zipFace'], clothing: 'bloodTee' } },
+        { id: 'unzipped', label: 'Unzipped', tag: 'scary', steps: [[200, 'Grab an old white T-shirt and cover the entire neckline with fake blood, letting it drip down.']], wardrobe: ['You can wear literally anything with this, but if you want to go all-out you can snip holes in an old jumper, pull a few stitches loose and rub in brown eyeshadow for dirt.'], set: { facePaint: 'paleBase', effects: ['zipFace'], clothing: 'bloodTee' } },
         {
           id: 'nurse', label: 'Zombie nurse', tag: 'sexy',
+          steps: [[200, 'Pair with a sexy zombie nurse costume to look 10/10 hot.']],
           wardrobe: ['Literally anything - regular clothes, the more dishevelled the better.'],
           nouns: { feminine: 'nurse', masculine: 'nurse', androgynous: 'nurse' },
           set: { facePaint: 'paleBase', lenses: 'whiteout', effects: ['tornCorners'], contour: 'bruised', underEyes: 'bruised', clothing: 'nurseDress', headwear: 'nurseCap', hairStyle: 'bob' }

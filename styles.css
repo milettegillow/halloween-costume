@@ -554,6 +554,25 @@ button {
   color: var(--oxblood);
 }
 
+.lenses-heading {
+  font-family: var(--heading);
+  font-size: 1.1rem;
+  color: var(--oxblood);
+  margin: 1.1rem 0 0.4rem;
+}
+
+.site-foot {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 16px 2.4rem;
+  text-align: center;
+  color: var(--text-on-dark);
+}
+
+.site-foot p {
+  margin: 0;
+}
+
 .method-note {
   margin: 1rem 0 0;
 }
