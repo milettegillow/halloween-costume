@@ -128,7 +128,7 @@ const DATA = {
     intro: 'The things I always have in the drawer for Halloween.',
     // kit keys, optionally with a different name or note for the kit; a bare name is shown as plain text
     products: [
-      { key: 'palette', name: 'Big makeup palette' },
+      { key: 'palette', name: 'Big makeup palette', note: 'I\'ve got this exact one. The shades Shy, Blue Moon, Pegasus and Fizzy Grape are the ones I use for my blue and purple signature dead makeup.' },
       'primer',
       'latex',
       { key: 'toiletPaper', note: 'I\'m concerned if you don\'t have this already' },
