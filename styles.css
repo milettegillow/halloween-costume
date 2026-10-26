@@ -485,8 +485,8 @@ button {
 
 .recipe {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-  gap: 0 3rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0 3.5rem;
 }
 
 .method {
@@ -610,7 +610,8 @@ button {
 
 /* the shopping list runs in two columns when there's room; lenses stay full width */
 #shopping {
-  columns: 2 15rem;
+  /* two columns only when each is at least 13rem wide, otherwise one */
+  columns: 2 13rem;
   column-gap: 2rem;
 }
 
