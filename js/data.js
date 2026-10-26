@@ -728,7 +728,7 @@ const DATA = {
           id: 'purple', label: 'Purple witch', tag: 'glam',
           set: { eyes: ['glamWitch'], lips: 'blood', clothing: 'tulleGown', headwear: 'veilHat', accessory: 'webCape', hairStyle: 'long', hairColour: 'black' }, products: ['lashes', 'lashGlue']
         },
-        { id: 'web', label: 'Web witch', tag: 'sexy', set: { eyes: ['spiderweb'], lips: 'blood', clothing: 'laceTop', headwear: 'veilHat', accessory: 'webCape', hairStyle: 'long', hairColour: 'black' } },
+        { id: 'web', label: 'Web witch', tag: 'sexy', set: { eyes: ['spiderweb'], lips: 'blood', clothing: 'laceTop', headwear: 'veilHat', accessory: 'webCape', hairStyle: 'witch', hairColour: 'black' } },
         { id: 'velvet', label: 'Velvet witch', tag: 'glam', set: { eyes: ['redSmoky'], lips: 'berry', clothing: 'velvetTop', headwear: 'veilHat', accessory: 'webCape', hairStyle: 'bob', hairColour: 'black' }, details: ['falseLashes'], steps: [[55, 'Glue on black false lashes.']], products: ['blackLashes', 'lashGlue'] }
       ]
     },
